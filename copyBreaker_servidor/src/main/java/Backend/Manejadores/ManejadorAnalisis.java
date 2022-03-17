@@ -8,8 +8,11 @@ package Backend.Manejadores;
 import Backend.Analizadores.Lexer;
 import Backend.Analizadores.Parser;
 import Backend.Objetos.TablaSimbolos;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.StringReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 /**
@@ -31,9 +34,14 @@ public class ManejadorAnalisis {//para mientras que estos métodos son del servi
     //yo imagino que esto se envlverá en un for para crear la TS de cada clase y así addla a la lista de TS...    
     public void analizarClase(File clase){
         /*TablaSimbolos tablaSimbolos = new TablaSimbolos();*/
+        
         try {            
-             Lexer  lexer = new Lexer(new FileReader(clase));
-             Parser parser = new Parser(lexer);
+            String string = Files.readString(clase.toPath());
+            System.out.println(string);
+            
+            
+            Lexer  lexer = new Lexer(new StringReader(string));
+            Parser parser = new Parser(lexer);
         
             parser.debug_parse();
         } catch (Exception ex) {
@@ -45,3 +53,10 @@ public class ManejadorAnalisis {//para mientras que estos métodos son del servi
     }
     
 }
+
+
+//lo primero que hice para leer el archivo fue usar un new FileReader(clase)
+//luego envolver eso en un BufferedReader... new BufferefReader(new FileReader(clase))
+//ahora voy a probar crear un path y de el con Files obtener el string y volver eso a un StringReader
+    //u obtener el path del archivo de forma directa...
+    //String string = Files.readString(clase.toPath()), en Lexer -> new StringReader(string)

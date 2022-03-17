@@ -13,10 +13,10 @@
     <name>copyBreaker_servidor</name>
     
      <dependencies>
-        <!-- https://mvnrepository.com/artifact/de.jflex/cup_runtime -->
+        <!-- https://mvnrepository.com/artifact/com.github.vbmacher/java-cup-runtime -->
         <dependency>
-            <groupId>de.jflex</groupId>
-            <artifactId>cup_runtime</artifactId>
+            <groupId>com.github.vbmacher</groupId>
+            <artifactId>java-cup-runtime</artifactId>
             <version>11b-20160615</version>
         </dependency>
     </dependencies>    

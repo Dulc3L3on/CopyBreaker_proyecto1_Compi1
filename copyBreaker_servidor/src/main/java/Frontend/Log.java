@@ -14,7 +14,7 @@ import java.io.File;
  */
 public class Log extends javax.swing.JFrame {
      private ManejadorAnalisis manejadorAnalisis = new ManejadorAnalisis();
-     private String pathJava = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/copyBreaker_servidor/src/main/resources/archivoPrueba.java";
+     private String pathJava = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_2.java";
      private String pathTxt = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba.txt";
      
     /**

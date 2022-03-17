@@ -16,9 +16,9 @@ parser code {:/*código que modifica el comportamiento del parser [sobreescribie
         super(lexer);        
     }    
     
-    protected int error_sync_size(){
+    /*protected int error_sync_size(){
         return 1;
-    }/*para que establezca que con un token bien leido basta para recuperarse...   */
+    }*//*para que establezca que con un token bien leido basta para recuperarse...   */
 :}/*este si puede ser accedido desde el código...*/
 
 /*2. terminales*/
@@ -33,7 +33,7 @@ terminal OPERADOR_RELACIONAL, OPERADOR_LOGICO, NO;
 /*3. no terminales*/
 non terminal inicio;
 non terminal imports, iimport, direccion;
-non terminal visibilidad, clase, def_clase, cuerpo_clase, bloque_clase, sentencias_clase;
+non terminal visibilidad, clase, def_clase, /*cuerpo_clase,*/ bloque_clase, sentencias_clase;
 non terminal def_variable, def_tipo_variable;
 non terminal creacion_variable_numero, variable_numero, creacion_variable_string, variable_string, creacion_variable_char, variable_char;
 non terminal creacion_variable_boolean, variable_boolean, creacion_variable_object, variable_object, creacion_variable_objeto, variable_objeto;
@@ -90,12 +90,9 @@ visibilidad ::= PUBLIC                                                     {:Sys
          /*     |                                                            {:System.out.println("visibilidad: ninguna");:}*/
               ;
 
-def_clase ::= CLASS OBJETO cuerpo_clase                                    {:System.out.println("substruct: def_clase");:}
+def_clase ::= CLASS OBJETO LLAVE_A bloque_clase LLAVE_C                              {:System.out.println("substruct: cuerpo_clase: CB");:}
+            | CLASS OBJETO LLAVE_A LLAVE_C                                           {:System.out.println("substruct: cuerpo_clase: SB");:}
             ;
-
-cuerpo_clase ::= LLAVE_A bloque_clase LLAVE_C                              {:System.out.println("substruct: cuerpo_clase: CB");:}
-               | LLAVE_A LLAVE_C                                           {:System.out.println("substruct: cuerpo_clase: SB");:}
-               ;
 
 bloque_clase ::= bloque_clase sentencias_clase                             {:System.out.println("bloque clases: +1 sentencia");:}
                | sentencias_clase                                          {:System.out.println("bloque clases: 1 sentencia");:}

@@ -197,7 +197,7 @@ contenidoComentario = ( [^*] | \*+ [^/*] )*
 
     {numero}                          {if(operadorAnterior != null){return sendSingleOperator();}else{System.out.println("[L] numero: "+ yytext());return symbol(NUMERO, yytext(), false);}}//son los signos de operación en sí quienes requieren del anterior
 
-    {identificador}                   {if(operadorAnterior != null){return sendSingleOperator();}else{accionIdentificador();}}
+    {identificador}                   {if(operadorAnterior != null){return sendSingleOperator();}else{return accionIdentificador();}}
 
     {operadoresAritmeticos}           {if(operadorAnterior != null){return sendSingleOperator();}else{System.out.println("[L] simbolo: "+ yytext());
                                          return symbol(((yytext().equals("+"))?MAS:((yytext().equals("-"))?RESTA:((yytext().equals("*"))?ASTERISCO:((yytext().equals("/"))?DIV:((yytext().equals("("))?PARENTESIS_A:PARENTESIS_C))))), yytext(), true);}}
