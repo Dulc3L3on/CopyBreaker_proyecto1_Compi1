@@ -1,0 +1,10 @@
+Backend/Analizadores/ParserSym.class
+Backend/Analizadores/Lexer.class
+Frontend/Log.class
+Backend/Manejadores/ManejadorAnalisis.class
+com/mycompany/servidor_copybreaker/PruebasSintaxis.class
+Backend/Objetos/Token.class
+Backend/Analizadores/Parser.class
+Frontend/Log$1.class
+Backend/Objetos/TablaSimbolos.class
+Backend/Analizadores/Parser$CUP$Parser$actions.class

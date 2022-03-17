@@ -1,0 +1,33 @@
+/*"\nstring correcto"
+"string \ incorrecto"
+"un string
+no deberia tener más 1 linea*/
+//comentario una linea
+/ **/
+/*/*/
+/**********/**/
+/ * * /
+/* * /
+& = +
++=545
+==& &
+//yo miro que no da errores haber agrupado esos operadores... si si de verdad -_- por qué no seguiste la forma FÁCIL!!!
+
+import java.util.*; // comentario simple 
+import java.sql.base1; // Statement, 
+public class ejemplo_final 
+{ 
+private String value; // "Comentarios" 
+private boolean valid;  
+/***Comentariooo * multilinea*/
+public boolean parse() { 
+Objeto nuevo_objeto = new Object(); 
+Saludar("hola "+" numero: "+ (55+55)); 
+} 
+public String Saludar(String val) { 
+   If(val! String ""){ 
+return val; // "Hola aqui retorno"} 
+} 
+} 
+}
+
