@@ -551,12 +551,16 @@ public void pruebaOpcionesSwitch(){
     
     switch("c"){
         case "asd"+3+true:
-    }
+    }        
     //es un hecho, solo admite ints, char y string
     
     /*switch(pruebas){
     
     }*/
+    
+    switch("c"){
+        default :
+    }
 }
 
 public void prubeasConcat(){

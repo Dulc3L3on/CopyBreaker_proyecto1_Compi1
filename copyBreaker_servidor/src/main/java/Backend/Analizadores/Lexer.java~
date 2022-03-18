@@ -950,7 +950,7 @@ public class Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 46: break;
           case 5:
-            { if(operadorAnterior != null){return sendSingleOperator();}else{accionIdentificador();}
+            { if(operadorAnterior != null){return sendSingleOperator();}else{return accionIdentificador();}
             }
             // fall through
           case 47: break;

@@ -37,7 +37,7 @@ non terminal visibilidad, clase, def_clase, /*cuerpo_clase,*/ bloque_clase, sent
 non terminal def_variable, def_tipo_variable;
 non terminal creacion_variable_numero, variable_numero, creacion_variable_string, variable_string, creacion_variable_char, variable_char;
 non terminal creacion_variable_boolean, variable_boolean, creacion_variable_object, variable_object, creacion_variable_objeto, variable_objeto;
-non terminal def_metodo, cuerpo_def_metodo, def_metodo_tipo, cuerpo_metodo_numero, cuerpo_metodo_string, cuerpo_metodo_char, cuerpo_metodo_boolean;
+non terminal def_metodo, cuerpo_def_metodo, def_metodo_constructor,def_metodo_tipo, cuerpo_metodo_numero, cuerpo_metodo_string, cuerpo_metodo_char, cuerpo_metodo_boolean;
 non terminal cuerpo_metodo_object, cuerpo_metodo_objeto, def_metodo_void, parametros, parametro, tipo;
 non terminal bloque, sentencias;
 non terminal asignacion, tipos_asignacion;
@@ -64,229 +64,230 @@ precedence nonassoc OPERADOR_RELACIONAL;/*yo diría que este es mayor en jerarqu
 /*4. Reglas de producción*/
 start with inicio;
 
-inicio ::= imports clase                                    {:System.out.println("clase con imports analizada");:}
-         | clase                                            {:System.out.println("clase analizada");:}
+inicio ::= imports clase                                    {:System.out.println("[S] clase con imports analizada");:}
+         | clase                                            {:System.out.println("[S] clase analizada");:}
          ;
 
-imports ::= IIMPORT iimport PUNTO_COMA                       {:System.out.println("estructura: import completada");:}
+imports ::= IIMPORT iimport PUNTO_COMA                       {:System.out.println("[S] estructura: import completada");:}
           ;
 
-iimport ::= direccion PUNTO ASTERISCO                        {:System.out.println("estructura: direccion [con *]");:}
-         | direccion                                         {:System.out.println("estructura: direccion [sin *]");:}
+iimport ::= direccion PUNTO ASTERISCO                        {:System.out.println("[S] estructura: direccion [con *]");:}
+         | direccion                                         {:System.out.println("[S] estructura: direccion [sin *]");:}
          ;
 
-direccion ::= direccion PUNTO NOMBRE                          {:System.out.println("substruct: direccion: LISTA");:}
-            | NOMBRE PUNTO NOMBRE                             {:System.out.println("substruct: direccion: PAREJA");:}
+direccion ::= direccion PUNTO NOMBRE                          {:System.out.println("[S] substruct: direccion: LISTA");:}
+            | NOMBRE PUNTO NOMBRE                             {:System.out.println("[S] substruct: direccion: PAREJA");:}
             ;
 
-clase ::= visibilidad def_clase                                            {:System.out.println("estructura: CLASE [visible]");:}
-        | def_clase                                                        {:System.out.println("estructura: CLASE [invisi]");:}
+clase ::= visibilidad def_clase                                            {:System.out.println("[S] estructura: CLASE [visible]");:}
+        | def_clase                                                        {:System.out.println("[S] estructura: CLASE [invisi]");:}
         ;
 
-visibilidad ::= PUBLIC                                                     {:System.out.println("visibilidad: PUBLIC");:}
-              | PROTECTED                                                  {:System.out.println("visibilidad: PROTECTED");:}
-              | PRIVATE                                                    {:System.out.println("visibilidad: PRIVATE");:}
-              | FINAL                                                      {:System.out.println("visibilidad: FINAL");:}
+visibilidad ::= PUBLIC                                                     {:System.out.println("[S] visibilidad: PUBLIC");:}
+              | PROTECTED                                                  {:System.out.println("[S] visibilidad: PROTECTED");:}
+              | PRIVATE                                                    {:System.out.println("[S] visibilidad: PRIVATE");:}
+              | FINAL                                                      {:System.out.println("[S] visibilidad: FINAL");:}
          /*     |                                                            {:System.out.println("visibilidad: ninguna");:}*/
               ;
 
-def_clase ::= CLASS OBJETO LLAVE_A bloque_clase LLAVE_C                              {:System.out.println("substruct: cuerpo_clase: CB");:}
-            | CLASS OBJETO LLAVE_A LLAVE_C                                           {:System.out.println("substruct: cuerpo_clase: SB");:}
+def_clase ::= CLASS OBJETO LLAVE_A bloque_clase LLAVE_C                              {:System.out.println("[S] substruct: cuerpo_clase: CB");:}
+            | CLASS OBJETO LLAVE_A LLAVE_C                                           {:System.out.println("[S] substruct: cuerpo_clase: SB");:}
             ;
 
-bloque_clase ::= bloque_clase sentencias_clase                             {:System.out.println("bloque clases: +1 sentencia");:}
-               | sentencias_clase                                          {:System.out.println("bloque clases: 1 sentencia");:}
+bloque_clase ::= bloque_clase sentencias_clase                             {:System.out.println("[S] bloque clases: +1 sentencia");:}
+               | sentencias_clase                                          {:System.out.println("[S] bloque clases: 1 sentencia");:}
            /*    |                                                           {:System.out.println("bloque clases: 0 sentencias");:}*/
                ;
 
-sentencias_clase ::= def_variable                                          {:System.out.println("sentencia clases: def_var");:}
-                   | def_metodo                                            {:System.out.println("sentencia clases: def_metodo");:}
+sentencias_clase ::= def_variable                                          {:System.out.println("[S] sentencia clases: def_var");:}
+                   | def_metodo                                            {:System.out.println("[S] sentencia clases: def_metodo");:}
                    ;
 
-def_variable ::= visibilidad def_tipo_variable PUNTO_COMA                             {:System.out.println("estructura: def_variable [visible]");:}
-               | def_tipo_variable PUNTO_COMA                                         {:System.out.println("estructura: def_variable [invisi]");:}
+def_variable ::= visibilidad def_tipo_variable PUNTO_COMA                             {:System.out.println("[S] estructura: def_variable [visible]");:}
+               | def_tipo_variable PUNTO_COMA                                         {:System.out.println("[S] estructura: def_variable [invisi]");:}
                ;
 
-def_tipo_variable ::= INT creacion_variable_numero                                  {:System.out.println("estructura: def_tipoVar [INT]");:}
-                    | DOUBLE creacion_variable_numero                               {:System.out.println("estructura: def_tipoVar [DOUBLE]");:}
-                    | STRING creacion_variable_string                               {:System.out.println("estructura: def_tipoVar [STRING]");:}
-                    | CHAR creacion_variable_char                                   {:System.out.println("estructura: def_tipoVar [CHAR]");:}
-                    | BOOLEAN creacion_variable_boolean                             {:System.out.println("estructura: def_tipoVar [BOOLEAN]");:}
-                    | OBJECT creacion_variable_object                               {:System.out.println("estructura: def_tipoVar [OBJECT]");:}
-                    | OBJETO creacion_variable_objeto                               {:System.out.println("estructura: def_tipoVar [OBJETO]");:}
+def_tipo_variable ::= INT creacion_variable_numero                                  {:System.out.println("[S] estructura: def_tipoVar [INT]");:}
+                    | DOUBLE creacion_variable_numero                               {:System.out.println("[S] estructura: def_tipoVar [DOUBLE]");:}
+                    | STRING creacion_variable_string                               {:System.out.println("[S] estructura: def_tipoVar [STRING]");:}
+                    | CHAR creacion_variable_char                                   {:System.out.println("[S] estructura: def_tipoVar [CHAR]");:}
+                    | BOOLEAN creacion_variable_boolean                             {:System.out.println("[S] estructura: def_tipoVar [BOOLEAN]");:}
+                    | OBJECT creacion_variable_object                               {:System.out.println("[S] estructura: def_tipoVar [OBJECT]");:}
+                    | OBJETO creacion_variable_objeto                               {:System.out.println("[S] estructura: def_tipoVar [OBJETO]");:}
                     /*ya se reemplazó por objeto...*/
                     ;                    
 
-creacion_variable_numero ::= creacion_variable_numero COMA variable_numero                       {:System.out.println("substruct: creacion_var_numero: LISTA");:}
-                           | variable_numero                                                     {:System.out.println("substruct: creacion_var_numero: UNICA");:}
+creacion_variable_numero ::= creacion_variable_numero COMA variable_numero                       {:System.out.println("[S] substruct: creacion_var_numero: LISTA");:}
+                           | variable_numero                                                     {:System.out.println("[S] substruct: creacion_var_numero: UNICA");:}
                            ;
 
-variable_numero ::= NOMBRE IGUAL contenido_numero                       {:System.out.println("substruct: variable_numero: cont#");:}
-                  | NOMBRE IGUAL contenido_char                         {:System.out.println("substruct: variable_numero: contChar");:}
-                  | NOMBRE                                              {:System.out.println("substruct: variable_numero: sin INI");:}
+variable_numero ::= NOMBRE IGUAL contenido_numero                       {:System.out.println("[S] substruct: variable_numero: cont#");:}
+                  | NOMBRE IGUAL contenido_char                         {:System.out.println("[S] substruct: variable_numero: contChar");:}
+                  | NOMBRE                                              {:System.out.println("[S] substruct: variable_numero: sin INI");:}
                   ;/*contenido# puede devolver 1 nombre xD [y tb un#] por eso no add contenido_var*/
 
-creacion_variable_string ::= creacion_variable_string COMA variable_string                          {:System.out.println("substruct: creacion_var_string: LISTA");:}
-                           | variable_string                                                        {:System.out.println("substruct: creacion_var_string: UNICA");:}
+creacion_variable_string ::= creacion_variable_string COMA variable_string                          {:System.out.println("[S] substruct: creacion_var_string: LISTA");:}
+                           | variable_string                                                        {:System.out.println("[S] substruct: creacion_var_string: UNICA");:}
                            ;
 
-variable_string ::= NOMBRE IGUAL contenido_variable                      {:System.out.println("substruct: variable_string: contVar");:}
-                  | NOMBRE IGUAL contenido_string  /*contenido_string*/  {:System.out.println("substruct: variable_string: contString");:}
-                  | NOMBRE                                               {:System.out.println("substruct: variable_string: sin INI");:}
+variable_string ::= NOMBRE IGUAL contenido_variable                      {:System.out.println("[S] substruct: variable_string: contVar");:}
+                  | NOMBRE IGUAL contenido_string  /*contenido_string*/  {:System.out.println("[S] substruct: variable_string: contString");:}
+                  | NOMBRE                                               {:System.out.println("[S] substruct: variable_string: sin INI");:}
                   /*con contenido_string me refería a la antigua versión de concat... en todo caso es concat xD, no esa antiguedad jaja*/
                   ;
 
-creacion_variable_char ::= creacion_variable_char COMA variable_char                              {:System.out.println("substruct: creacion_var_char: LISTA");:}
-                         | variable_char                                                          {:System.out.println("substruct: creacion_var_char: UNICA");:}
+creacion_variable_char ::= creacion_variable_char COMA variable_char                              {:System.out.println("[S] substruct: creacion_var_char: LISTA");:}
+                         | variable_char                                                          {:System.out.println("[S] substruct: creacion_var_char: UNICA");:}
                          ;
 
-variable_char ::= NOMBRE IGUAL contenido_variable                         {:System.out.println("substruct: variable_char: contVar");:}
-                | NOMBRE IGUAL contenido_char                             {:System.out.println("substruct: variable_char: contChar");:}
-                | NOMBRE                                                  {:System.out.println("substruct: variable_char: sin INI");:}
+variable_char ::= NOMBRE IGUAL contenido_variable                         {:System.out.println("[S] substruct: variable_char: contVar");:}
+                | NOMBRE IGUAL contenido_char                             {:System.out.println("[S] substruct: variable_char: contChar");:}
+                | NOMBRE                                                  {:System.out.println("[S] substruct: variable_char: sin INI");:}
                 ;/*igual que en def_metodo_char no coloqué contenido#, aquí tampoco porque puede generar variables y variables de enteros no aceptar y doubles ni en valor ni var, lo que permitiría add contenido-# y no dbeería es a los double, porque lo de la variable aún tendŕia que revisar xD si analizara sem xD*/
 
-creacion_variable_boolean ::= creacion_variable_boolean COMA variable_boolean                      {:System.out.println("substruct: creacion_var_boolean: LISTA");:}
-                           | variable_boolean                                                      {:System.out.println("substruct: creacion_var_boolean: UNICA");:}
+creacion_variable_boolean ::= creacion_variable_boolean COMA variable_boolean                      {:System.out.println("[S] substruct: creacion_var_boolean: LISTA");:}
+                           | variable_boolean                                                      {:System.out.println("[S] substruct: creacion_var_boolean: UNICA");:}
                            ;
 
-variable_boolean ::= NOMBRE IGUAL contenido_variable                       {:System.out.println("substruct: variable_boolean: contVar");:}
-                   | NOMBRE contenido_boolean /*condiciones*/              {:System.out.println("substruct: variable_boolean: contBool");:}
-                   | NOMBRE                                                {:System.out.println("substruct: variable_boolean: sin Ini");:}
+variable_boolean ::= NOMBRE IGUAL contenido_variable                       {:System.out.println("[S] substruct: variable_boolean: contVar");:}
+                   | NOMBRE IGUAL contenido_boolean /*condiciones*/              {:System.out.println("[S] substruct: variable_boolean: contBool");:}
+                   | NOMBRE                                                {:System.out.println("[S] substruct: variable_boolean: sin Ini");:}
                    ;/*por si acaso da algún conflicto, deja solo booleans y contenido_negs, aunque no creo que vaya a haber*/
 
-creacion_variable_object ::= creacion_variable_object COMA variable_object                       {:System.out.println("substruct: creacion_var_object: LISTA");:}
-                           | variable_object                                                     {:System.out.println("substruct: creacion_var_object: UNICA");:}
+creacion_variable_object ::= creacion_variable_object COMA variable_object                       {:System.out.println("[S] substruct: creacion_var_object: LISTA");:}
+                           | variable_object                                                     {:System.out.println("[S] substruct: creacion_var_object: UNICA");:}
                            ;
 
-variable_object ::= NOMBRE IGUAL contenido_variable                         {:System.out.println("substruct: variable_object: contVar");:}
-                  | NOMBRE IGUAL contenido_object                           {:System.out.println("substruct: variable_object: contObject");:}           
-                  | NOMBRE IGUAL contenido_objeto                           {:System.out.println("substruct: variable_object: contObjetO");:} 
-                  | NOMBRE                                                  {:System.out.println("substruct: variable_object: sin Ini");:} 
+variable_object ::= NOMBRE IGUAL contenido_variable                         {:System.out.println("[S] substruct: variable_object: contVar");:}
+                  | NOMBRE IGUAL contenido_object                           {:System.out.println("[S] substruct: variable_object: contObject");:}           
+                  | NOMBRE IGUAL contenido_objeto                           {:System.out.println("[S] substruct: variable_object: contObjetO");:} 
+                  | NOMBRE                                                  {:System.out.println("[S] substruct: variable_object: sin Ini");:} 
                   ;/*creo que ya no puse lo de string porque se me olvidó o porque vi algún conclicto... yo me acuerdo que si lo había peuesto xD*/                
 
-creacion_variable_objeto ::= creacion_variable_objeto COMA variable_objeto                       {:System.out.println("substruct: creacion_var_objetO: LISTA");:}
-                           | variable_objeto                                                     {:System.out.println("substruct: creacion_var_objetO: UNICA");:}
+creacion_variable_objeto ::= creacion_variable_objeto COMA variable_objeto                       {:System.out.println("[S] substruct: creacion_var_objetO: LISTA");:}
+                           | variable_objeto                                                     {:System.out.println("[S] substruct: creacion_var_objetO: UNICA");:}
                            ;
 
-variable_objeto ::= NOMBRE IGUAL contenido_variable                         {:System.out.println("substruct: variable_objetO: contVar");:}
-                  | NOMBRE IGUAL contenido_objeto                           {:System.out.println("substruct: variable_objetO: conObjeto");:}
-                  | NOMBRE                                                  {:System.out.println("substruct: variable_objetO: sin Ini");:}
+variable_objeto ::= NOMBRE IGUAL contenido_variable                         {:System.out.println("[S] substruct: variable_objetO: contVar");:}
+                  | NOMBRE IGUAL contenido_objeto                           {:System.out.println("[S] substruct: variable_objetO: conObjeto");:}
+                  | NOMBRE                                                  {:System.out.println("[S] substruct: variable_objetO: sin Ini");:}
                   ;/*hay que ver lo de los paréntesis aquí y en los demás cotenidos... parentesis ;-;*/
 
-def_metodo ::= visibilidad cuerpo_def_metodo                           {:System.out.println("estructura: def_metodo [visible]");:}
-             | cuerpo_def_metodo                                       {:System.out.println("estructura: def_metodo [invisible]");:}
+def_metodo ::= visibilidad cuerpo_def_metodo                           {:System.out.println("[S] estructura: def_metodo [visible]");:}
+             | cuerpo_def_metodo                                       {:System.out.println("[S] estructura: def_metodo [invisible]");:}
              ;
 
-cuerpo_def_metodo ::= def_metodo_tipo                           {:System.out.println("substruct: def_metodo_TIPO");:}
-                    | VOID def_metodo_void                      {:System.out.println("substruct: def_metodo_VOID");:}
+cuerpo_def_metodo ::= NOMBRE def_metodo_constructor                    {:System.out.println("[S] substruct: def_metodo_constructor");:}
+                    | def_metodo_tipo                                  {:System.out.println("[S] substruct: def_metodo_TIPO");:}
+                    | VOID NOMBRE def_metodo_void                      {:System.out.println("[S] substruct: def_metodo_VOID");:}                    
                     ;
 
-def_metodo_tipo ::= INT PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero                              {:System.out.println("substruct: def_metodo_tipo: INT");:}
-                  | DOUBLE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero                           {:System.out.println("substruct: def_metodo_tipo: DOUBLE");:}
-                  | STRING PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_string                           {:System.out.println("substruct: def_metodo_tipo: STRING");:}
-                  | CHAR PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_char                               {:System.out.println("substruct: def_metodo_tipo: CHAR");:}
-                  | BOOLEAN PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_boolean                         {:System.out.println("substruct: def_metodo_tipo: BOOLEAN");:}
-                  | OBJECT PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_object                           {:System.out.println("substruct: def_metodo_tipo: OBJECT");:}
-                  | OBJETO PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_objeto                           {:System.out.println("substruct: def_metodo_tipo: OBJETO");:}
+def_metodo_constructor ::= LLAVE_A bloque LLAVE_C                              {:System.out.println("[S] substruct: no_void [cuerpo_cnstrct [CB]]");:}
+                         | LLAVE_A LLAVE_C                                     {:System.out.println("[S] substruct: no_void [cuerpo_cnstrct [SB]]");:}    
+                         ;
+
+def_metodo_tipo ::= INT NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero                              {:System.out.println("[S] substruct: def_metodo_tipo: INT");:}
+                  | DOUBLE NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero                           {:System.out.println("[S] substruct: def_metodo_tipo: DOUBLE");:}
+                  | STRING NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_string                           {:System.out.println("[S] substruct: def_metodo_tipo: STRING");:}
+                  | CHAR NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_char                               {:System.out.println("[S] substruct: def_metodo_tipo: CHAR");:}
+                  | BOOLEAN NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_boolean                         {:System.out.println("[S] substruct: def_metodo_tipo: BOOLEAN");:}
+                  | OBJECT NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_object                           {:System.out.println("[S] substruct: def_metodo_tipo: OBJECT");:}
+                  | OBJETO NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_objeto                           {:System.out.println("[S] substruct: def_metodo_tipo: OBJETO");:}
                   ;
 
-cuerpo_metodo_numero ::= LLAVE_A bloque retorno_numero LLAVE_C                               {:System.out.println("substruct: cuerpo_metodo_# [CB, CR_#]");:}            
-                       | LLAVE_A retorno_numero LLAVE_C                                      {:System.out.println("substruct: cuerpo_metodo_# [SB, CR_#]");:}                                               
-                       | LLAVE_A bloque retorno_char LLAVE_C                                 {:System.out.println("substruct: cuerpo_metodo_# [CB, CR_C]");:}            
-                       | LLAVE_A retorno_char LLAVE_C                                        {:System.out.println("substruct: cuerpo_metodo_# [SB, CR_C]");:}                        
+cuerpo_metodo_numero ::= LLAVE_A bloque retorno_numero LLAVE_C                               {:System.out.println("[S] substruct: cuerpo_metodo_# [CB, CR_#]");:}            
+                       | LLAVE_A retorno_numero LLAVE_C                                      {:System.out.println("[S] substruct: cuerpo_metodo_# [SB, CR_#]");:}                                               
+                       | LLAVE_A bloque retorno_char LLAVE_C                                 {:System.out.println("[S] substruct: cuerpo_metodo_# [CB, CR_C]");:}            
+                       | LLAVE_A retorno_char LLAVE_C                                        {:System.out.println("[S] substruct: cuerpo_metodo_# [SB, CR_C]");:}                        
                        /*estos últimos dos puesto que ambos permiten devolver char... lo de double no permitido en int lo debería revisar sem sea que se coloque a éstos últimos o no xD*/
                        ;
 
-cuerpo_metodo_string ::= LLAVE_A bloque retorno_variable LLAVE_C                     {:System.out.println("substruct: cuerpo_metodo_string [CB, CR_var]");:}
-                       | LLAVE_A retorno_variable LLAVE_C                            {:System.out.println("substruct: cuerpo_metodo_string [SB, CR_var]");:}
-                       | LLAVE_A bloque retorno_string LLAVE_C                       {:System.out.println("substruct: cuerpo_metodo_string [CB, CR_S]");:}
-                       | LLAVE_A retorno_string LLAVE_C                              {:System.out.println("substruct: cuerpo_metodo_string [SB, CR_S]");:}
+cuerpo_metodo_string ::= LLAVE_A bloque retorno_variable LLAVE_C                     {:System.out.println("[S] substruct: cuerpo_metodo_string [CB, CR_var]");:}
+                       | LLAVE_A retorno_variable LLAVE_C                            {:System.out.println("[S] substruct: cuerpo_metodo_string [SB, CR_var]");:}
+                       | LLAVE_A bloque retorno_string LLAVE_C                       {:System.out.println("[S] substruct: cuerpo_metodo_string [CB, CR_S]");:}
+                       | LLAVE_A retorno_string LLAVE_C                              {:System.out.println("[S] substruct: cuerpo_metodo_string [SB, CR_S]");:}
                        ;
 
-cuerpo_metodo_char ::=  LLAVE_A bloque retorno_variable LLAVE_C                  {:System.out.println("substruct: cuerpo_metodo_char [CB, CR_var]");:}
-                     | LLAVE_A retorno_variable LLAVE_C                          {:System.out.println("substruct: cuerpo_metodo_char [SB, CR_var]");:}
-                     | LLAVE_A bloque retorno_char LLAVE_C                       {:System.out.println("substruct: cuerpo_metodo_char [CB, CR_C]");:}
-                     | LLAVE_A retorno_char LLAVE_C                              {:System.out.println("substruct: cuerpo_metodo_char [SB, CR_C]");:}                  
+cuerpo_metodo_char ::=  LLAVE_A bloque retorno_variable LLAVE_C                  {:System.out.println("[S] substruct: cuerpo_metodo_char [CB, CR_var]");:}
+                     | LLAVE_A retorno_variable LLAVE_C                          {:System.out.println("[S] substruct: cuerpo_metodo_char [SB, CR_var]");:}
+                     | LLAVE_A bloque retorno_char LLAVE_C                       {:System.out.println("[S] substruct: cuerpo_metodo_char [CB, CR_C]");:}
+                     | LLAVE_A retorno_char LLAVE_C                              {:System.out.println("[S] substruct: cuerpo_metodo_char [SB, CR_C]");:}                  
                      ;/*aquí si no voy a colocar que puede deolver# porque tb estaría permitiendo retornar doubles...                  */
                 
-cuerpo_metodo_boolean ::= LLAVE_A bloque retorno_variable LLAVE_C                {:System.out.println("substruct: cuerpo_metodo_char [CB, CR_var]");:}
-                        | LLAVE_A retorno_variable LLAVE_C                       {:System.out.println("substruct: cuerpo_metodo_char [SB, CR_var]");:}
-                        | LLAVE_A bloque retorno_boolean LLAVE_C                 {:System.out.println("substruct: cuerpo_metodo_char [CB, CR_B]");:}
-                        | LLAVE_A retorno_boolean LLAVE_C                        {:System.out.println("substruct: cuerpo_metodo_char [SB, CR_B]");:}
+cuerpo_metodo_boolean ::= LLAVE_A bloque retorno_variable LLAVE_C                {:System.out.println("[S] substruct: cuerpo_metodo_char [CB, CR_var]");:}
+                        | LLAVE_A retorno_variable LLAVE_C                       {:System.out.println("[S] substruct: cuerpo_metodo_char [SB, CR_var]");:}
+                        | LLAVE_A bloque retorno_boolean LLAVE_C                 {:System.out.println("[S] substruct: cuerpo_metodo_char [CB, CR_B]");:}
+                        | LLAVE_A retorno_boolean LLAVE_C                        {:System.out.println("[S] substruct: cuerpo_metodo_char [SB, CR_B]");:}
                         ;
 
-cuerpo_metodo_object ::= LLAVE_A bloque retorno_variable LLAVE_C                 {:System.out.println("substruct: cuerpo_metodo_object [CB, CR_var]");:}
-                       | LLAVE_A retorno_variable LLAVE_C                        {:System.out.println("substruct: cuerpo_metodo_object [SB, CR_var]");:}
-                       | LLAVE_A bloque retorno_object LLAVE_C                   {:System.out.println("substruct: cuerpo_metodo_object [CB, CR_OC]");:}
-                       | LLAVE_A retorno_object LLAVE_C                          {:System.out.println("substruct: cuerpo_metodo_object [SB, CR_OC]");:}
-                       | LLAVE_A bloque retorno_objeto LLAVE_C                   {:System.out.println("substruct: cuerpo_metodo_object [CB, CR_O]");:}
-                       | LLAVE_A retorno_objeto LLAVE_C                          {:System.out.println("substruct: cuerpo_metodo_object [SB, CR_O]");:}
-                       | LLAVE_A bloque retorno_string LLAVE_C                   {:System.out.println("substruct: cuerpo_metodo_object [CB, CR_S]");:}
-                       | LLAVE_A retorno_string LLAVE_C                          {:System.out.println("substruct: cuerpo_metodo_object [SB, CR_S]");:}
+cuerpo_metodo_object ::= LLAVE_A bloque retorno_variable LLAVE_C                 {:System.out.println("[S] substruct: cuerpo_metodo_object [CB, CR_var]");:}
+                       | LLAVE_A retorno_variable LLAVE_C                        {:System.out.println("[S] substruct: cuerpo_metodo_object [SB, CR_var]");:}
+                       | LLAVE_A bloque retorno_object LLAVE_C                   {:System.out.println("[S] substruct: cuerpo_metodo_object [CB, CR_OC]");:}
+                       | LLAVE_A retorno_object LLAVE_C                          {:System.out.println("[S] substruct: cuerpo_metodo_object [SB, CR_OC]");:}
+                       | LLAVE_A bloque retorno_objeto LLAVE_C                   {:System.out.println("[S] substruct: cuerpo_metodo_object [CB, CR_O]");:}
+                       | LLAVE_A retorno_objeto LLAVE_C                          {:System.out.println("[S] substruct: cuerpo_metodo_object [SB, CR_O]");:}
+                       | LLAVE_A bloque retorno_string LLAVE_C                   {:System.out.println("[S] substruct: cuerpo_metodo_object [CB, CR_S]");:}
+                       | LLAVE_A retorno_string LLAVE_C                          {:System.out.println("[S] substruct: cuerpo_metodo_object [SB, CR_S]");:}
                        /*Si los ultimos 4 [los de string más que los de objeto] dan conflictos, auqneu yo creería que no, quítalos xD, puest el caso normal y que esperarían ya lo tienes xD*/
                        ;
 
-cuerpo_metodo_objeto ::= LLAVE_A bloque retorno_variable LLAVE_C                  {:System.out.println("substruct: cuerpo_metodo_objeto [CB, CR_var]");:}
-                       | LLAVE_A retorno_variable LLAVE_C                         {:System.out.println("substruct: cuerpo_metodo_objeto [SB, CR_var]");:}
-                       | LLAVE_A bloque retorno_objeto LLAVE_C                    {:System.out.println("substruct: cuerpo_metodo_objeto [CB, CR_O]");:}
-                       | LLAVE_A retorno_objeto LLAVE_C                           {:System.out.println("substruct: cuerpo_metodo_objeto [SB, CR_O]");:}
-                       /*estos 4 primeros dos son cuando sea un método normal xD                       */
-                       | LLAVE_A bloque LLAVE_C                                   {:System.out.println("substruct: no_void [cuerpo_cnstrct [CB]]");:}
-                       | LLAVE_A LLAVE_C                                          {:System.out.println("substruct: no_void [cuerpo_cnstrct [SB]]");:}    
-                       /*estos últimos dos son para los cnstrct*/
+cuerpo_metodo_objeto ::= LLAVE_A bloque retorno_variable LLAVE_C                  {:System.out.println("[S] substruct: cuerpo_metodo_objeto [CB, CR_var]");:}
+                       | LLAVE_A retorno_variable LLAVE_C                         {:System.out.println("[S] substruct: cuerpo_metodo_objeto [SB, CR_var]");:}
+                       | LLAVE_A bloque retorno_objeto LLAVE_C                    {:System.out.println("[S] substruct: cuerpo_metodo_objeto [CB, CR_O]");:}
+                       | LLAVE_A retorno_objeto LLAVE_C                           {:System.out.println("[S] substruct: cuerpo_metodo_objeto [SB, CR_O]");:}                       
                        ;
 
-def_metodo_void ::= PARENTESIS_A parametros PARENTESIS_C LLAVE_A bloque RETURN PUNTO_COMA LLAVE_C                       {:System.out.println("substruct: def_metodo_void [CB, CR]");:}
-                  | PARENTESIS_A parametros PARENTESIS_C LLAVE_A bloque LLAVE_C                                         {:System.out.println("substruct: def_metodo_void [CB, SR]");:}             
-                  | PARENTESIS_A parametros PARENTESIS_C LLAVE_A RETURN PUNTO_COMA LLAVE_C                              {:System.out.println("substruct: def_metodo_void [SB, CR]");:}
-                  | PARENTESIS_A parametros PARENTESIS_C LLAVE_A LLAVE_C                                                {:System.out.println("substruct: def_metodo_void [SB, SR]");:}
+def_metodo_void ::= PARENTESIS_A parametros PARENTESIS_C LLAVE_A bloque RETURN PUNTO_COMA LLAVE_C                       {:System.out.println("[S] substruct: def_metodo_void [CB, CR]");:}
+                  | PARENTESIS_A parametros PARENTESIS_C LLAVE_A bloque LLAVE_C                                         {:System.out.println("[S] substruct: def_metodo_void [CB, SR]");:}             
+                  | PARENTESIS_A parametros PARENTESIS_C LLAVE_A RETURN PUNTO_COMA LLAVE_C                              {:System.out.println("[S] substruct: def_metodo_void [SB, CR]");:}
+                  | PARENTESIS_A parametros PARENTESIS_C LLAVE_A LLAVE_C                                                {:System.out.println("[S] substruct: def_metodo_void [SB, SR]");:}
                   ;
 
-parametros ::= parametros COMA parametro                               {:System.out.println("substruct: parametros: LISTA");:}
-             | parametro                                               {:System.out.println("substruct: parametros: UNICO");:}
-             |                                                         {:System.out.println("substruct: parametros: ninguno");:}/*a menos que tb lo llame como forma de finalizar la lista, aunque yo pienso que no debería xD*/
+parametros ::= parametros COMA parametro                               {:System.out.println("[S] substruct: parametros: LISTA");:}
+             | parametro                                               {:System.out.println("[S] substruct: parametros: UNICO");:}
+             |                                                         {:System.out.println("[S] substruct: parametros: ninguno");:}/*a menos que tb lo llame como forma de finalizar la lista, aunque yo pienso que no debería xD*/
              ;
 
-parametro ::= tipo NOMBRE                                              {:System.out.println("substruct: parametro");:}
+parametro ::= tipo NOMBRE                                              {:System.out.println("[S] substruct: parametro");:}
             ;
 
-tipo ::= INT                            {:System.out.println("tipo: INT");:}
-       | DOUBLE                         {:System.out.println("tipo: DOUBLE");:}
-       | STRING                         {:System.out.println("tipo: STRING");:}
-       | CHAR                           {:System.out.println("tipo: CHAR");:}
-       | BOOLEAN                        {:System.out.println("tipo: BOOLEAN");:}
-       | OBJECT                         {:System.out.println("tipo: OBJECT");:}
-       | OBJETO                         {:System.out.println("tipo: OBJETO");:}
+tipo ::= INT                            {:System.out.println("[S] tipo: INT");:}
+       | DOUBLE                         {:System.out.println("[S] tipo: DOUBLE");:}
+       | STRING                         {:System.out.println("[S] tipo: STRING");:}
+       | CHAR                           {:System.out.println("[S] tipo: CHAR");:}
+       | BOOLEAN                        {:System.out.println("[S] tipo: BOOLEAN");:}
+       | OBJECT                         {:System.out.println("[S] tipo: OBJECT");:}
+       | OBJETO                         {:System.out.println("[S] tipo: OBJETO");:}
        ;/*ya reemplacé por lo de objeto xD xD*/
 
-bloque ::= bloque sentencias                            {:System.out.println("bloque: +1 sentencia");:}
-         | sentencias                                   {:System.out.println("bloque: 1 sentencia");:}
+bloque ::= bloque sentencias                            {:System.out.println("[S] bloque: +1 sentencia");:}
+         | sentencias                                   {:System.out.println("[S] bloque: 1 sentencia");:}
       /*   |                                            {:System.out.println("bloque: 0 sentencias");:}*/
          ;
 
-sentencias ::= def_variable                                {:System.out.println("sentencias bloque: def_var");:}
-             | asignacion                                  {:System.out.println("sentencias bloque: asignacion");:}
-             | ciclo                                       {:System.out.println("sentencias bloque: ciclo");:}
-             | invocacion                                  {:System.out.println("sentencias bloque: invocacion");:}
-             | sentencia_control                           {:System.out.println("sentencias bloque: sentencia_control");:}
-             | operacion_unaria PUNTO_COMA                 {:System.out.println("sentencias bloque: operacion_unaria");:}
+sentencias ::= def_variable                                {:System.out.println("[S] sentencias bloque: def_var");:}
+             | asignacion                                  {:System.out.println("[S] sentencias bloque: asignacion");:}
+             | ciclo                                       {:System.out.println("[S] sentencias bloque: ciclo");:}
+             | invocacion                                  {:System.out.println("[S] sentencias bloque: invocacion");:}
+             | sentencia_control                           {:System.out.println("[S] sentencias bloque: sentencia_control");:}
+             | operacion_unaria PUNTO_COMA                 {:System.out.println("[S] sentencias bloque: operacion_unaria");:}
              ;
 
-asignacion ::= NOMBRE IGUAL tipos_asignacion PUNTO_COMA                       {:System.out.println("estructura: asignacion");:}
+asignacion ::= NOMBRE IGUAL tipos_asignacion PUNTO_COMA                       {:System.out.println("[S] estructura: asignacion");:}
              ;
 
-tipos_asignacion ::= contenido_numero                               {:System.out.println("substruct: tipos_asig: cont#");:}
-                   | contenido_string                               {:System.out.println("substruct: tipos_asig: contS");:}
+tipos_asignacion ::= contenido_numero                               {:System.out.println("[S] substruct: tipos_asig: cont#");:}
+                   | contenido_string                               {:System.out.println("[S] substruct: tipos_asig: contS");:}
                    /*si me dan conflicto cont# y contS, entonces agregaré numeros y contenido variable, porque eli cont#, pues val# sería generado por contS [según lo que diría el msje].. lo malo es que no lo genera completamente sino solo las sumas... en todo caso lo que tendría que hacer es dejar solo strings, puesto que es menos probable que ad*/
-                   | contenido_char                                 {:System.out.println("substruct: tipo_asig: contC");:} 
-                   | contenido_boolean                              {:System.out.println("substruct: tipo_asig: contB");:}  
-                   | contenido_object                               {:System.out.println("substruct: tipo_asig: contOc");:}
-                   | contenido_objeto                               {:System.out.println("substruct: tipo_asig: contO");:}
+                   | contenido_char                                 {:System.out.println("[S] substruct: tipo_asig: contC");:} 
+                   | contenido_boolean                              {:System.out.println("[S] substruct: tipo_asig: contB");:}  
+                   | contenido_object                               {:System.out.println("[S] substruct: tipo_asig: contOc");:}
+                   | contenido_objeto                               {:System.out.println("[S] substruct: tipo_asig: contO");:}
                    /*contenido_variable//no pongo cont_var puesto que contenido# permite esto porque devuelve 1 nombre [y tb numero, pero en este caso interesa más lo de nombre xD]*/
                    ;
 
-contenido_variable ::= PARENTESIS_A contenido_variable PARENTESIS_C                          {:System.out.println("substruct: cont_var: ( cont_var )");:}
-                     | NOMBRE                                                                {:System.out.println("substruct: cont_var: NOMBRE");:}
+contenido_variable ::= PARENTESIS_A contenido_variable PARENTESIS_C                          {:System.out.println("[S] substruct: cont_var: ( cont_var )");:}
+                     | NOMBRE                                                                {:System.out.println("[S] substruct: cont_var: NOMBRE");:}
                      ;
 /*_X_ [con este nombre se debe catalogar val#]*/
 /*contenido_numero ::= valor_numerico
@@ -297,202 +298,202 @@ contenido_variable ::= PARENTESIS_A contenido_variable PARENTESIS_C             
           | NUMERO /*bueno en todo caso si valro# va a seguir devolviendo nombre y numero, esta RP no debería existir y se debería nombar a val# contenido#...
           ;*//*no se si vayas a controlar de nuevo los signos negativos en val#, sino coloca aquí - NUMERO xD*/
 
-contenido_numero ::= contenido_numero MAS contenido_numero                            {:System.out.println("substruct: cont_#: MAS");:}
-                  | contenido_numero RESTA contenido_numero                           {:System.out.println("substruct: cont_#: RESTA");:}
-                  | contenido_numero ASTERISCO contenido_numero                       {:System.out.println("substruct: cont_#: ASTERISCO");:}
-                  | contenido_numero DIV contenido_numero                             {:System.out.println("substruct: cont_#: DIV");:}
-                  | RESTA contenido_numero                                            {:System.out.println("substruct: cont_#: MENOS");:}
+contenido_numero ::= contenido_numero MAS contenido_numero                            {:System.out.println("[S] substruct: cont_#: MAS");:}
+                  | contenido_numero RESTA contenido_numero                           {:System.out.println("[S] substruct: cont_#: RESTA");:}
+                  | contenido_numero ASTERISCO contenido_numero                       {:System.out.println("[S] substruct: cont_#: ASTERISCO");:}
+                  | contenido_numero DIV contenido_numero                             {:System.out.println("[S] substruct: cont_#: DIV");:}
+                  | RESTA contenido_numero                                            {:System.out.println("[S] substruct: cont_#: MENOS");:}
                   %prec MENOS                                        
-                  | PARENTESIS_A contenido_numero PARENTESIS_C                        {:System.out.println("substruct: cont_#: ( cont_# )");:}
-                  | NUMERO                                                            {:System.out.println("substruct: cont_#: NUMERO");:}
-                  | NOMBRE                                                            {:System.out.println("substruct: cont_#: NOMBRE");:}
+                  | PARENTESIS_A contenido_numero PARENTESIS_C                        {:System.out.println("[S] substruct: cont_#: ( cont_# )");:}
+                  | NUMERO                                                            {:System.out.println("[S] substruct: cont_#: NUMERO");:}
+                  | NOMBRE                                                            {:System.out.println("[S] substruct: cont_#: NOMBRE");:}
                   ;
 
-contenido_string ::= concatenacion                              {:System.out.println("substruct: cont_S: concat");:}
-                   | strings                                    {:System.out.println("substruct: cont_S: strings");:}
+contenido_string ::= concatenacion                              {:System.out.println("[S] substruct: cont_S: concat");:}
+                   | strings                                    {:System.out.println("[S] substruct: cont_S: strings");:}
                    ;/*esto es lo que pusiste como strings [en la nueva forma de concat] en tu cuaderno...*/
 
-strings ::= PARENTESIS_A strings PARENTESIS_C                           {:System.out.println("substruct: strings: ( strings )");:}                   
-         | CADENA                                                       {:System.out.println("substruct: strings: CADENA");:}
+strings ::= PARENTESIS_A strings PARENTESIS_C                           {:System.out.println("[S] substruct: strings: ( strings )");:}                   
+         | CADENA                                                       {:System.out.println("[S] substruct: strings: CADENA");:}
          /*porque strings [que ahora se llamará contenido_string xD] invoca a ambos...*/
          ;
 
-contenido_char ::= PARENTESIS_A contenido_char PARENTESIS_C                                 {:System.out.println("substruct: cont_C: ( cont_C )");:}
-                 | CARACTER                                                                 {:System.out.println("substruct: cont_C: CARACTER");:}
+contenido_char ::= PARENTESIS_A contenido_char PARENTESIS_C                                 {:System.out.println("[S] substruct: cont_C: ( cont_C )");:}
+                 | CARACTER                                                                 {:System.out.println("[S] substruct: cont_C: CARACTER");:}
                  ;
 
-contenido_boolean ::= condiciones                               {:System.out.println("substruct: cont_B: condiciones");:}
-                    | booleans                                  {:System.out.println("substruct: cont_B: booleans");:}                       
-                    | contenido_negaciones                      {:System.out.println("substruct: cont_B: contenido_negaciones");:}                        
+contenido_boolean ::= condiciones                               {:System.out.println("[S] substruct: cont_B: condiciones");:}
+                    | booleans                                  {:System.out.println("[S] substruct: cont_B: booleans");:}                       
+                    | contenido_negaciones                      {:System.out.println("[S] substruct: cont_B: contenido_negaciones");:}                        
                     ;/*el contenido variable, igual que antes de add esta última cn, se llama por separado para evitar conflictos*/
 
-booleans ::= PARENTESIS_A booleans PARENTESIS_C                                 {:System.out.println("substruct: cont_C: ( booleans )");:}
-           | BOOLEANO                                                           {:System.out.println("substruct: cont_C: BOOLEANO");:}
+booleans ::= PARENTESIS_A booleans PARENTESIS_C                                 {:System.out.println("[S] substruct: cont_C: ( booleans )");:}
+           | BOOLEANO                                                           {:System.out.println("[S] substruct: cont_C: BOOLEANO");:}
            /*si es que condiciones no llega a devolver boolean o nombre [aunque ahora que veo así la gram, no provocaría mayor cosa, solo en las Reglas rel con esas RP xD que bien jajaja]...*/
            ;
 
-contenido_object ::= PARENTESIS_A contenido_object PARENTESIS_C                             {:System.out.println("substruct: cont_Oc: ( cont_Oc )");:}
-                   | NEW OBJECT PARENTESIS_A PARENTESIS_C                                   {:System.out.println("substruct: cont_Oc: NEW Oc()");:}
+contenido_object ::= PARENTESIS_A contenido_object PARENTESIS_C                             {:System.out.println("[S] substruct: cont_Oc: ( cont_Oc )");:}
+                   | NEW OBJECT PARENTESIS_A PARENTESIS_C                                   {:System.out.println("[S] substruct: cont_Oc: NEW Oc()");:}
                    /*object no tiene parámetros, por lo tanto no recibe argus...*/
                    ;
 
-contenido_objeto ::= PARENTESIS_A contenido_objeto PARENTESIS_C                              {:System.out.println("substruct: cont_O: ( cont_O )");:}
-                   | NEW OBJETO PARENTESIS_A argumentacion PARENTESIS_C                      {:System.out.println("substruct: cont_O: NEW O( argucion )");:}
+contenido_objeto ::= PARENTESIS_A contenido_objeto PARENTESIS_C                              {:System.out.println("[S] substruct: cont_O: ( cont_O )");:}
+                   | NEW OBJETO PARENTESIS_A argumentacion PARENTESIS_C                      {:System.out.println("[S] substruct: cont_O: NEW O( argucion )");:}
                    ;
 
-concatenacion ::= PARENTESIS_A concatenacion PARENTESIS_C                             {:System.out.println("substruct: concat: ( concat )");:}                   
-                | concatenacion MAS opcion_concatenacion                              {:System.out.println("substruct: concat: +2 concat ");:}
-                | opcion_concatenacion MAS opcion_concatenacion                       {:System.out.println("substruct: concat: 1 concat");:}                
+concatenacion ::= PARENTESIS_A concatenacion PARENTESIS_C                             {:System.out.println("[S] substruct: concat: ( concat )");:}                   
+                | concatenacion MAS opcion_concatenacion                              {:System.out.println("[S] substruct: concat: +2 concat ");:}
+                | opcion_concatenacion MAS opcion_concatenacion                       {:System.out.println("[S] substruct: concat: 1 concat");:}                
                 ;
 
 /*contenido_concatenacion ::= opcion_concatenacion MAS opcion_concatenacion
                           ;*/
 
-opcion_concatenacion ::= contenido_numero                                 {:System.out.println("substruct: op_concat: cont_#");:}                                                           
-                      | contenido_boolean                                 {:System.out.println("substruct: op_concat: cont_B");:}
+opcion_concatenacion ::= contenido_numero                                 {:System.out.println("[S] substruct: op_concat: cont_#");:}                                                           
+                      | contenido_boolean                                 {:System.out.println("[S] substruct: op_concat: cont_B");:}
                       /*si no funciona [por las condis] aunque si debería, lo que harás es colocar solo booleans... además tendría que especificar que solo admite condis si están entre ()*/
-                      | contenido_char                                    {:System.out.println("substruct: op_concat: cont_C");:}
-                      | strings                                           {:System.out.println("substruct: op_concat: strings");:}
+                      | contenido_char                                    {:System.out.println("[S] substruct: op_concat: cont_C");:}
+                      | strings                                           {:System.out.println("[S] substruct: op_concat: strings");:}
                      /* | contenido_variable *//*val# retorna nombre, claro xD*/
                       ;
 
-operacion_unaria ::= incremento                                 {:System.out.println("substruct: op_unaria: INCRE");:}
-                   | autoincremento                             {:System.out.println("substruct: op_unaria: AUTO_INCRE");:}
+operacion_unaria ::= incremento                                 {:System.out.println("[S] substruct: op_unaria: INCRE");:}
+                   | autoincremento                             {:System.out.println("[S] substruct: op_unaria: AUTO_INCRE");:}
                    ;
 
-incremento ::= NOMBRE MAS MAS                               {:System.out.println("substruct: incre: ++ [der]");:}
-             | NOMBRE RESTA RESTA                           {:System.out.println("substruct: incre: -- [der]");:}
-             | MAS MAS NOMBRE                               {:System.out.println("substruct: incre: ++ [izq]");:}
-             | RESTA RESTA NOMBRE                           {:System.out.println("substruct: incre: -- [izq]");:}
+incremento ::= NOMBRE MAS MAS                               {:System.out.println("[S] substruct: incre: ++ [der]");:}
+             | NOMBRE RESTA RESTA                           {:System.out.println("[S] substruct: incre: -- [der]");:}
+             | MAS MAS NOMBRE                               {:System.out.println("[S] substruct: incre: ++ [izq]");:}
+             | RESTA RESTA NOMBRE                           {:System.out.println("[S] substruct: incre: -- [izq]");:}
              ;
 
-autoincremento ::= NOMBRE opciones_autoincremento                                 {:System.out.println("substruct: autoincre");:}
+autoincremento ::= NOMBRE opciones_autoincremento                                 {:System.out.println("[S] substruct: autoincre");:}
                  ;
 
-opciones_autoincremento ::= opciones_autoIncreMas                                 {:System.out.println("substruct: autoincre: +=");:}
-                          | RESTA IGUAL contenido_numero                          {:System.out.println("substruct: autoincre: -=");:}
-                          | ASTERISCO IGUAL contenido_numero                      {:System.out.println("substruct: autoincre: *=");:}
-                          | DIV IGUAL contenido_numero                            {:System.out.println("substruct: autoincre: /=");:}
+opciones_autoincremento ::= opciones_autoIncreMas                                 {:System.out.println("[S] substruct: autoincre: +=");:}
+                          | RESTA IGUAL contenido_numero                          {:System.out.println("[S] substruct: autoincre: -=");:}
+                          | ASTERISCO IGUAL contenido_numero                      {:System.out.println("[S] substruct: autoincre: *=");:}
+                          | DIV IGUAL contenido_numero                            {:System.out.println("[S] substruct: autoincre: /=");:}
                           ;
 
-opciones_autoIncreMas ::= MAS IGUAL contenido_numero/*_X_*/                                {:System.out.println("substruct: autoincre: += [val#]");:}
+opciones_autoIncreMas ::= MAS IGUAL contenido_numero/*_X_*/                                {:System.out.println("[S] substruct: autoincre: += [val#]");:}
                         /*si da conflicto, entonces giual que en asignación, dejarásn ContS, eli cont#, add numeros y contenido variable, NO porque así evitaría las operaciones...*/
                         /* entonces en todo caso solo deja contenido_numero y cadena aunque en realidad se puede usar concat...*/
-                        | MAS IGUAL contenido_string                            {:System.out.println("substruct: autoincre: += [cnt_string]");:}
+                        | MAS IGUAL contenido_string                            {:System.out.println("[S] substruct: autoincre: += [cnt_string]");:}
                         ;
 
-ciclo ::= ciclo_for                                                                                                  {:System.out.println("estructura: ciclo: FOR");:}
-        | WHILE PARENTESIS_A contenido_boolean PARENTESIS_C cuerpo_estructuras                                       {:System.out.println("estructura: ciclo: WHILE [contenido_Bool]");:}        
+ciclo ::= ciclo_for                                                                                                  {:System.out.println("[S] estructura: ciclo: FOR");:}
+        | WHILE PARENTESIS_A contenido_boolean PARENTESIS_C cuerpo_estructuras                                       {:System.out.println("[S] estructura: ciclo: WHILE [contenido_Bool]");:}        
         /*| WHILE PARENTESIS_A contenido_variable PARENTESIS_C cuerpo_estructuras                                      {:System.out.println("estructura: ciclo: WHILE [NOMBRE]");:}        */
-        | DO cuerpo_estructuras WHILE PARENTESIS_A contenido_boolean PARENTESIS_C PUNTO_COMA                         {:System.out.println("estructura: ciclo: DO-WHILE [contenido_Bool]");:}        
+        | DO cuerpo_estructuras WHILE PARENTESIS_A contenido_boolean PARENTESIS_C PUNTO_COMA                         {:System.out.println("[S] estructura: ciclo: DO-WHILE [contenido_Bool]");:}        
         /*| DO cuerpo_estructuras WHILE PARENTESIS_A contenido_variable PARENTESIS_C PUNTO_COMA                        {:System.out.println("estructura: ciclo: DO-WHILE [NOMBRE] ");:}        */
         ;/*loc comento, porque no sé si dará conflictos...*/
 
-ciclo_for ::= FOR PARENTESIS_A asignacion_for condiciones_for incremento_for PARENTESIS_C cuerpo_estructuras                         {:System.out.println("substruct: ciclo_for");:}            
+ciclo_for ::= FOR PARENTESIS_A asignacion_for condiciones_for incremento_for PARENTESIS_C cuerpo_estructuras                         {:System.out.println("[S] substruct: ciclo_for");:}            
             ;
 
-asignacion_for ::= asignacion_completa_for                                                     {:System.out.println("substruct: ciclo_for: asignacion [completa]");:}
-                 | asignacion                                                                  {:System.out.println("substruct: ciclo_for: asignacion [parcial]");:}
+asignacion_for ::= asignacion_completa_for                                                     {:System.out.println("[S] substruct: ciclo_for: asignacion [completa]");:}
+                 | asignacion                                                                  {:System.out.println("[S] substruct: ciclo_for: asignacion [parcial]");:}
                  /*puesto que permite que se add vars de todos los tipos de la práctica xD, e imagino que en realidad permite la de todos :0 xD*/
-                 | PUNTO_COMA                                                                  {:System.out.println("substruct: ciclo_for: asignacion [ninguna]");:}
+                 | PUNTO_COMA                                                                  {:System.out.println("[S] substruct: ciclo_for: asignacion [ninguna]");:}
                  ;
 
-asignacion_completa_for ::= INT NOMBRE IGUAL contenido_numero PUNTO_COMA                       {:System.out.println("substruct: ciclo_for: asignacion_C [INT]");:}
-                          | DOUBLE NOMBRE IGUAL contenido_numero PUNTO_COMA                   {:System.out.println("substruct: ciclo_for: asignacion_C [DOUBLE]");:}
-                          | STRING NOMBRE IGUAL contenido_string PUNTO_COMA                   {:System.out.println("substruct: ciclo_for: asignacion_C [STRING-CS]");:}
-                          | STRING NOMBRE IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("substruct: ciclo_for: asignacion_C [STRING-CV]");:}
-                          | CHAR NOMBRE IGUAL contenido_char PUNTO_COMA                       {:System.out.println("substruct: ciclo_for: asignacion_C [CHAR-CC]");:}
-                          | CHAR NOMBRE IGUAL contenido_variable PUNTO_COMA                   {:System.out.println("substruct: ciclo_for: asignacion_C [CHAR-CV]");:}
-                          | BOOLEAN NOMBRE IGUAL contenido_boolean PUNTO_COMA                 {:System.out.println("substruct: ciclo_for: asignacion_C [BOOLEAN-CB]");:}
-                          | BOOLEAN NOMBRE IGUAL contenido_variable PUNTO_COMA                {:System.out.println("substruct: ciclo_for: asignacion_C [BOOLEAN-CV]");:}
-                          | OBJECT NOMBRE IGUAL contenido_object PUNTO_COMA                   {:System.out.println("substruct: ciclo_for: asignacion_C [OBJECT-COc]");:}
-                          | OBJECT NOMBRE IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("substruct: ciclo_for: asignacion_C [OBJETC-CV]");:}
-                          | OBJETO NOMBRE IGUAL contenido_objeto PUNTO_COMA                   {:System.out.println("substruct: ciclo_for: asignacion_C [OBJETO-CO]");:}
-                          | OBJETO NOMBRE IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("substruct: ciclo_for: asignacion_C [OBJETO-CV]");:}
+asignacion_completa_for ::= INT NOMBRE IGUAL contenido_numero PUNTO_COMA                      {:System.out.println("[S] substruct: ciclo_for: asignacion_C [INT]");:}
+                          | DOUBLE NOMBRE IGUAL contenido_numero PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [DOUBLE]");:}
+                          | STRING NOMBRE IGUAL contenido_string PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [STRING-CS]");:}
+                          | STRING NOMBRE IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [STRING-CV]");:}
+                          | CHAR NOMBRE IGUAL contenido_char PUNTO_COMA                       {:System.out.println("[S] substruct: ciclo_for: asignacion_C [CHAR-CC]");:}
+                          | CHAR NOMBRE IGUAL contenido_variable PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [CHAR-CV]");:}
+                          | BOOLEAN NOMBRE IGUAL contenido_boolean PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [BOOLEAN-CB]");:}
+                          | BOOLEAN NOMBRE IGUAL contenido_variable PUNTO_COMA                {:System.out.println("[S] substruct: ciclo_for: asignacion_C [BOOLEAN-CV]");:}
+                          | OBJECT NOMBRE IGUAL contenido_object PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJECT-COc]");:}
+                          | OBJECT NOMBRE IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETC-CV]");:}
+                          | OBJETO NOMBRE IGUAL contenido_objeto PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETO-CO]");:}
+                          | OBJETO NOMBRE IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETO-CV]");:}
                           ;/*solo donde hay cont# no porque ese por sí solo permite el cont_var xD*/
 
-condiciones_for ::= contenido_boolean PUNTO_COMA                                 {:System.out.println("substruct: ciclo_for: condiciones [existente]");:}
+condiciones_for ::= contenido_boolean PUNTO_COMA                                 {:System.out.println("[S] substruct: ciclo_for: condiciones [existente]");:}
                   /*| contenido_variable                                           {:System.out.println("substruct: ciclo_for: condiciones [con VAR]");:}*/
-                  | PUNTO_COMA                                                   {:System.out.println("substruct: ciclo_for: condiciones [ninguna]");:}
+                  | PUNTO_COMA                                                   {:System.out.println("[S] substruct: ciclo_for: condiciones [ninguna]");:}
                   ;
 
-incremento_for ::= operacion_unaria                              {:System.out.println("substruct: ciclo_for: incremento [existente]");:}
-                 |                                               {:System.out.println("substruct: ciclo_for: incremento [ninguna]");:}
+incremento_for ::= operacion_unaria                              {:System.out.println("[S] substruct: ciclo_for: incremento [existente]");:}
+                 |                                               {:System.out.println("[S] substruct: ciclo_for: incremento [ninguna]");:}
                  ;
 
-invocacion ::= direccion PARENTESIS_A argumentacion PARENTESIS_C PUNTO_COMA                         {:System.out.println("estructura: invocacion [externa]");:}
-             | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C PUNTO_COMA                            {:System.out.println("estructura: invocacion [interna]");:}
+invocacion ::= direccion PARENTESIS_A argumentacion PARENTESIS_C PUNTO_COMA                         {:System.out.println("[S] estructura: invocacion [externa]");:}
+             | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C PUNTO_COMA                            {:System.out.println("[S] estructura: invocacion [interna]");:}
              ;
 
-argumentacion ::= argumentos                            {:System.out.println("substruct: argumentacion [min 1 argu]");:}
-                |                                       {:System.out.println("substruct: argumentacion [0 argu]");:}
+argumentacion ::= argumentos                            {:System.out.println("[S] substruct: argumentacion [min 1 argu]");:}
+                |                                       {:System.out.println("[S] substruct: argumentacion [0 argu]");:}
                 ;
 
-argumentos ::= argumentos COMA argumento                               {:System.out.println("substruct: argumentos [+ 1 argu]");:}
-             | argumento                                               {:System.out.println("substruct: argumentos [1 argu]");:}
+argumentos ::= argumentos COMA argumento                               {:System.out.println("[S] substruct: argumentos [+ 1 argu]");:}
+             | argumento                                               {:System.out.println("[S] substruct: argumentos [1 argu]");:}
              ;
     
-argumento ::= contenido_numero                           {:System.out.println("substruct: argumento [cont_#]");:}          
-            | contenido_string                           {:System.out.println("substruct: argumento [cont_S]");:}
-            | contenido_char                             {:System.out.println("substruct: argumento [cont_C]");:}
-            | contenido_boolean                          {:System.out.println("substruct: argumento [cont_B]");:}
-            | contenido_object                           {:System.out.println("substruct: argumento [cont_Oc]");:}
-            | contenido_objeto                           {:System.out.println("substruct: argumento [cont_O]");:}
+argumento ::= contenido_numero                           {:System.out.println("[S] substruct: argumento [cont_#]");:}          
+            | contenido_string                           {:System.out.println("[S] substruct: argumento [cont_S]");:}
+            | contenido_char                             {:System.out.println("[S] substruct: argumento [cont_C]");:}
+            | contenido_boolean                          {:System.out.println("[S] substruct: argumento [cont_B]");:}
+            | contenido_object                           {:System.out.println("[S] substruct: argumento [cont_Oc]");:}
+            | contenido_objeto                           {:System.out.println("[S] substruct: argumento [cont_O]");:}
             ;/*no add contenido_var porque los contenidos se llaman directamente sin nada que especifique que s debe agarrar alguno en una sit específica, por lo tanto cont# se encarga de ello xD*/
             /*aquí si hay conflictos deplano lo que haré es dejar contS [a diferencia de condi y autoincre y dejaré solo a los #...]*/
 
-sentencia_control ::= sentencia_if                                                         {:System.out.println("estructura: IF");:}
-                    | sentencia_if ELSE cuerpo_estructuras                                 {:System.out.println("estructura: IF-ELSE");:}                    
-                    | sentencia_switch                                                     {:System.out.println("estructura: SWITCH");:}
+sentencia_control ::= sentencia_if                                                         {:System.out.println("[S] estructura: IF");:}
+                    | sentencia_if ELSE cuerpo_estructuras                                 {:System.out.println("[S] estructura: IF-ELSE");:}                    
+                    | sentencia_switch                                                     {:System.out.println("[S] estructura: SWITCH");:}
                     ;
 
-sentencia_if ::= IF PARENTESIS_A contenido_boolean PARENTESIS_C cuerpo_estructuras                             {:System.out.println("substruct: sentencia_if");:}               
+sentencia_if ::= IF PARENTESIS_A contenido_boolean PARENTESIS_C cuerpo_estructuras                             {:System.out.println("[S] substruct: sentencia_if");:}               
                ;
 
-condiciones ::= multiple_condicion                                          {:System.out.println("substruct: condiciones [multiple]");:}
-              | condicion                                                   {:System.out.println("substruct: condiciones [pareja o unica]");:}
+condiciones ::= multiple_condicion                                          {:System.out.println("[S] substruct: condiciones [multiple]");:}
+              | condicion                                                   {:System.out.println("[S] substruct: condiciones [pareja o unica]");:}
               ;
 
-multiple_condicion ::= negaciones PARENTESIS_A multiple_condicion PARENTESIS_C                              {:System.out.println("substruct: multiple_condi [! ( MC ) ]");:}
-                     | PARENTESIS_A multiple_condicion PARENTESIS_C                                         {:System.out.println("substruct: multiple_condi [( MC )]");:}
-                     | multiple_condicion OPERADOR_LOGICO pareja_condiciones                                {:System.out.println("substruct: multiple_condi [ MC OL parejaC]");:}
-                     | pareja_condiciones OPERADOR_LOGICO pareja_condiciones                                {:System.out.println("substruct: multiple_condi [parejaC OL parejaC]");:}
+multiple_condicion ::= negaciones PARENTESIS_A multiple_condicion PARENTESIS_C                              {:System.out.println("[S] substruct: multiple_condi [! ( MC ) ]");:}
+                     | PARENTESIS_A multiple_condicion PARENTESIS_C                                         {:System.out.println("[S] substruct: multiple_condi [( MC )]");:}
+                     | multiple_condicion OPERADOR_LOGICO pareja_condiciones                                {:System.out.println("[S] substruct: multiple_condi [ MC OL parejaC]");:}
+                     | pareja_condiciones OPERADOR_LOGICO pareja_condiciones                                {:System.out.println("[S] substruct: multiple_condi [parejaC OL parejaC]");:}
                      ;
 
-pareja_condiciones ::= condicion                                {:System.out.println("substruct: multiple_condi [parejaC OL parejaC]");:}
+pareja_condiciones ::= condicion                                {:System.out.println("[S] substruct: multiple_condi [parejaC OL parejaC]");:}
                      /*si da conflicto, quizá sería útil crear otra regla para factorizar cont_condi del ini, u OpRel...*/
-                     | contenido_condicion                      {:System.out.println("substruct: multiple_condi [parejaC OL parejaC]");:}
+                     | contenido_condicion                      {:System.out.println("[S] substruct: multiple_condi [parejaC OL parejaC]");:}
                      ;
 
-condicion ::= PARENTESIS_A condicion PARENTESIS_C                                                  {:System.out.println("substruct: multiple_condi [parejaC OL parejaC]");:}
-            | contenido_condicion OPERADOR_RELACIONAL contenido_condicion                          {:System.out.println("substruct: multiple_condi [parejaC OL parejaC]");:}
+condicion ::= PARENTESIS_A condicion PARENTESIS_C                                                  {:System.out.println("[S] substruct: multiple_condi [parejaC OL parejaC]");:}
+            | contenido_condicion OPERADOR_RELACIONAL contenido_condicion                          {:System.out.println("[S] substruct: multiple_condi [parejaC OL parejaC]");:}
             ;
 
-contenido_condicion ::= contenido_numero                                {:System.out.println("substruct: contenido_condi [con_#]");:}
-                      | contenido_string                                {:System.out.println("substruct: contenido_condi [cont_S]");:}
+contenido_condicion ::= contenido_numero                                {:System.out.println("[S] substruct: contenido_condi [con_#]");:}
+                      | contenido_string                                {:System.out.println("[S] substruct: contenido_condi [cont_S]");:}
                       /*si hay conflicto entre estos... tendré que colocar solo "strings" aquí de todos modos no creo que vayan a colocar una concat en una condición... [igual que en autoincre]*/
-                      | contenido_char                                  {:System.out.println("substruct: contenido_condi [cont_C]");:}
-                      | booleans                                        {:System.out.println("substruct: contenido_condi [booleans]");:}
+                      | contenido_char                                  {:System.out.println("[S] substruct: contenido_condi [cont_C]");:}
+                      | booleans                                        {:System.out.println("[S] substruct: contenido_condi [booleans]");:}
                       /*antes por descuido tenía contenido_boolean, hasta donde sé eso provocaría conflictos por la recursi...*/
-                      | contenido_negaciones                            {:System.out.println("substruct: contenido_condi [cont_N]");:}
+                      | contenido_negaciones                            {:System.out.println("[S] substruct: contenido_condi [cont_N]");:}
                       /*para evitar conflictos con nombre [generado por cont#] y booleans*/
-                      | contenido_object                                {:System.out.println("substruct: contenido_condi [cont_Oc]");:}
-                      | contenido_objeto                                {:System.out.println("substruct: contenido_condi [cont_O]");:}
+                      | contenido_object                                {:System.out.println("[S] substruct: contenido_condi [cont_Oc]");:}
+                      | contenido_objeto                                {:System.out.println("[S] substruct: contenido_condi [cont_O]");:}
                       ;
 /*a pesar de generar conflictos, es más clara y además eliminó 1 conflicto uwu :v xD*/
 
 /*de esta manera restringo que solo los booleanos puedan ser negados individualmente... y sin caer en conflictos por el nombre generado en contenido_numeros...*/
-contenido_negaciones ::= PARENTESIS_A contenido_negaciones PARENTESIS_C                             {:System.out.println("substruct: cont_N [ ( cont_N ) ]");:}
-                       | negaciones contenido_negaciones                                            {:System.out.println("substruct: cont_N [ ! cont_N]");:}
-                       | negaciones opciones_booleanas                                              {:System.out.println("substruct: cont_N [ ! op_booleanas]");:}
+contenido_negaciones ::= PARENTESIS_A contenido_negaciones PARENTESIS_C                             {:System.out.println("[S] substruct: cont_N [ ( cont_N ) ]");:}
+                       | negaciones contenido_negaciones                                            {:System.out.println("[S] substruct: cont_N [ ! cont_N]");:}
+                       | negaciones opciones_booleanas                                              {:System.out.println("[S] substruct: cont_N [ ! op_booleanas]");:}
                        ;/*si trabaja de afuera hacia adentro si funciona :v hasta donde sé es así xD*/
 
-opciones_booleanas ::= booleans                                         {:System.out.println("substruct: op_booleanas [booleans]");:}
-                     | contenido_variable                               {:System.out.println("substruct: op_booleanas [cont_v]");:}
+opciones_booleanas ::= booleans                                         {:System.out.println("[S] substruct: op_booleanas [booleans]");:}
+                     | contenido_variable                               {:System.out.println("[S] substruct: op_booleanas [cont_v]");:}
                      ;
 
-negaciones ::= negaciones NO                                  {:System.out.println("substruct: negaciones [LISTA]");:}
-             | NO                                             {:System.out.println("substruct: negaciones [UNICA]");:}
+negaciones ::= negaciones NO                                  {:System.out.println("[S] substruct: negaciones [LISTA]");:}
+             | NO                                             {:System.out.println("[S] substruct: negaciones [UNICA]");:}
              /*|                                                      {:System.out.println("substruct: negaciones [ninguna]");:}*/
              ;
 
@@ -500,78 +501,78 @@ negaciones ::= negaciones NO                                  {:System.out.print
            //|                                    {:System.out.println("substruct: negacion [ninguna]");:}
            ;*/
 
-sentencia_switch ::= SWITCH PARENTESIS_A contenido_switch PARENTESIS_C LLAVE_A cuerpo_switch LLAVE_C                             {:System.out.println("substruct: sentencia_switch");:}
+sentencia_switch ::= SWITCH PARENTESIS_A contenido_switch PARENTESIS_C LLAVE_A cuerpo_switch LLAVE_C                             {:System.out.println("[S] substruct: sentencia_switch");:}
                    ;
 
-cuerpo_switch ::= casos_normales caso_default                               {:System.out.println("substruct: cuerpo_switch [CN + posible CD]");:}
-                | caso_default                                              {:System.out.println("substruct: cuerpo_switch [posible CD o nada]");:}
+cuerpo_switch ::= casos_normales caso_default                               {:System.out.println("[S] substruct: cuerpo_switch [CN + posible CD]");:}
+                | caso_default                                              {:System.out.println("[S] substruct: cuerpo_switch [posible CD o nada]");:}
                 ;
 
-casos_normales ::= casos_normales caso                               {:System.out.println("substruct: casos_normales [LISTA]");:}
-                 | caso                                              {:System.out.println("substruct: casos_normales [UNICO]");:}
+casos_normales ::= casos_normales caso                               {:System.out.println("[S] substruct: casos_normales [LISTA]");:}
+                 | caso                                              {:System.out.println("[S] substruct: casos_normales [UNICO]");:}
                  ;
 
 /*vamos a ver si esto de casos y caso_def no da prob por repitencia, si si entonces crearás otra RP donde se tenga BG y nada xD [ambos usarían la misma RP]*/
-caso ::= CASE contenido_switch DOS_PUNTOS bloque_general                                 {:System.out.println("substruct: caso (CB)");:}
-       | CASE contenido_switch DOS_PUNTOS                                                {:System.out.println("substruct: caso (SB)");:} 
+caso ::= CASE contenido_switch DOS_PUNTOS bloque_general                                 {:System.out.println("[S] substruct: caso (CB)");:}
+       | CASE contenido_switch DOS_PUNTOS                                                {:System.out.println("[S] substruct: caso (SB)");:} 
        ;
 
-caso_default ::= DEFAULT DOS_PUNTOS bloque_general                                  {:System.out.println("substruct: caso_default [existente (CB)]");:}
-               | DEFAULT DOS_PUNTOS                                                 {:System.out.println("substruct: caso_default [existente (SB)]");:} 
-               |                                                                    {:System.out.println("substruct: caso_default [ausente]");:}
+caso_default ::= DEFAULT DOS_PUNTOS bloque_general                                  {:System.out.println("[S] substruct: caso_default [existente (CB)]");:}
+               | DEFAULT DOS_PUNTOS                                                 {:System.out.println("[S] substruct: caso_default [existente (SB)]");:} 
+               |                                                                    {:System.out.println("[S] substruct: caso_default [ausente]");:}
                ;
 
-contenido_switch ::= contenido_string                               {:System.out.println("substruct: contenido_switch [cont_S]");:}
-                   | contenido_numero                               {:System.out.println("substruct: contenido_switch [cont_#]");:}
-                   | contenido_char                                 {:System.out.println("substruct: contenido_switch [cont_C]");:}
+contenido_switch ::= contenido_string                               {:System.out.println("[S] substruct: contenido_switch [cont_S]");:}
+                   | contenido_numero                               {:System.out.println("[S] substruct: contenido_switch [cont_#]");:}
+                   | contenido_char                                 {:System.out.println("[S] substruct: contenido_switch [cont_C]");:}
                    ;/*mientras no sepa como hacer para que contenido# no genere un "nombre" solito, no incluiré contenido_Var*/
 
-cuerpo_estructuras ::= LLAVE_A bloque_general LLAVE_C                              {:System.out.println("substruct: cuerpo_estructuras [CB]");:}
-                     | LLAVE_A LLAVE_C                                             {:System.out.println("substruct: cuerpo_estructuras [SB]");:}
+cuerpo_estructuras ::= LLAVE_A bloque_general LLAVE_C                              {:System.out.println("[S] substruct: cuerpo_estructuras [CB]");:}
+                     | LLAVE_A LLAVE_C                                             {:System.out.println("[S] substruct: cuerpo_estructuras [SB]");:}
                      ;
 
 /*esta RP es para los ciclos y estructuras de control...*/
-bloque_general ::= bloque retorno                                {:System.out.println("substruct: bloque_general [CR [comp o parada]]");:}
-                 | bloque                                        {:System.out.println("substruct: bloque_general [SR]");:}
-                 | retorno                                       {:System.out.println("substruct: bloque_general [SB y CR]");:}
+bloque_general ::= bloque retorno                                {:System.out.println("[S] substruct: bloque_general [CR [comp o parada]]");:}
+                 | bloque                                        {:System.out.println("[S] substruct: bloque_general [SR]");:}
+                 | retorno                                       {:System.out.println("[S] substruct: bloque_general [SB y CR]");:}
                  /*ya verifiqué y los ciclos tb pueden solo retornar...*/
                  ;
 
-retorno ::= retorno_compuesto                                {:System.out.println("substruct: retorno [compuesto]");:}
-          | parada PUNTO_COMA                                {:System.out.println("substruct: retorno [parada [simple]]");:}
+retorno ::= retorno_compuesto                                {:System.out.println("[S] substruct: retorno [compuesto]");:}
+          | parada PUNTO_COMA                                {:System.out.println("[S] substruct: retorno [parada [simple]]");:}
           ;
 
-retorno_compuesto ::= retorno_numero                           {:System.out.println("substruct: retorno_compuesto: retorno_#");:}
-                    | retorno_string                           {:System.out.println("substruct: retorno_compuesto: retorno_S");:}
-                    | retorno_char                             {:System.out.println("substruct: retorno_compuesto: retorno_C");:}
-                    | retorno_boolean                          {:System.out.println("substruct: retorno_compuesto: retorno_B");:}
-                    | retorno_object                           {:System.out.println("substruct: retorno_compuesto: retorno_Oc");:}
-                    | retorno_objeto                           {:System.out.println("substruct: retorno_compuesto: retorno_O");:}
+retorno_compuesto ::= retorno_numero                           {:System.out.println("[S] substruct: retorno_compuesto: retorno_#");:}
+                    | retorno_string                           {:System.out.println("[S] substruct: retorno_compuesto: retorno_S");:}
+                    | retorno_char                             {:System.out.println("[S] substruct: retorno_compuesto: retorno_C");:}
+                    | retorno_boolean                          {:System.out.println("[S] substruct: retorno_compuesto: retorno_B");:}
+                    | retorno_object                           {:System.out.println("[S] substruct: retorno_compuesto: retorno_Oc");:}
+                    | retorno_objeto                           {:System.out.println("[S] substruct: retorno_compuesto: retorno_O");:}
                     //retorno_variable //lo comento, puesto que número se encarga de permitir el contenido variable
                     ;
 
-retorno_variable ::= RETURN contenido_variable PUNTO_COMA                             {:System.out.println("substruct: retorno_V");:}
+retorno_variable ::= RETURN contenido_variable PUNTO_COMA                             {:System.out.println("[S] substruct: retorno_V");:}
                    ;/*aunque cont# permita esto, si no se juntan a todos en una sola RP este debe existir por los demás xD*/
 
-retorno_numero ::= RETURN contenido_numero PUNTO_COMA                                 {:System.out.println("substruct: retorno_#");:}
+retorno_numero ::= RETURN contenido_numero PUNTO_COMA                                 {:System.out.println("[S] substruct: retorno_#");:}
                  ;
 
-retorno_string ::= RETURN contenido_string PUNTO_COMA                                 {:System.out.println("substruct: retorno_S");:}
+retorno_string ::= RETURN contenido_string PUNTO_COMA                                 {:System.out.println("[S] substruct: retorno_S");:}
                  ;
 
-retorno_char ::= RETURN contenido_char PUNTO_COMA                                     {:System.out.println("substruct: retorno_C");:}
+retorno_char ::= RETURN contenido_char PUNTO_COMA                                     {:System.out.println("[S] substruct: retorno_C");:}
                ;
 
-retorno_boolean ::= RETURN contenido_boolean PUNTO_COMA                               {:System.out.println("substruct: retorno_B");:}
+retorno_boolean ::= RETURN contenido_boolean PUNTO_COMA                               {:System.out.println("[S] substruct: retorno_B");:}
                   ;
 
-retorno_object ::= RETURN contenido_object PUNTO_COMA                                 {:System.out.println("substruct: retorno_Oc");:}
+retorno_object ::= RETURN contenido_object PUNTO_COMA                                 {:System.out.println("[S] substruct: retorno_Oc");:}
                  ;
 
-retorno_objeto ::= RETURN contenido_objeto PUNTO_COMA                                 {:System.out.println("substruct: retorno_O");:}
+retorno_objeto ::= RETURN contenido_objeto PUNTO_COMA                                 {:System.out.println("[S] substruct: retorno_O");:}
                  ;
 
-parada ::= RETURN                                   {:System.out.println("substruct: parada [RETURN]");:}
-         | BREAK                                    {:System.out.println("substruct: parada [BREAK]");:}
+parada ::= RETURN                                   {:System.out.println("[S] substruct: parada [RETURN]");:}
+         | BREAK                                    {:System.out.println("[S] substruct: parada [BREAK]");:}
          ;
 /*No se a donde se fue el otro estado*/
