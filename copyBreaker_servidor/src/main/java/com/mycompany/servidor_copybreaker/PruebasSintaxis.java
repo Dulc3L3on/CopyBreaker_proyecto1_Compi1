@@ -569,4 +569,86 @@ public void prubeasConcat(){
      char caracter = ' ';
 }
 
+public void pruebasIf(){
+    int numero = 5;
+    double doble = 3;
+    
+    if(!!!(5>4)){
+    
+    }    
+    if(!(5<4)){
+    
+    }    
+    if(!(5>=4)){
+    
+    }    
+    if(!(5<=4)){
+    
+    }    
+    if(!(5==4)){
+    
+    }    
+    if(!(numero>=4)){
+    
+    }    
+    if(!(5<=numero)){
+    
+    }    
+    if(!(numero==4)){
+    
+    }    
+    
+    if(!(5<=numero)){
+    
+    }    
+    if(!(numero==doble)){
+    
+    }//si deja comparar entre int y doubles    
+    if(!(5<=numero) && !(numero==doble)){
+    
+    }    
+    if(!(numero==4) || (numero==doble)){
+    
+    }    
+    if(!!(!(numero==4) || (numero==doble))){
+    
+    }    
+    
+    if(!(""=="")){
+    
+    }
+    if(!(""!="")){
+    
+    }
+    
+    if(!('c'=='d')){
+    
+    }
+    if(!('c'!='d')){
+    
+    }
+    if(!('c'>'d')){
+    
+    }
+    //OK, si se puede negar una condición con OR :0 -_- JAJAJA, que bien xD    
+}
+
+public void probarConcatenacion(int numero){
+    String concat = ((1>3))+""+2;
+    concat = 2.2+3.3 +"";
+    concat = 2+5+7+"";
+    concat = 'c'+'f'+"";
+    concat = 2 +'c'+5.3 + "";
+    concat = ""+(1-5);
+    concat = ""+(numero--)+(numero+=1);
+    concat = true +"";
+}//RESUMEN
+//todas las operaciones: aritmeticas, comparacion, la incre, la autoincre
+//doubles, int, char y strings [dobi xD], pueden aparecer +1 vez antes de un string
+    //ya sea puros o una combinación de cualquiera de estos
+//boolean puede aparecer 1 sola vez
+    //y solo puede estar él antes del string, nada más, ni siquiera los que pueden
+    //estar más de una vez...
+
+
 }

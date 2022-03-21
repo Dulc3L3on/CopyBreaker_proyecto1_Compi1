@@ -41,14 +41,14 @@ non terminal def_metodo, cuerpo_def_metodo, def_metodo_constructor,def_metodo_ti
 non terminal cuerpo_metodo_object, cuerpo_metodo_objeto, def_metodo_void, parametros, parametro, tipo;
 non terminal bloque, sentencias;
 non terminal asignacion, tipos_asignacion;
-non terminal contenido_variable, contenido_numero, contenido_string, strings, contenido_char, contenido_boolean, booleans, contenido_object, contenido_objeto;
-non terminal concatenacion, opcion_concatenacion;
+non terminal contenido_variable, contenido_numero, contenido_string, inicio_contenido, restringidos, permitidos,cualquier_contenido, opciones_cualquier_contenido, contenido_cualquiera, strings, contenido_char, contenido_boolean, /*booleans,*/ contenido_object, contenido_objeto;
+non terminal concatenacion, otra_concatenacion, opcion_concatenacion;
 non terminal operacion_unaria, incremento, autoincremento, opciones_autoincremento, opciones_autoIncreMas;
 non terminal ciclo, ciclo_for, asignacion_for, asignacion_completa_for, condiciones_for, incremento_for;
 non terminal invocacion, argumentacion, argumentos, argumento;
 non terminal sentencia_control, sentencia_if, sentencia_switch, cuerpo_switch, casos_normales, caso, caso_default, contenido_switch;
-non terminal condiciones, multiple_condicion, condicion, pareja_condiciones, contenido_condicion, contenido_negaciones;
-non terminal opciones_booleanas, negaciones;
+non terminal multiple_condicion, condicion, opcion_condicion, pareja_condiciones, contenido_bool, contenido_condicion;
+non terminal negaciones, negaciones_prima;
 non terminal cuerpo_estructuras, bloque_general;
 non terminal retorno, retorno_compuesto, retorno_variable, retorno_numero, retorno_string, retorno_char, retorno_boolean, retorno_object;
 non terminal retorno_objeto, parada;
@@ -59,7 +59,9 @@ precedence left ASTERISCO, DIV;/*no creo que me de problemas, al aparecer AST, t
 precedence left MENOS;
 
 precedence left OPERADOR_LOGICO;
-precedence nonassoc OPERADOR_RELACIONAL;/*yo diría que este es mayor en jerarquía que el lógico...*//*esperaría que no provocar más erorres [eso sí soy consciente de que eli 1 la noassoc:v xD]*/
+precedence left OPERADOR_RELACIONAL;/*yo diría que este es mayor en jerarquía que el lógico...*//*esperaría que no provocar más erorres [eso sí soy consciente de que eli 1 la noassoc:v xD]*/
+
+//precedence left opciones_cualquier_contenido;//la agregué para que lea de primero el menos... pero no hizo nada ;-;
 
 /*4. Reglas de producción*/
 start with inicio;
@@ -309,9 +311,24 @@ contenido_numero ::= contenido_numero MAS contenido_numero                      
                   | NOMBRE                                                            {:System.out.println("[S] substruct: cont_#: NOMBRE");:}
                   ;
 
-contenido_string ::= concatenacion                              {:System.out.println("[S] substruct: cont_S: concat");:}
-                   | strings                                    {:System.out.println("[S] substruct: cont_S: strings");:}
-                   ;/*esto es lo que pusiste como strings [en la nueva forma de concat] en tu cuaderno...*/
+contenido_string ::= contenido_boolean MAS cualquier_contenido                                  {:System.out.println("[S] substruct: cont_S [ cont_boolean + cc ]");:}
+                   | permitidos                                                                 {:System.out.println("[S] substruct: cont_S [ permitidos ]");:}
+                   ;
+
+permitidos ::= contenido_numero MAS permitidos                                      {:System.out.println("[S] substruct: permitidos [cont_# + permitidos]");:} 
+             | contenido_char MAS permitidos                                        {:System.out.println("[S] substruct: permitidos [cont_c + permitidos]");:}
+             | cualquier_contenido                                                  {:System.out.println("[S] substruct: permitidos [cc]");:}
+             ;
+
+cualquier_contenido ::= cualquier_contenido opciones_cualquier_contenido                                    {:System.out.println("[S] substruct [cual_cont: cc o_cc]");:}
+                      | strings                                                                             {:System.out.println("[S] substruct [cual_cont: strings]");:}
+                      ;
+
+opciones_cualquier_contenido ::= MAS contenido_numero                                {:System.out.println("[S] substruct: op_cc [+ cont_#]");:}
+                               | MAS contenido_char                                  {:System.out.println("[S] substruct: op_cc [+ cont_c]");:}
+                               | MAS contenido_boolean                               {:System.out.println("[S] substruct: op_cc [+ cont_b]");:} 
+                               | MAS strings                                         {:System.out.println("[S] substruct: op_cc [+ strings]");:}
+                               ;/*forma 1*/
 
 strings ::= PARENTESIS_A strings PARENTESIS_C                           {:System.out.println("[S] substruct: strings: ( strings )");:}                   
          | CADENA                                                       {:System.out.println("[S] substruct: strings: CADENA");:}
@@ -322,15 +339,10 @@ contenido_char ::= PARENTESIS_A contenido_char PARENTESIS_C                     
                  | CARACTER                                                                 {:System.out.println("[S] substruct: cont_C: CARACTER");:}
                  ;
 
-contenido_boolean ::= condiciones                               {:System.out.println("[S] substruct: cont_B: condiciones");:}
+/*contenido_boolean ::= condiciones                               {:System.out.println("[S] substruct: cont_B: condiciones");:}
                     | booleans                                  {:System.out.println("[S] substruct: cont_B: booleans");:}                       
                     | contenido_negaciones                      {:System.out.println("[S] substruct: cont_B: contenido_negaciones");:}                        
-                    ;/*el contenido variable, igual que antes de add esta última cn, se llama por separado para evitar conflictos*/
-
-booleans ::= PARENTESIS_A booleans PARENTESIS_C                                 {:System.out.println("[S] substruct: cont_C: ( booleans )");:}
-           | BOOLEANO                                                           {:System.out.println("[S] substruct: cont_C: BOOLEANO");:}
-           /*si es que condiciones no llega a devolver boolean o nombre [aunque ahora que veo así la gram, no provocaría mayor cosa, solo en las Reglas rel con esas RP xD que bien jajaja]...*/
-           ;
+                    ;*//*el contenido variable, igual que antes de add esta última cn, se llama por separado para evitar conflictos*/
 
 contenido_object ::= PARENTESIS_A contenido_object PARENTESIS_C                             {:System.out.println("[S] substruct: cont_Oc: ( cont_Oc )");:}
                    | NEW OBJECT PARENTESIS_A PARENTESIS_C                                   {:System.out.println("[S] substruct: cont_Oc: NEW Oc()");:}
@@ -340,22 +352,6 @@ contenido_object ::= PARENTESIS_A contenido_object PARENTESIS_C                 
 contenido_objeto ::= PARENTESIS_A contenido_objeto PARENTESIS_C                              {:System.out.println("[S] substruct: cont_O: ( cont_O )");:}
                    | NEW OBJETO PARENTESIS_A argumentacion PARENTESIS_C                      {:System.out.println("[S] substruct: cont_O: NEW O( argucion )");:}
                    ;
-
-concatenacion ::= PARENTESIS_A concatenacion PARENTESIS_C                             {:System.out.println("[S] substruct: concat: ( concat )");:}                   
-                | concatenacion MAS opcion_concatenacion                              {:System.out.println("[S] substruct: concat: +2 concat ");:}
-                | opcion_concatenacion MAS opcion_concatenacion                       {:System.out.println("[S] substruct: concat: 1 concat");:}                
-                ;
-
-/*contenido_concatenacion ::= opcion_concatenacion MAS opcion_concatenacion
-                          ;*/
-
-opcion_concatenacion ::= contenido_numero                                 {:System.out.println("[S] substruct: op_concat: cont_#");:}                                                           
-                      | contenido_boolean                                 {:System.out.println("[S] substruct: op_concat: cont_B");:}
-                      /*si no funciona [por las condis] aunque si debería, lo que harás es colocar solo booleans... además tendría que especificar que solo admite condis si están entre ()*/
-                      | contenido_char                                    {:System.out.println("[S] substruct: op_concat: cont_C");:}
-                      | strings                                           {:System.out.println("[S] substruct: op_concat: strings");:}
-                     /* | contenido_variable *//*val# retorna nombre, claro xD*/
-                      ;
 
 operacion_unaria ::= incremento                                 {:System.out.println("[S] substruct: op_unaria: INCRE");:}
                    | autoincremento                             {:System.out.println("[S] substruct: op_unaria: AUTO_INCRE");:}
@@ -450,47 +446,44 @@ sentencia_control ::= sentencia_if                                              
 sentencia_if ::= IF PARENTESIS_A contenido_boolean PARENTESIS_C cuerpo_estructuras                             {:System.out.println("[S] substruct: sentencia_if");:}               
                ;
 
-condiciones ::= multiple_condicion                                          {:System.out.println("[S] substruct: condiciones [multiple]");:}
-              | condicion                                                   {:System.out.println("[S] substruct: condiciones [pareja o unica]");:}
-              ;
+contenido_boolean ::= negaciones PARENTESIS_A contenido_boolean PARENTESIS_C                             {:System.out.println("[S] substruct: contenido_boolean [! ( MC ) ]");:}
+                    | PARENTESIS_A contenido_boolean PARENTESIS_C                                        {:System.out.println("[S] substruct: contenido_boolean [( MC )]");:}
+                    | contenido_boolean OPERADOR_LOGICO contenido_boolean                                {:System.out.println("[S] substruct: contenido_boolean [ cont_boolean OL cont_boolean]");:}
+                    | condicion                                                                          {:System.out.println("[S] substruct: contenido_boolean [condicion]");:}                    
+                    ;
 
-multiple_condicion ::= negaciones PARENTESIS_A multiple_condicion PARENTESIS_C                              {:System.out.println("[S] substruct: multiple_condi [! ( MC ) ]");:}
-                     | PARENTESIS_A multiple_condicion PARENTESIS_C                                         {:System.out.println("[S] substruct: multiple_condi [( MC )]");:}
-                     | multiple_condicion OPERADOR_LOGICO pareja_condiciones                                {:System.out.println("[S] substruct: multiple_condi [ MC OL parejaC]");:}
-                     | pareja_condiciones OPERADOR_LOGICO pareja_condiciones                                {:System.out.println("[S] substruct: multiple_condi [parejaC OL parejaC]");:}
-                     ;
-
-pareja_condiciones ::= condicion                                {:System.out.println("[S] substruct: multiple_condi [parejaC OL parejaC]");:}
-                     /*si da conflicto, quizá sería útil crear otra regla para factorizar cont_condi del ini, u OpRel...*/
-                     | contenido_condicion                      {:System.out.println("[S] substruct: multiple_condi [parejaC OL parejaC]");:}
-                     ;
-
-condicion ::= PARENTESIS_A condicion PARENTESIS_C                                                  {:System.out.println("[S] substruct: multiple_condi [parejaC OL parejaC]");:}
-            | contenido_condicion OPERADOR_RELACIONAL contenido_condicion                          {:System.out.println("[S] substruct: multiple_condi [parejaC OL parejaC]");:}
+condicion ::= contenido_condicion OPERADOR_RELACIONAL opcion_condicion                               {:System.out.println("[S] substruct: condicion [contCondi OR op_condi]");:}
+            | contenido_bool OPERADOR_RELACIONAL opcion_condicion                                    {:System.out.println("[S] substruct: condicion [cont_bool OR op_condi]");:}                                
+            | contenido_bool                                                                         {:System.out.println("[S] substruct: condicion [cont_bool]");:}                                
             ;
+
+opcion_condicion ::= contenido_bool                                          {:System.out.println("[S] substruct: op_condicion [cont_bool]");:}                                   
+                   | contenido_condicion                                     {:System.out.println("[S] substruct: op_condicion [cont_condi]");:}
+                   ;/*1. 10 conflictos*/
+
+/*condicion ::= opcion_condicion OPERADOR_RELACIONAL opcion_condicion                               {:System.out.println("[S] substruct: multiple_condi [parejaC OL parejaC]");:}            
+            | contenido_bool 
+            ;
+            
+opcion_condicion ::= contenido_bool
+                   | contenido_condicion
+                   ;*//*2. 10 conflictos, no cbn nada con la que está arribita*/   
 
 contenido_condicion ::= contenido_numero                                {:System.out.println("[S] substruct: contenido_condi [con_#]");:}
                       | contenido_string                                {:System.out.println("[S] substruct: contenido_condi [cont_S]");:}
                       /*si hay conflicto entre estos... tendré que colocar solo "strings" aquí de todos modos no creo que vayan a colocar una concat en una condición... [igual que en autoincre]*/
-                      | contenido_char                                  {:System.out.println("[S] substruct: contenido_condi [cont_C]");:}
-                      | booleans                                        {:System.out.println("[S] substruct: contenido_condi [booleans]");:}
-                      /*antes por descuido tenía contenido_boolean, hasta donde sé eso provocaría conflictos por la recursi...*/
-                      | contenido_negaciones                            {:System.out.println("[S] substruct: contenido_condi [cont_N]");:}
+                      | contenido_char                                  {:System.out.println("[S] substruct: contenido_condi [cont_C]");:}                      
                       /*para evitar conflictos con nombre [generado por cont#] y booleans*/
                       | contenido_object                                {:System.out.println("[S] substruct: contenido_condi [cont_Oc]");:}
                       | contenido_objeto                                {:System.out.println("[S] substruct: contenido_condi [cont_O]");:}
                       ;
-/*a pesar de generar conflictos, es más clara y además eliminó 1 conflicto uwu :v xD*/
 
+contenido_bool ::= PARENTESIS_A contenido_bool PARENTESIS_C                             {:System.out.println("[S] substruct: cont_bool [ ( cont_bool ) ]");:}
+                 | negaciones contenido_bool                                            {:System.out.println("[S] substruct: cont_bool [ ! cont_bool ]");:}
+                 | negaciones contenido_variable                                        {:System.out.println("[S] substruct: cont_bool [ ! cont_var ]");:}                                                         
+                 | BOOLEANO                                                             {:System.out.println("[S] substruct: cont_bool [ BOOLEANO ]");:}
+                 ;
 /*de esta manera restringo que solo los booleanos puedan ser negados individualmente... y sin caer en conflictos por el nombre generado en contenido_numeros...*/
-contenido_negaciones ::= PARENTESIS_A contenido_negaciones PARENTESIS_C                             {:System.out.println("[S] substruct: cont_N [ ( cont_N ) ]");:}
-                       | negaciones contenido_negaciones                                            {:System.out.println("[S] substruct: cont_N [ ! cont_N]");:}
-                       | negaciones opciones_booleanas                                              {:System.out.println("[S] substruct: cont_N [ ! op_booleanas]");:}
-                       ;/*si trabaja de afuera hacia adentro si funciona :v hasta donde sé es así xD*/
-
-opciones_booleanas ::= booleans                                         {:System.out.println("[S] substruct: op_booleanas [booleans]");:}
-                     | contenido_variable                               {:System.out.println("[S] substruct: op_booleanas [cont_v]");:}
-                     ;
 
 negaciones ::= negaciones NO                                  {:System.out.println("[S] substruct: negaciones [LISTA]");:}
              | NO                                             {:System.out.println("[S] substruct: negaciones [UNICA]");:}
@@ -575,4 +568,3 @@ retorno_objeto ::= RETURN contenido_objeto PUNTO_COMA                           
 parada ::= RETURN                                   {:System.out.println("[S] substruct: parada [RETURN]");:}
          | BREAK                                    {:System.out.println("[S] substruct: parada [BREAK]");:}
          ;
-/*No se a donde se fue el otro estado*/

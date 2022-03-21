@@ -16,6 +16,8 @@ public class Log extends javax.swing.JFrame {
      private ManejadorAnalisis manejadorAnalisis = new ManejadorAnalisis();
      private String pathJava = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_2.java";
      private String pathTxt = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba.txt";
+     private String pathTxt_2 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_nivel2.txt";
+     private String pathTxt_3 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_nivel3.txt";
      
     /**
      * Creates new form Log
