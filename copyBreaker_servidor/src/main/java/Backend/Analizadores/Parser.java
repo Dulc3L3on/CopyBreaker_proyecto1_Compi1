@@ -2440,7 +2440,7 @@ class CUP$Parser$actions {
           case 128: // tipos_asignacion ::= contenido_numero 
             {
               Object RESULT =null;
-		System.out.println("[S] substruct: tipos_asig: cont#");
+		System.out.println("[S] substruct: tipos_asig: cont_#");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipos_asignacion",40, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2449,7 +2449,7 @@ class CUP$Parser$actions {
           case 129: // tipos_asignacion ::= contenido_string 
             {
               Object RESULT =null;
-		System.out.println("[S] substruct: tipos_asig: contS");
+		System.out.println("[S] substruct: tipos_asig: cont_S");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipos_asignacion",40, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2458,7 +2458,7 @@ class CUP$Parser$actions {
           case 130: // tipos_asignacion ::= contenido_char 
             {
               Object RESULT =null;
-		System.out.println("[S] substruct: tipo_asig: contC");
+		System.out.println("[S] substruct: tipo_asig: cont_C");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipos_asignacion",40, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2467,7 +2467,7 @@ class CUP$Parser$actions {
           case 131: // tipos_asignacion ::= contenido_boolean 
             {
               Object RESULT =null;
-		System.out.println("[S] substruct: tipo_asig: contB");
+		System.out.println("[S] substruct: tipo_asig: cont_B");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipos_asignacion",40, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2476,7 +2476,7 @@ class CUP$Parser$actions {
           case 132: // tipos_asignacion ::= contenido_object 
             {
               Object RESULT =null;
-		System.out.println("[S] substruct: tipo_asig: contOc");
+		System.out.println("[S] substruct: tipo_asig: cont_Oc");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipos_asignacion",40, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2485,7 +2485,7 @@ class CUP$Parser$actions {
           case 133: // tipos_asignacion ::= contenido_objeto 
             {
               Object RESULT =null;
-		System.out.println("[S] substruct: tipo_asig: contO");
+		System.out.println("[S] substruct: tipo_asig: cont_O");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipos_asignacion",40, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

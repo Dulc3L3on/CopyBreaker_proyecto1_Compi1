@@ -281,17 +281,17 @@ asignacion ::= cuerpo_invocacion_var IGUAL tipos_asignacion PUNTO_COMA          
             // | THIS cuerpo_invocacion_metodo IGUAL tipos_asignacion PUNTO_COMA                       {:System.out.println("[S] estructura: asignacion");:}
              ;//yo me recordaba que se puede asignar a un método get, porque el inge Moi lo hizo, pero no me sale al probar en ajva :v xD
 
-tipos_asignacion ::= contenido_numero                               {:System.out.println("[S] substruct: tipos_asig: cont#");:}
-                   | contenido_string                               {:System.out.println("[S] substruct: tipos_asig: contS");:}
+tipos_asignacion ::= contenido_numero                               {:System.out.println("[S] substruct: tipos_asig: cont_#");:}
+                   | contenido_string                               {:System.out.println("[S] substruct: tipos_asig: cont_S");:}
                    /*si me dan conflicto cont# y contS, entonces agregaré numeros y contenido variable, porque eli cont#, pues val# sería generado por contS [según lo que diría el msje].. lo malo es que no lo genera completamente sino solo las sumas... en todo caso lo que tendría que hacer es dejar solo strings, puesto que es menos probable que ad*/
-                   | contenido_char                                 {:System.out.println("[S] substruct: tipo_asig: contC");:} 
-                   | contenido_boolean                              {:System.out.println("[S] substruct: tipo_asig: contB");:}  
-                   | contenido_object                               {:System.out.println("[S] substruct: tipo_asig: contOc");:}
-                   | contenido_objeto                               {:System.out.println("[S] substruct: tipo_asig: contO");:}
+                   | contenido_char                                 {:System.out.println("[S] substruct: tipo_asig: cont_C");:} 
+                   | contenido_boolean                              {:System.out.println("[S] substruct: tipo_asig: cont_B");:}  
+                   | contenido_object                               {:System.out.println("[S] substruct: tipo_asig: cont_Oc");:}
+                   | contenido_objeto                               {:System.out.println("[S] substruct: tipo_asig: cont_O");:}
                    //| cuerpo_invocacion_var                          {:System.out.println("[S] substruct: tipo_asig: invoc_var");:}  //no por los conflictos que se generan con cont_#...
-                   | THIS PUNTO cuerpo_invocacion_var                     {:System.out.println("[S] substruct: tipo_asig: THIS. invoc_var");:}
+                   | THIS PUNTO cuerpo_invocacion_var               {:System.out.println("[S] substruct: tipo_asig: THIS. invoc_var");:}
                    | cuerpo_invocacion_metodo                       {:System.out.println("[S] substruct: tipo_asig: invoc_met");:}
-                   | THIS PUNTO cuerpo_invocacion_metodo                  {:System.out.println("[S] substruct: tipo_asig: THIS. invoc_met");:}
+                   | THIS PUNTO cuerpo_invocacion_metodo            {:System.out.println("[S] substruct: tipo_asig: THIS. invoc_met");:}
                    /*contenido_variable//no pongo cont_var puesto que contenido# permite esto porque devuelve 1 nombre [y tb numero, pero en este caso interesa más lo de nombre xD]*/
                    ;
 
@@ -379,10 +379,10 @@ opciones_autoincremento ::= opciones_autoIncreMas                               
                           | DIV IGUAL contenido_numero                            {:System.out.println("[S] substruct: autoincre: /=");:}
                           ;
 
-opciones_autoIncreMas ::= MAS IGUAL contenido_numero/*_X_*/                                {:System.out.println("[S] substruct: autoincre: += [val#]");:}
+opciones_autoIncreMas ::= MAS IGUAL contenido_numero/*_X_*/                             {:System.out.println("[S] substruct: autoincre: += [val#]");:}
                         /*si da conflicto, entonces giual que en asignación, dejarásn ContS, eli cont#, add numeros y contenido variable, NO porque así evitaría las operaciones...*/
                         /* entonces en todo caso solo deja contenido_numero y cadena aunque en realidad se puede usar concat...*/
-                        | MAS IGUAL contenido_string                            {:System.out.println("[S] substruct: autoincre: += [cont_S]");:}
+                        | MAS IGUAL contenido_string                                    {:System.out.println("[S] substruct: autoincre: += [cont_S]");:}
                         ;
 
 ciclo ::= ciclo_for                                                                                                  {:System.out.println("[S] estructura: ciclo: FOR");:}
@@ -430,12 +430,12 @@ invocacion ::= cuerpo_invocacion_metodo PUNTO_COMA                         {:Sys
 
 cuerpo_invocacion_var ::= NOMBRE PUNTO cuerpo_invocacion_var                                                                         {:System.out.println("[S] estructura: cuerpo_invocacion_V [recursi var]");:}             
                         | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C PUNTO cuerpo_invocacion_var                                 {:System.out.println("[S] estructura: cuerpo_invocacion_V [recursi met]");:}             
-                        | NOMBRE                                                                                                     {:System.out.println("[S] estructura: cuerpo_invocacion_V [var]");:}             
+                        | NOMBRE                                                                                                     {:System.out.println("[S] estructura: cuerpo_invocacion_V [only var]");:}             
                         ;
 
 cuerpo_invocacion_metodo ::= NOMBRE PUNTO cuerpo_invocacion_metodo                                                                   {:System.out.println("[S] estructura: cuerpo_invocacion_M [recursi var]");:}                
                            | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C PUNTO cuerpo_invocacion_metodo                           {:System.out.println("[S] estructura: cuerpo_invocacion_M [recursi met]");:}             
-                           | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C                                                          {:System.out.println("[S] estructura: cuerpo_invocacion_M [metodo]");:}             
+                           | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C                                                          {:System.out.println("[S] estructura: cuerpo_invocacion_M [only metodo]");:}             
                            ;
 
 argumentacion ::= argumentos                            {:System.out.println("[S] substruct: argumentacion [min 1 argu]");:}
