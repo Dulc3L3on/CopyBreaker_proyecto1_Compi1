@@ -167,6 +167,7 @@ contenidoComentario = ( [^*] | \*+ [^/*] )*
 //Reglas léxicas
 <YYINITIAL> "import"               {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(IIMPORT);}}
 <YYINITIAL> "new"                  {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(NEW);}}
+<YYINITIAL> "this"                  {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(THIS);}}
 <YYINITIAL> "public"               {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(PUBLIC);}}
 <YYINITIAL> "protected"            {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(PROTECTED);}}
 <YYINITIAL> "private"              {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(PRIVATE);}}

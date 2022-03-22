@@ -8,60 +8,62 @@ package Backend.Analizadores;
 /** CUP generated class containing symbol constants. */
 public class ParserSym {
   /* terminals */
-  public static final int NUMERO = 21;
-  public static final int CHAR = 14;
-  public static final int NOMBRE = 18;
-  public static final int CASE = 44;
-  public static final int DOUBLE = 12;
-  public static final int RESTA = 32;
-  public static final int DOS_PUNTOS = 29;
-  public static final int PRIVATE = 9;
-  public static final int INT = 11;
-  public static final int LLAVE_C = 28;
-  public static final int ASTERISCO = 26;
-  public static final int FOR = 38;
-  public static final int LLAVE_A = 27;
-  public static final int IGUAL = 35;
-  public static final int CARACTER = 23;
-  public static final int OBJECT = 16;
+  public static final int NUMERO = 22;
+  public static final int CHAR = 15;
+  public static final int NOMBRE = 19;
+  public static final int CASE = 45;
+  public static final int DOUBLE = 13;
+  public static final int RESTA = 33;
+  public static final int DOS_PUNTOS = 30;
+  public static final int PRIVATE = 10;
+  public static final int INT = 12;
+  public static final int LLAVE_C = 29;
+  public static final int ASTERISCO = 27;
+  public static final int FOR = 39;
+  public static final int LLAVE_A = 28;
+  public static final int IGUAL = 36;
+  public static final int CARACTER = 24;
+  public static final int OBJECT = 17;
   public static final int CLASS = 3;
-  public static final int DIV = 34;
-  public static final int IF = 41;
-  public static final int PUNTO_COMA = 24;
+  public static final int DIV = 35;
+  public static final int IF = 42;
+  public static final int THIS = 4;
+  public static final int PUNTO_COMA = 25;
   public static final int EOF = 0;
-  public static final int BOOLEAN = 15;
-  public static final int RETURN = 5;
-  public static final int NEW = 4;
+  public static final int BOOLEAN = 16;
+  public static final int RETURN = 6;
+  public static final int NEW = 5;
   public static final int error = 1;
-  public static final int COMA = 30;
-  public static final int CADENA = 20;
-  public static final int MENOS = 33;
-  public static final int BREAK = 6;
-  public static final int OPERADOR_LOGICO = 47;
-  public static final int VOID = 19;
-  public static final int SWITCH = 43;
-  public static final int NO = 48;
-  public static final int OPERADOR_RELACIONAL = 46;
-  public static final int ELSE = 42;
-  public static final int PROTECTED = 8;
-  public static final int PUNTO = 25;
-  public static final int PARENTESIS_C = 37;
-  public static final int WHILE = 39;
-  public static final int FINAL = 10;
-  public static final int PARENTESIS_A = 36;
-  public static final int DEFAULT = 45;
-  public static final int PUBLIC = 7;
+  public static final int COMA = 31;
+  public static final int CADENA = 21;
+  public static final int MENOS = 34;
+  public static final int BREAK = 7;
+  public static final int OPERADOR_LOGICO = 48;
+  public static final int VOID = 20;
+  public static final int SWITCH = 44;
+  public static final int NO = 49;
+  public static final int OPERADOR_RELACIONAL = 47;
+  public static final int ELSE = 43;
+  public static final int PROTECTED = 9;
+  public static final int PUNTO = 26;
+  public static final int PARENTESIS_C = 38;
+  public static final int WHILE = 40;
+  public static final int FINAL = 11;
+  public static final int PARENTESIS_A = 37;
+  public static final int DEFAULT = 46;
+  public static final int PUBLIC = 8;
   public static final int IIMPORT = 2;
-  public static final int BOOLEANO = 22;
-  public static final int STRING = 13;
-  public static final int OBJETO = 17;
-  public static final int DO = 40;
-  public static final int MAS = 31;
+  public static final int BOOLEANO = 23;
+  public static final int STRING = 14;
+  public static final int OBJETO = 18;
+  public static final int DO = 41;
+  public static final int MAS = 32;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
   "IIMPORT",
   "CLASS",
+  "THIS",
   "NEW",
   "RETURN",
   "BREAK",

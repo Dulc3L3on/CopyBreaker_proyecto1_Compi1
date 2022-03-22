@@ -12,6 +12,7 @@ import jdk.nashorn.api.tree.BreakTree;
  * @author phily
  */
 public class PruebasSintaxis {
+    int varGlobal =5;
     
     PruebasSintaxis (){
         
@@ -649,6 +650,19 @@ public void probarConcatenacion(int numero){
 //boolean puede aparecer 1 sola vez
     //y solo puede estar él antes del string, nada más, ni siquiera los que pueden
     //estar más de una vez...
+
+public void pruebasAsignacion(){
+   this.getPruebasSintaxis().varGlobal = 3;
+   //this.getPruebasSintaxis()= new PruebasSintaxis();//yo me recuerdo que el inge Moi hizo algo así y le funcionaba...
+}
+
+public PruebasSintaxis getPruebasSintaxis(){
+    return new PruebasSintaxis();
+}
+
+public int getVar(){
+    return varGlobal;
+}
 
 
 }

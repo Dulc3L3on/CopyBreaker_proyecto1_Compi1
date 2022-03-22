@@ -22,7 +22,7 @@ parser code {:/*código que modifica el comportamiento del parser [sobreescribie
 :}/*este si puede ser accedido desde el código...*/
 
 /*2. terminales*/
-terminal IIMPORT, CLASS, NEW, RETURN, BREAK;
+terminal IIMPORT, CLASS, THIS, NEW, RETURN, BREAK;
 terminal PUBLIC, PROTECTED, PRIVATE, FINAL, INT, DOUBLE, STRING, CHAR, BOOLEAN, OBJECT, OBJETO, NOMBRE, VOID;
 terminal CADENA, NUMERO, BOOLEANO, CARACTER;/*hace falta objeto, pero aún no tengo imple como hacerlo por eso no lo add*/
 terminal PUNTO_COMA, PUNTO, ASTERISCO, LLAVE_A, LLAVE_C, DOS_PUNTOS, COMA;
@@ -33,7 +33,7 @@ terminal OPERADOR_RELACIONAL, OPERADOR_LOGICO, NO;
 /*3. no terminales*/
 non terminal inicio;
 non terminal imports, iimport, direccion;
-non terminal visibilidad, clase, def_clase, /*cuerpo_clase,*/ bloque_clase, sentencias_clase;
+non terminal visibilidad, clase, def_clase, bloque_clase, sentencias_clase;
 non terminal def_variable, def_tipo_variable;
 non terminal creacion_variable_numero, variable_numero, creacion_variable_string, variable_string, creacion_variable_char, variable_char;
 non terminal creacion_variable_boolean, variable_boolean, creacion_variable_object, variable_object, creacion_variable_objeto, variable_objeto;
@@ -44,7 +44,7 @@ non terminal asignacion, tipos_asignacion;
 non terminal contenido_variable, contenido_numero, contenido_string, permitidos, cualquier_contenido, opciones_cualquier_contenido, strings, contenido_char, contenido_boolean, contenido_object, contenido_objeto;
 non terminal operacion_unaria, incremento, autoincremento, opciones_autoincremento, opciones_autoIncreMas;
 non terminal ciclo, ciclo_for, asignacion_for, asignacion_completa_for, condiciones_for, incremento_for;
-non terminal invocacion, argumentacion, argumentos, argumento;
+non terminal invocacion, cuerpo_invocacion_var, cuerpo_invocacion_metodo, argumentacion, argumentos, argumento;
 non terminal sentencia_control, sentencia_if, sentencia_switch, cuerpo_switch, casos_normales, caso, caso_default, contenido_switch;
 non terminal condicion, opcion_condicion, contenido_bool, contenido_condicion;
 non terminal negaciones;
@@ -275,8 +275,11 @@ sentencias ::= def_variable                                {:System.out.println(
              | operacion_unaria PUNTO_COMA                 {:System.out.println("[S] sentencias bloque: operacion_unaria");:}
              ;
 
-asignacion ::= NOMBRE IGUAL tipos_asignacion PUNTO_COMA                       {:System.out.println("[S] estructura: asignacion");:}
-             ;
+asignacion ::= cuerpo_invocacion_var IGUAL tipos_asignacion PUNTO_COMA                       {:System.out.println("[S] estructura: asignacion");:}
+             | THIS PUNTO cuerpo_invocacion_var IGUAL tipos_asignacion PUNTO_COMA                       {:System.out.println("[S] estructura: asignacion");:}
+            // | cuerpo_invocacion_metodo IGUAL tipos_asignacion PUNTO_COMA                       {:System.out.println("[S] estructura: asignacion");:}
+            // | THIS cuerpo_invocacion_metodo IGUAL tipos_asignacion PUNTO_COMA                       {:System.out.println("[S] estructura: asignacion");:}
+             ;//yo me recordaba que se puede asignar a un método get, porque el inge Moi lo hizo, pero no me sale al probar en ajva :v xD
 
 tipos_asignacion ::= contenido_numero                               {:System.out.println("[S] substruct: tipos_asig: cont#");:}
                    | contenido_string                               {:System.out.println("[S] substruct: tipos_asig: contS");:}
@@ -285,6 +288,10 @@ tipos_asignacion ::= contenido_numero                               {:System.out
                    | contenido_boolean                              {:System.out.println("[S] substruct: tipo_asig: contB");:}  
                    | contenido_object                               {:System.out.println("[S] substruct: tipo_asig: contOc");:}
                    | contenido_objeto                               {:System.out.println("[S] substruct: tipo_asig: contO");:}
+                   //| cuerpo_invocacion_var                          {:System.out.println("[S] substruct: tipo_asig: invoc_var");:}  //no por los conflictos que se generan con cont_#...
+                   | THIS PUNTO cuerpo_invocacion_var                     {:System.out.println("[S] substruct: tipo_asig: THIS. invoc_var");:}
+                   | cuerpo_invocacion_metodo                       {:System.out.println("[S] substruct: tipo_asig: invoc_met");:}
+                   | THIS PUNTO cuerpo_invocacion_metodo                  {:System.out.println("[S] substruct: tipo_asig: THIS. invoc_met");:}
                    /*contenido_variable//no pongo cont_var puesto que contenido# permite esto porque devuelve 1 nombre [y tb numero, pero en este caso interesa más lo de nombre xD]*/
                    ;
 
@@ -409,7 +416,7 @@ asignacion_completa_for ::= INT NOMBRE IGUAL contenido_numero PUNTO_COMA        
                           ;/*solo donde hay cont# no porque ese por sí solo permite el cont_var xD*/
 
 condiciones_for ::= contenido_boolean PUNTO_COMA                                 {:System.out.println("[S] substruct: ciclo_for: condiciones [existente]");:}
-                  /*| contenido_variable                                           {:System.out.println("substruct: ciclo_for: condiciones [con VAR]");:}*/
+                  | contenido_variable PUNTO_COMA                                {:System.out.println("[S] substruct: ciclo_for: condiciones [cont_V]");:}
                   | PUNTO_COMA                                                   {:System.out.println("[S] substruct: ciclo_for: condiciones [ninguna]");:}
                   ;
 
@@ -417,10 +424,19 @@ incremento_for ::= operacion_unaria                              {:System.out.pr
                  |                                               {:System.out.println("[S] substruct: ciclo_for: incremento [ninguna]");:}
                  ;
 
-invocacion ::= direccion PARENTESIS_A argumentacion PARENTESIS_C PUNTO_COMA                         {:System.out.println("[S] estructura: invocacion [externa]");:}
-             | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C PUNTO_COMA                            {:System.out.println("[S] estructura: invocacion [interna]");:}
-             //| THIS PUNTO 
+invocacion ::= cuerpo_invocacion_metodo PUNTO_COMA                         {:System.out.println("[S] estructura: invocacion [tradicional]");:}             
+             | THIS PUNTO cuerpo_invocacion_metodo PUNTO_COMA              {:System.out.println("[S] estructura: invocacion [this]");:}
              ;
+
+cuerpo_invocacion_var ::= NOMBRE PUNTO cuerpo_invocacion_var                                                                         {:System.out.println("[S] estructura: cuerpo_invocacion_V [recursi var]");:}             
+                        | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C PUNTO cuerpo_invocacion_var                                 {:System.out.println("[S] estructura: cuerpo_invocacion_V [recursi met]");:}             
+                        | NOMBRE                                                                                                     {:System.out.println("[S] estructura: cuerpo_invocacion_V [var]");:}             
+                        ;
+
+cuerpo_invocacion_metodo ::= NOMBRE PUNTO cuerpo_invocacion_metodo                                                                   {:System.out.println("[S] estructura: cuerpo_invocacion_M [recursi var]");:}                
+                           | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C PUNTO cuerpo_invocacion_metodo                           {:System.out.println("[S] estructura: cuerpo_invocacion_M [recursi met]");:}             
+                           | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C                                                          {:System.out.println("[S] estructura: cuerpo_invocacion_M [metodo]");:}             
+                           ;
 
 argumentacion ::= argumentos                            {:System.out.println("[S] substruct: argumentacion [min 1 argu]");:}
                 |                                       {:System.out.println("[S] substruct: argumentacion [0 argu]");:}
@@ -444,7 +460,8 @@ sentencia_control ::= sentencia_if                                              
                     | sentencia_switch                                                     {:System.out.println("[S] estructura: SWITCH");:}
                     ;
 
-sentencia_if ::= IF PARENTESIS_A contenido_boolean PARENTESIS_C cuerpo_estructuras                             {:System.out.println("[S] substruct: sentencia_if");:}               
+sentencia_if ::= IF PARENTESIS_A contenido_boolean PARENTESIS_C cuerpo_estructuras                              {:System.out.println("[S] substruct: sentencia_if [cont_B]");:}               
+               | IF PARENTESIS_A contenido_variable PARENTESIS_C cuerpo_estructuras                             {:System.out.println("[S] substruct: sentencia_if [cont_V]");:}               
                ;
 
 contenido_boolean ::= negaciones PARENTESIS_A contenido_boolean PARENTESIS_C                             {:System.out.println("[S] substruct: contenido_boolean [! ( MC ) ]");:}
