@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Backend.Manejadores;
+package Backend.Objetos.Enums;
 
 /**
  *
  * @author phily
  */
-public class ManejadorInterfaz {
-    
-    
-    
+
+public enum LexerError{
+    INVALID_WORD,
+    MAYBE_YOU_MEANT;    
 }

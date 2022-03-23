@@ -23,10 +23,14 @@ public class Token implements  Serializable{//como lo que utilizaría es el lexe
         this.columna = columna;
         this.lexema = lexema;
         this.anterior = previous;
-    }
+    }     
     
     public void setSiguiente(Token next){
         this.siguiente = next;
+    }
+    
+    public String getLexema(){
+        return this.lexema;
     }
     
     public static Token parseToken(Object objeto){

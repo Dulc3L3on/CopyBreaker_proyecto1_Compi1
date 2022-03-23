@@ -1,13 +1,14 @@
 Backend/Analizadores/Lexer.class
 Backend/Manejadores/ManejadorAnalisis.class
+Backend/Objetos/Enums/LexerError.class
 com/mycompany/servidor_copybreaker/PruebasSintaxis.class
 Backend/Analizadores/Parser.class
+Backend/Objetos/Enums/SintaxError.class
+Backend/Manejadores/ManejadorErrores.class
 Backend/Analizadores/ParserSym.class
 Frontend/Log.class
-Frontend/Log$3.class
-Frontend/Log$2.class
 Backend/Objetos/Token.class
 Frontend/Log$1.class
 Backend/Objetos/TablaSimbolos.class
-Backend/Manejadores/ManejadorInterfaz.class
+Backend/Objetos/Error.class
 Backend/Analizadores/Parser$CUP$Parser$actions.class

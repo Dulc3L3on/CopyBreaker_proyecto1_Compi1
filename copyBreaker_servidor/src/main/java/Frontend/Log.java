@@ -19,6 +19,7 @@ public class Log extends javax.swing.JFrame {
      private String pathTxt_1 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba.txt";
      private String pathTxt_2 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_nivel2.txt";
      private String pathTxt_3 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_nivel3.txt";
+     private String pathTxt_withErrors = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_withErrors.txt";
      
     /**
      * Creates new form Log
@@ -27,7 +28,7 @@ public class Log extends javax.swing.JFrame {
         initComponents();
         
         
-        this.manejadorAnalisis.analizarClase(new File(pathTxt_3));
+        this.manejadorAnalisis.analizarClase(new File(pathTxt_withErrors));
         
     }
 
