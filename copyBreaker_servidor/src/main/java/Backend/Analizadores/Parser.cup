@@ -49,7 +49,7 @@ parser code {:/*código que modifica el comportamiento del parser [sobreescribie
     }
 
     protected int error_sync_size(){
-        return 2;
+        return 1;
     }/*para que establezca que con un token bien leido basta para recuperarse...   */
 
     public ArrayList<Error> getListaErrores(){
@@ -68,13 +68,13 @@ terminal OPERADOR_RELACIONAL, OPERADOR_LOGICO, NO;
 
 /*3. no terminales*/
 non terminal inicio;
-non terminal imports, iimport, direccion;
+non terminal imports, iimport, direccion_import, direccion;
 non terminal visibilidad, clase, def_clase, bloque_clase, sentencias_clase;
 non terminal def_variable, def_tipo_variable;
 non terminal creacion_variable_numero, variable_numero, creacion_variable_string, variable_string, creacion_variable_char, variable_char;
 non terminal creacion_variable_boolean, variable_boolean, creacion_variable_object, variable_object, creacion_variable_objeto, variable_objeto;
-non terminal def_metodo, cuerpo_def_metodo, def_metodo_constructor,def_metodo_tipo, cuerpo_metodo_numero, cuerpo_metodo_string, cuerpo_metodo_char, cuerpo_metodo_boolean;
-non terminal cuerpo_metodo_object, cuerpo_metodo_objeto, def_metodo_void, parametros, parametro, tipo;
+non terminal def_metodo, cuerpo_def_metodo, def_metodo_constructor, cuerpo_metodo_constructor,def_metodo_tipo, cuerpo_metodo_numero, cuerpo_metodo_string, cuerpo_metodo_char, cuerpo_metodo_boolean;
+non terminal cuerpo_metodo_object, cuerpo_metodo_objeto, def_metodo_void, cuerpo_metodo_void, parametros, parametro, tipo;
 non terminal bloque, sentencias;
 non terminal asignacion, tipos_asignacion;
 non terminal contenido_variable, contenido_numero, contenido_string, permitidos, cualquier_contenido, opciones_cualquier_contenido, strings, contenido_char, contenido_boolean, contenido_object, contenido_objeto;
@@ -106,17 +106,20 @@ inicio ::= imports clase                                    {:System.out.println
      //    | error                                            {:System.out.println("[S] error: FILE JAVA MALFORMED");:}
          ;
 
-imports ::= imports IIMPORT iimport PUNTO_COMA                       {:System.out.println("[S] estructura: import [LISTA]");:}
-          | IIMPORT iimport PUNTO_COMA                               {:System.out.println("[S] estructura: import [UNICO]");:}
-          | error:err                                                {:System.out.println("[S] error: SECTION OF IMPORTS WITH ERRORS");
+imports ::= imports iimport                                          {:System.out.println("[S] estructura: import [LISTA]");:}
+          | iimport                                                  {:System.out.println("[S] estructura: import [UNICO]");:}
+          | error:err  iimport                                       {:System.out.println("[S] error: SECTION OF IMPORTS WITH ERRORS");
                                                                        addError(Token.parseToken(err), errleft, errright, SintaxError.IMPORT_SECTION_WITH_ERRORS);:}
           ;
 
-iimport ::= direccion PUNTO ASTERISCO                         {:System.out.println("[S] estructura: direccion [con *]");:}
-          | direccion                                         {:System.out.println("[S] estructura: direccion [sin *]");:}
-          | error:err IIMPORT                                        {:System.out.println("[S] error: MALFORMED IMPORT");
-                                                                addError(Token.parseToken(err), errleft, errright, SintaxError.IMPORT_MALFORMED);:}
-          ;/*dejo el símbolo de recu aquí como IIMPORT, o vuelvo a colocar el PC en lo de arribita, o el IIMPORT, allá mismo???*/
+iimport ::= IIMPORT direccion_import PUNTO_COMA                             {:System.out.println("[S] estructura: iimport");:}
+          ;
+
+direccion_import ::= direccion PUNTO ASTERISCO                         {:System.out.println("[S] estructura: direccion_import [con *]");:}
+                   | direccion                                         {:System.out.println("[S] estructura: direccion_import [sin *]");:}
+                   | error:err                                         {:System.out.println("[S] error: MALFORMED IMPORT");
+                                                                         addError(Token.parseToken(err), errleft, errright, SintaxError.IMPORT_MALFORMED);:}
+                   ;/*dejo el símbolo de recu aquí como IIMPORT, o vuelvo a colocar el PC en lo de arribita, o el IIMPORT, allá mismo???*/
 
 direccion ::= direccion PUNTO NOMBRE                          {:System.out.println("[S] substruct: direccion: LISTA");:}
             | NOMBRE PUNTO NOMBRE                             {:System.out.println("[S] substruct: direccion: PAREJA");:}
@@ -148,7 +151,7 @@ bloque_clase ::= bloque_clase sentencias_clase                             {:Sys
 
 sentencias_clase ::= def_variable                                          {:System.out.println("[S] sentencia clases: def_var");:}
                    | def_metodo                                            {:System.out.println("[S] sentencia clases: def_metodo");:}
-          //         | error                                                 {:System.out.println("[S] error: SENTENCE EXPECTED: definición de variable o método");:}
+        //           | error                                                 {:System.out.println("[S] error: SENTENCE EXPECTED: definición de variable o método");:}
                    ;
 
 def_variable ::= visibilidad def_tipo_variable PUNTO_COMA                             {:System.out.println("[S] estructura: def_variable [visible]");:}
@@ -170,7 +173,7 @@ def_tipo_variable ::= INT creacion_variable_numero                              
 
 creacion_variable_numero ::= creacion_variable_numero COMA variable_numero                       {:System.out.println("[S] substruct: creacion_var_numero: LISTA");:}
                            | variable_numero                                                     {:System.out.println("[S] substruct: creacion_var_numero: UNICA");:}
-                           | error:err PUNTO_COMA                                                {:System.out.println("[S] error: BAD NUMBER VAR CREATION");
+                           | error:err variable_numero                                           {:System.out.println("[S] error: BAD NUMBER VAR CREATION");
                                                                                                    addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_NUMBER_VAR_CREATION);:}
                            ;/*teríamos COMA, pero con ese no analizaba nada después del error, al menos con PC, ya analiza, un poco mucho tarde xD, pero al menos ya lo hace xD*/
 
@@ -182,7 +185,7 @@ variable_numero ::= NOMBRE IGUAL contenido_numero                       {:System
 
 creacion_variable_string ::= creacion_variable_string COMA variable_string                          {:System.out.println("[S] substruct: creacion_var_string: LISTA");:}
                            | variable_string                                                        {:System.out.println("[S] substruct: creacion_var_string: UNICA");:}
-                           | error:err PUNTO_COMA                                                         {:System.out.println("[S] error: BAD STRING VAR CREATION");
+                           | error:err variable_string                                              {:System.out.println("[S] error: BAD STRING VAR CREATION");
                                                                                                       addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_STRING_VAR_CREATION);:}
                            ;
 
@@ -195,7 +198,7 @@ variable_string ::= NOMBRE IGUAL contenido_variable                      {:Syste
 
 creacion_variable_char ::= creacion_variable_char COMA variable_char                              {:System.out.println("[S] substruct: creacion_var_char: LISTA");:}
                          | variable_char                                                          {:System.out.println("[S] substruct: creacion_var_char: UNICA");:}
-                         | error:err PUNTO_COMA                                                         {:System.out.println("[S] error: BAD CHAR VAR CREATION");
+                         | error:err variable_char                                                {:System.out.println("[S] error: BAD CHAR VAR CREATION");
                                                                                                     addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_CHAR_VAR_CREATION);:}
                          ;
 
@@ -207,7 +210,7 @@ variable_char ::= NOMBRE IGUAL contenido_variable                         {:Syst
 
 creacion_variable_boolean ::= creacion_variable_boolean COMA variable_boolean                      {:System.out.println("[S] substruct: creacion_var_boolean: LISTA");:}
                            | variable_boolean                                                      {:System.out.println("[S] substruct: creacion_var_boolean: UNICA");:}
-                           | error:err PUNTO_COMA                                                        {:System.out.println("[S] error: BAD BOOLEAN VAR CREATION");
+                           | error:err variable_boolean                                            {:System.out.println("[S] error: BAD BOOLEAN VAR CREATION");
                                                                                                       addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_BOOLEAN_VAR_CREATION);:}
                            ;
 
@@ -219,7 +222,7 @@ variable_boolean ::= NOMBRE IGUAL contenido_variable                       {:Sys
 
 creacion_variable_object ::= creacion_variable_object COMA variable_object                       {:System.out.println("[S] substruct: creacion_var_object: LISTA");:}
                            | variable_object                                                     {:System.out.println("[S] substruct: creacion_var_object: UNICA");:}
-                           | error:err PUNTO_COMA                                                      {:System.out.println("[S] error: BAD OBJECT VAR CREATION");
+                           | error:err variable_object                                           {:System.out.println("[S] error: BAD OBJECT VAR CREATION");
                                                                                                    addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_OBJECT_VAR_CREATION);:}
                            ;
 
@@ -232,7 +235,7 @@ variable_object ::= NOMBRE IGUAL contenido_variable                         {:Sy
 
 creacion_variable_objeto ::= creacion_variable_objeto COMA variable_objeto                       {:System.out.println("[S] substruct: creacion_var_objetO: LISTA");:}
                            | variable_objeto                                                     {:System.out.println("[S] substruct: creacion_var_objetO: UNICA");:}
-                           | error:err PUNTO_COMA                                                      {:System.out.println("[S] error: BAD CUSTOM OBJECT VAR CREATION");
+                           | error:err variable_objeto                                           {:System.out.println("[S] error: BAD CUSTOM OBJECT VAR CREATION");
                                                                                                    addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_CUSTOM_OBJECT_VAR_CREATION);:}
                            ;
 
@@ -244,20 +247,25 @@ variable_objeto ::= NOMBRE IGUAL contenido_variable                         {:Sy
 
 def_metodo ::= visibilidad cuerpo_def_metodo                           {:System.out.println("[S] estructura: def_metodo [visible]");:}
              | cuerpo_def_metodo                                       {:System.out.println("[S] estructura: def_metodo [invisible]");:}
-             | error:err                                               {:System.out.println("[S] error: BAD METHOD|CONSTRUCTOR DEFINITION");
-                                                                         addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_METHOD_DECLARATION);:}
-             ;
+       //      | error:err                                               {:System.out.println("[S] error: BAD METHOD|CONSTRUCTOR DEFINITION");
+       //                                                                  addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_METHOD_DECLARATION);:}
+             ;//vamos a dejar la RP de error de cuerpo_def_metodo en lugar de esta, quedaríamos en una sit simi a lo que tenemos en var xD
 
-cuerpo_def_metodo ::= OBJETO PARENTESIS_A parametros PARENTESIS_C def_metodo_constructor                     {:System.out.println("[S] substruct: def_metodo_constructor");:}
-                    | def_metodo_tipo                                                                        {:System.out.println("[S] substruct: def_metodo_TIPO");:}
-                    | VOID NOMBRE def_metodo_void                                                            {:System.out.println("[S] substruct: def_metodo_VOID");:}                    
-             //       | error                                                                                  {:System.out.println("[S] error: METHOD CREATION EXPECTED constructor|method [INT, DOUBLE, STRING, BOOLEAN, CHAR|OBJECT|OBJETO|VOID]");:}
+cuerpo_def_metodo ::= def_metodo_constructor                           {:System.out.println("[S] substruct: cuerpo_def_metodo: def_metodo_constructor");:}
+                    | def_metodo_tipo                                  {:System.out.println("[S] substruct: cuerpo_def_metodo: def_metodo_TIPO");:}
+                    | def_metodo_void                                  {:System.out.println("[S] substruct: cuerpo_def_metodo: def_metodo_VOID");:}                    
+                    | error:err                                        {:System.out.println("[S] error: METHOD CREATION EXPECTED constructor|method [INT, DOUBLE, STRING, BOOLEAN, CHAR|OBJECT|OBJETO|VOID]");
+                                                                         addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_METHOD_BODY_DECLARATION);:}
                     ;
 
-def_metodo_constructor ::= LLAVE_A bloque LLAVE_C                              {:System.out.println("[S] substruct: no_void [cuerpo_cnstrct [CB]]");:}
-                         | LLAVE_A LLAVE_C                                     {:System.out.println("[S] substruct: no_void [cuerpo_cnstrct [SB]]");:}    
-       //                  | error                                               {:System.out.println("[S] error: NO CONSTRUCTOR BODY DEFINED");:}
+def_metodo_constructor ::= OBJETO PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_constructor                     {:System.out.println("[S] substruct: def_metodo_constructor");:}
                          ;
+
+cuerpo_metodo_constructor ::= LLAVE_A bloque LLAVE_C                              {:System.out.println("[S] substruct: no_void [cuerpo_cnstrct [CB]]");:}
+                            | LLAVE_A LLAVE_C                                     {:System.out.println("[S] substruct: no_void [cuerpo_cnstrct [SB]]");:}    
+                            | error:err LLAVE_C                                   {:System.out.println("[S] error: NO CONSTRUCTOR BODY DEFINED");
+                                                                                    addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_CONSTRUCTOR_BODY_DECLARATION);:}
+                            ;
 
 def_metodo_tipo ::= INT NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero                              {:System.out.println("[S] substruct: def_metodo_tipo: INT");:}
                   | DOUBLE NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero                           {:System.out.println("[S] substruct: def_metodo_tipo: DOUBLE");:}
@@ -275,7 +283,7 @@ cuerpo_metodo_numero ::= LLAVE_A bloque retorno_numero LLAVE_C                  
                        | LLAVE_A retorno_char LLAVE_C                                        {:System.out.println("[S] substruct: cuerpo_metodo_# [SB, CR_C]");:}                        
                        /*estos últimos dos puesto que ambos permiten devolver char... lo de double no permitido en int lo debería revisar sem sea que se coloque a éstos últimos o no xD*/
                        | error:err LLAVE_C                                                   {:System.out.println("[S] error: BAD DEFINITION OF NUMBER [INT|DOUBLE] METHOD BODY");
-                                                                                               addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_NUMBER_METHOD_DECLARATION);:}
+                                                                                               addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_NUMBER_BODY_DECLARATION);:}
                        ;
 
 cuerpo_metodo_string ::= LLAVE_A bloque retorno_variable LLAVE_C                     {:System.out.println("[S] substruct: cuerpo_metodo_string [CB, CR_var]");:}
@@ -283,7 +291,7 @@ cuerpo_metodo_string ::= LLAVE_A bloque retorno_variable LLAVE_C                
                        | LLAVE_A bloque retorno_string LLAVE_C                       {:System.out.println("[S] substruct: cuerpo_metodo_string [CB, CR_S]");:}
                        | LLAVE_A retorno_string LLAVE_C                              {:System.out.println("[S] substruct: cuerpo_metodo_string [SB, CR_S]");:}
                        | error:err LLAVE_C                                           {:System.out.println("[S] error: BAD DEFINITION STRING OF METHOD BODY");
-                                                                                       addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_STRING_METHOD_DECLARATION);:}
+                                                                                       addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_STRING_BODY_DECLARATION);:}
                        ;
 
 cuerpo_metodo_char ::=  LLAVE_A bloque retorno_variable LLAVE_C                  {:System.out.println("[S] substruct: cuerpo_metodo_char [CB, CR_var]");:}
@@ -291,7 +299,7 @@ cuerpo_metodo_char ::=  LLAVE_A bloque retorno_variable LLAVE_C                 
                      | LLAVE_A bloque retorno_char LLAVE_C                       {:System.out.println("[S] substruct: cuerpo_metodo_char [CB, CR_C]");:}
                      | LLAVE_A retorno_char LLAVE_C                              {:System.out.println("[S] substruct: cuerpo_metodo_char [SB, CR_C]");:} 
                      | error:err LLAVE_C                                         {:System.out.println("[S] error: BAD DEFINITION CHAR OF METHOD BODY");
-                                                                                   addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_CHAR_METHOD_DECLARATION);:}                 
+                                                                                   addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_CHAR_BODY_DECLARATION);:}                 
                      ;/*aquí si no voy a colocar que puede deolver# porque tb estaría permitiendo retornar doubles...                  */
                 
 cuerpo_metodo_boolean ::= LLAVE_A bloque retorno_variable LLAVE_C                {:System.out.println("[S] substruct: cuerpo_metodo_char [CB, CR_var]");:}
@@ -299,7 +307,7 @@ cuerpo_metodo_boolean ::= LLAVE_A bloque retorno_variable LLAVE_C               
                         | LLAVE_A bloque retorno_boolean LLAVE_C                 {:System.out.println("[S] substruct: cuerpo_metodo_char [CB, CR_B]");:}
                         | LLAVE_A retorno_boolean LLAVE_C                        {:System.out.println("[S] substruct: cuerpo_metodo_char [SB, CR_B]");:}
                         | error:err LLAVE_C                                      {:System.out.println("[S] error: BAD DEFINITION OF BOOLEAN METHOD BODY");
-                                                                                   addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_BOOLEAN_METHOD_DECLARATION);:}
+                                                                                   addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_BOOLEAN_BODY_DECLARATION);:}
                         ;
 
 cuerpo_metodo_object ::= LLAVE_A bloque retorno_variable LLAVE_C                 {:System.out.println("[S] substruct: cuerpo_metodo_object [CB, CR_var]");:}
@@ -311,7 +319,7 @@ cuerpo_metodo_object ::= LLAVE_A bloque retorno_variable LLAVE_C                
                        | LLAVE_A bloque retorno_string LLAVE_C                   {:System.out.println("[S] substruct: cuerpo_metodo_object [CB, CR_S]");:}
                        | LLAVE_A retorno_string LLAVE_C                          {:System.out.println("[S] substruct: cuerpo_metodo_object [SB, CR_S]");:}
                        | error:err LLAVE_C                                       {:System.out.println("[S] error: BAD DEFINITION OF OBJECT METHOD BODY");
-                                                                                   addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_OBJECT_METHOD_DECLARATION);:}
+                                                                                   addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_OBJECT_BODY_DECLARATION);:}
                        /*Si los ultimos 4 [los de string más que los de objeto] dan conflictos, auqneu yo creería que no, quítalos xD, puest el caso normal y que esperarían ya lo tienes xD*/
                        ;
 
@@ -320,21 +328,24 @@ cuerpo_metodo_objeto ::= LLAVE_A bloque retorno_variable LLAVE_C                
                        | LLAVE_A bloque retorno_objeto LLAVE_C                    {:System.out.println("[S] substruct: cuerpo_metodo_objeto [CB, CR_O]");:}
                        | LLAVE_A retorno_objeto LLAVE_C                           {:System.out.println("[S] substruct: cuerpo_metodo_objeto [SB, CR_O]");:}                       
                        | error:err LLAVE_C                                        {:System.out.println("[S] error: BAD DEFINITION OF CUSTOM OBJECT METHOD BODY");
-                                                                                    addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_OBJETO_METHOD_DECLARATION);:}
+                                                                                    addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_OBJETO_BODY_DECLARATION);:}
                        ;
 
-def_metodo_void ::= PARENTESIS_A parametros PARENTESIS_C LLAVE_A bloque RETURN PUNTO_COMA LLAVE_C                       {:System.out.println("[S] substruct: def_metodo_void [CB, CR]");:}
-                  | PARENTESIS_A parametros PARENTESIS_C LLAVE_A bloque LLAVE_C                                         {:System.out.println("[S] substruct: def_metodo_void [CB, SR]");:}             
-                  | PARENTESIS_A parametros PARENTESIS_C LLAVE_A RETURN PUNTO_COMA LLAVE_C                              {:System.out.println("[S] substruct: def_metodo_void [SB, CR]");:}
-                  | PARENTESIS_A parametros PARENTESIS_C LLAVE_A LLAVE_C                                                {:System.out.println("[S] substruct: def_metodo_void [SB, SR]");:}
-                  | error:err LLAVE_C                                                                                   {:System.out.println("[S] error: BAD DEFINITION OF VOID METHOD BODY");
-                                                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_VOID_METHOD_DECLARATION);:}
+def_metodo_void ::= VOID NOMBRE cuerpo_metodo_void                                  {:System.out.println("[S] substruct: cuerpo_def_metodo: def_metodo_VOID");:}                    
                   ;
+
+cuerpo_metodo_void ::= PARENTESIS_A parametros PARENTESIS_C LLAVE_A bloque RETURN PUNTO_COMA LLAVE_C                       {:System.out.println("[S] substruct: def_metodo_void [CB, CR]");:}
+                     | PARENTESIS_A parametros PARENTESIS_C LLAVE_A bloque LLAVE_C                                         {:System.out.println("[S] substruct: def_metodo_void [CB, SR]");:}             
+                     | PARENTESIS_A parametros PARENTESIS_C LLAVE_A RETURN PUNTO_COMA LLAVE_C                              {:System.out.println("[S] substruct: def_metodo_void [SB, CR]");:}
+                     | PARENTESIS_A parametros PARENTESIS_C LLAVE_A LLAVE_C                                                {:System.out.println("[S] substruct: def_metodo_void [SB, SR]");:}
+                     | error:err LLAVE_C                                                                                   {:System.out.println("[S] error: BAD DEFINITION OF VOID METHOD BODY");
+                                                                                                                             addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_VOID_BODY_DECLARATION);:}
+                     ;/*deplano que le vamos a dejar la Llave_C... porque si se la quito observé con lo de {{ que sigue diciendo que hay error después con la invoc de vars...*/
 
 parametros ::= parametros COMA parametro                               {:System.out.println("[S] substruct: parametros: LISTA");:}
              | parametro                                               {:System.out.println("[S] substruct: parametros: UNICO");:}
              |                                                         {:System.out.println("[S] substruct: parametros: ninguno");:}/*a menos que tb lo llame como forma de finalizar la lista, aunque yo pienso que no debería xD*/
-             | error:err COMA                                          {:System.out.println("[S] error: PARAM OR LIST OF THEM WITH ERRORS");
+             | error:err                                               {:System.out.println("[S] error: PARAM OR LIST OF THEM WITH ERRORS");
                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_PARAM_LIST);:}
              ;
 
@@ -555,7 +566,7 @@ argumentacion ::= argumentos                            {:System.out.println("[S
 
 argumentos ::= argumentos COMA argumento                               {:System.out.println("[S] substruct: argumentos [+ 1 argu]");:}
              | argumento                                               {:System.out.println("[S] substruct: argumentos [1 argu]");:}
-             | error:err COMA                                          {:System.out.println("[S] error: EXPECTED 1 OR ARGUMENTS LIST");
+             | error:err                                               {:System.out.println("[S] error: EXPECTED 1 OR ARGUMENTS LIST");
                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.ARGUMENTS_SECTION_WITH_ERRORS);:}
              ;
     
