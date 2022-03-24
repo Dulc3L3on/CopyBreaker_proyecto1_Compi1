@@ -23,7 +23,7 @@ public class Comentario {
     //Estos métodos asString es para que se pueda formar
     //lo que contiene cada {} del JSON
     public String asString(){
-        return "Texto: \""+ this.texto + "\"";
+        return "{ Texto: \""+ this.texto + "\" }";
     }
     
     

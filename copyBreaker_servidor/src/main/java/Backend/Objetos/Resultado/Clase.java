@@ -22,7 +22,7 @@ public class Clase {
     
     //esto es para crea el JSON, porque los reportes, req el valor en sí, sin formatos xD
     public String asString(){
-        return "{ Nombre: \""+nombre+"\"";
+        return "{ Nombre: \""+nombre+"\" }";
     }//puesto que cunado piden RESULT.Clase, piden el obj, entonces soy libre de mostrarlo así xD
     
 }

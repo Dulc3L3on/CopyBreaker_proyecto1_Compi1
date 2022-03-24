@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @author phily
  */
 public class RESULT {
-    private int score;
+    private double score = 0;
     private ArrayList<Clase> clases;
     private ArrayList<Comentario> comentarios;
     private ArrayList<Variable> variables;
@@ -41,99 +41,80 @@ public class RESULT {
         this.metodos.add(metodo);
     }
 
-    public int getScore() {
-        return score;
+    public void addSubScore(int repetidos, int total){
+        if(total > 0){
+            this.score += ((repetidos/total)*0.25);
+        }        
     }
-
+    
     public Clase getClase(int posicion){
-        return clases.get(posicion);
+        return this.clases.get(posicion);
+    }
+    
+    public ArrayList<Clase> getClases() {
+        return clases;
     }
 
     public Comentario getComentario(int posicion){
-        return comentarios.get(posicion);
+        return this.comentarios.get(posicion);
+    }
+    
+    public ArrayList<Comentario> getComentarios() {
+        return comentarios;
     }
 
     public Variable getVariable(int posicion) {
-        return variables.get(posicion);
+        return this.variables.get(posicion);
+    }
+    
+    public ArrayList<Variable> getVariables(){
+        return this.variables;
     }
 
     public Metodo getMetodo(int posicion){
-        return metodos.get(posicion);
+        return this.metodos.get(posicion);
     }
     
     public ArrayList<Metodo> getMetodos(){
-        return metodos;
-    }
-        
-    public String getClases_RESULT(){
-        String clasesRepetidas = "";
-        
-        for (int index = 0; index < clases.size(); index++) {
-            clasesRepetidas += "["+(index+1)+"] " + clases.get(index).asString() + "\n";//quizá deba colocarse o hacerse directamente en el html, por el br, y la forma en que se especificará cómo se mostrarán los datos...
-        }        
-        return clasesRepetidas;
+        return this.metodos;
     }    
-    
-    public String getComentarios_RESULT(){
-        String comentariosRepetidos = "";
-        
-        for (int index = 0; index < comentarios.size(); index++) {
-            comentariosRepetidos += "["+(index+1)+"] " + comentarios.get(index).asString() + "\n";//quizá deba colocarse o hacerse directamente en el html, por el br, y la forma en que se especificará cómo se mostrarán los datos...
-        }        
-        return comentariosRepetidos;
-    }
-    
-    public String getVariables_RESULT(){
-        String variablesRepetidas = "";
-        
-        for (int index = 0; index < variables.size(); index++) {
-            variablesRepetidas += "["+(index+1)+"] " + variables.get(index).asString() + "\n";//quizá deba colocarse o hacerse directamente en el html, por el br, y la forma en que se especificará cómo se mostrarán los datos...
-        }        
-        return variablesRepetidas;
-    }
-    
-    public String getMetodos_RESULT(){
-        String metodosRepetidos = "";
-        
-        for (int index = 0; index < metodos.size(); index++) {
-            metodosRepetidos += "["+(index+1)+"] " + metodos.get(index).asString() + "\n";//quizá deba colocarse o hacerse directamente en el html, por el br, y la forma en que se especificará cómo se mostrarán los datos...
-        }        
-        return metodosRepetidos;
-    }
 
-    //método para formar el JSON
-    public String getClases_JSON(){
+    public double getScore() {
+        return this.score;
+    }        
+    
+    public String getClassObjects(boolean esParaReporte){
         String clasesRepetidas = "";
         
         for (Clase clase : clases) {
-            clasesRepetidas += clase.asString();//puesto que ya tienen incluidos las {} xD
+            clasesRepetidas += clase.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
         }        
         return clasesRepetidas;
     }
     
-    public String getComentarios_JSON(){
+    public String getCommentsObjects(boolean esParaReporte){
         String cometariosRepetidos = "";
         
         for (Comentario comentario : comentarios) {
-            cometariosRepetidos += comentario.asString();//puesto que ya tienen incluidos las {} xD
+            cometariosRepetidos += comentario.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
         }        
         return cometariosRepetidos;
     }
     
-    public String getVariables_JSON(){
+    public String getVariablesObjects(boolean esParaReporte){
         String variablesRepetidas = "";
         
         for (Variable variable : variables) {
-            variablesRepetidas += variable.asString();//puesto que ya tienen incluidos las {} xD
+            variablesRepetidas += variable.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
         }        
         return variablesRepetidas;
     }
     
-    public String getMetodos_JSON(){
+    public String getMethodObjects(boolean esParaReporte){
         String metodosRepetidos = "";
         
         for (Metodo metodo : metodos) {
-            metodosRepetidos += metodo.asString();//puesto que ya tienen incluidos las {} xD
+            metodosRepetidos += metodo.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
         }        
         return metodosRepetidos;
     }

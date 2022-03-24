@@ -1,11 +1,12 @@
+Backend/Manejadores/ComplexComparator.class
 Backend/Analizadores/Lexer.class
 Backend/Objetos/Resultado/Clase.class
 Backend/Manejadores/ManejadorAnalisis.class
 Backend/Objetos/Enums/LexerError.class
 Backend/Objetos/Resultado/Variable.class
 com/mycompany/servidor_copybreaker/PruebasSintaxis.class
+Backend/Objetos/Auxiliares/Match.class
 Backend/Analizadores/Parser.class
-Backend/Manejadores/Comparador.class
 Backend/Objetos/Resultado/Metodo.class
 Backend/Objetos/Enums/SintaxError.class
 Backend/Manejadores/ManejadorErrores.class
@@ -14,6 +15,7 @@ Frontend/Log.class
 Backend/Objetos/Resultado/RESULT.class
 Backend/Objetos/Token.class
 Frontend/Log$1.class
+Backend/Manejadores/SingleComparator.class
 Backend/Objetos/Resultado/Comentario.class
 Backend/Objetos/Error.class
 Backend/Analizadores/Parser$CUP$Parser$actions.class

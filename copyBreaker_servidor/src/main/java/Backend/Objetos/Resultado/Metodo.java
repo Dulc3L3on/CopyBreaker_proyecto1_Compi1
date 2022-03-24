@@ -12,32 +12,44 @@ import java.util.ArrayList;
  * @author phily
  */
 public class Metodo {
-    private String nombre;
     private String tipo;
-    private ArrayList<Variable> parametros;//a estos obj simplemente no se les seteará la función puesto que es obvi xD
+    private String nombre;    
+    private ArrayList<Variable> parametros;//a estos obj simplemente no se les seteará la función puesto que es obvi de donde son xD
+    private int numeroParametros;
     
-    public Metodo(String nombre, String tipo, ArrayList<Variable> parametros){
-        this.nombre = nombre;
+    public Metodo(String tipo, String nombre, ArrayList<Variable> parametros){
         this.tipo = tipo;
+        this.nombre = nombre;        
         this.parametros = parametros;
+        this.numeroParametros = this.parametros.size();
     }
-
-    public String getNombre() {
-        return nombre;
+    
+    public Metodo(String tipo, String nombre, int numeroParametros){
+        this.tipo = tipo;
+        this.nombre = nombre;        
+        this.numeroParametros = numeroParametros;
     }
 
     public String getTipo() {
         return tipo;
+    }
+    
+    public String getNombre() {
+        return nombre;
     }
 
     public ArrayList<Variable> getParametros() {
         return parametros;
     }
     
+    public int getNumeroParametros(){
+        return this.numeroParametros;
+    }
+    
     public String asString(){
-        return "Nombre: \""+ this.nombre + "\", "
+        return "{ Nombre: \""+ this.nombre + "\", "
               + "Tipo: \"" + this.tipo + "\","
-              + "Parametros: " + String.valueOf(this.parametros.size());
+              + "Parametros: " + "\"" + String.valueOf(this.parametros.size())+"\" }";
     }
     
 }
