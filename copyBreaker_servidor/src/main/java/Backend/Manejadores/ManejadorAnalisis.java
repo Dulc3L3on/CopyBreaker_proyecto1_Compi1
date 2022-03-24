@@ -7,7 +7,7 @@ package Backend.Manejadores;
 
 import Backend.Analizadores.Lexer;
 import Backend.Analizadores.Parser;
-import Backend.Objetos.TablaSimbolos;
+import Backend.Objetos.Resultado.RESULT;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -21,8 +21,8 @@ import java.util.ArrayList;
  */
 public class ManejadorAnalisis {//para mientras que estos métodos son del servidor...
  
-    public ArrayList<TablaSimbolos> analizarProyectos(ArrayList<File> clases){
-        ArrayList<TablaSimbolos> listaTablaSimbolos = new ArrayList<>();
+    public ArrayList<RESULT> analizarProyectos(ArrayList<File> clases){
+        ArrayList<RESULT> listaTablaSimbolos = new ArrayList<>();
         
         for (int claseActual = 0; claseActual < clases.size(); claseActual++) {
                 this.analizarClase(clases.get(claseActual).getAbsoluteFile());
