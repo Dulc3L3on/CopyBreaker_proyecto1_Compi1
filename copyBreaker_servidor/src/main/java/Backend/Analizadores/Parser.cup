@@ -4,6 +4,9 @@ package Backend.Analizadores;
 import java_cup.runtime.*;
 import java.util.List;
 import java.util.ArrayList;
+import Backend.Objetos.Resultado.RESULT;
+import Backend.Objetos.Resultado.Metodo;
+import Backend.Objetos.Resultado.Variable;
 import Backend.Objetos.Token;
 import Backend.Manejadores.ManejadorErrores;
 import Backend.Objetos.Error;
@@ -14,6 +17,43 @@ import Backend.Analizadores.ParserSym;
 class Parser;
 
 action code{:
+    int numeroVarsNumericas = 0;
+    int numeroVarCreadas = 0;
+
+    private void addInfoMetodo(String tipo, Object nombre){
+        addInfoRestanteVariables("metodo: "+Token.parseToken(nombre).getLexema());
+        resultParcial.addMetodo(new Metodo(tipo, Token.parseToken(nombre).getLexema(), listaParametros));
+        listaParametros.clear();
+    }
+
+    private void addInfoVariables(String tipo, Object nombre){
+        if(tipo != null){
+            resultParcial.addVariable(new Variable(tipo, Token.parseToken(nombre).getLexema()));
+        }else{
+            resultParcial.addVariable(new Variable(Token.parseToken(nombre).getLexema()));            
+        }  
+        numeroVarCreadas++;      
+    }
+
+    private void addTipoNumericoVars(String tipo){
+        ArrayList<Variable> variables = resultParcial.getVariables();
+
+        for(int actual = (variables.size()-numeroVarsNumericas); actual < variables.size(); actual++){            
+            variables.get(actual).setTipo(tipo);                                
+        }
+        numeroVarsNumericas = 0;
+    }
+
+    private void addInfoRestanteVariables(String funcion){
+        ArrayList<Variable> variables = resultParcial.getVariables();
+
+        for(int actual = (variables.size()-numeroVarCreadas); actual < variables.size(); actual++){         
+            variables.get(actual).setFuncion(" ", funcion);
+        }
+        
+        numeroVarCreadas = 0;
+    }//este se invoca en las def_var de los bloques: clase y método, puesto que ahí se completa la info...
+
     private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error        
         if(token == null){//quiere decir que no existe el T que se esperaba
             manejadorErrores.setError(new Error("", linea, columna, SintaxError.PARSER_EXPECTED, "concatExpected()"));
@@ -28,7 +68,7 @@ action code{:
         String lista = "";
 
         for(int idActual = 0; idActual < tokensAMostrar; idActual++){
-            lista += symbl_name_from_id(expected.get(idActual)) + " ";
+            lista += symbl_name_from_id(expected.get(idActual)) + " ";//De alguna manera, esta línea da ArrayIndexOutBoundsEx...
         }
         return lista;
     }  
@@ -36,11 +76,14 @@ action code{:
 
 parser code {:/*código que modifica el comportamiento del parser [sobreescribiendo o creado métodos]    */
     private ManejadorErrores manejadorErrores;
+    private RESULT resultParcial;
+    private ArrayList<Variable> listaParametros = new ArrayList<>();
 
-    public Parser(Lexer lexer){/*nuevo constructor*/
+    public Parser(Lexer lexer, RESULT resultadoLexer, ManejadorErrores manejadorErroresLex){/*nuevo constructor*/
         super(lexer);        
 
-        manejadorErrores = new ManejadorErrores();
+        manejadorErrores = manejadorErroresLex;
+        resultParcial = resultadoLexer;//ya tiene el listado de comentarios y clase [que tiene 1 sola clase xD], agregados... aunque quizá halla un poco de riesgo, al establecer la clase en el lexer, nec que sea allá para que así se seteen sin tantas vueltas el campo función de las clases globales... de todos modos en un caso en el que todo está bien, el searlo en el lexer está bien, lo raro sucedería al haber errores xD
     }    
 
     public void report_fatal_error(String message, Object info){
@@ -51,10 +94,6 @@ parser code {:/*código que modifica el comportamiento del parser [sobreescribie
     protected int error_sync_size(){
         return 1;
     }/*para que establezca que con un token bien leido basta para recuperarse...   */
-
-    public ArrayList<Error> getListaErrores(){
-        return manejadorErrores.getListaErrores();
-    }
 :}/*este si puede ser accedido desde el código...*/
 
 /*2. terminales*/
@@ -74,7 +113,8 @@ non terminal def_variable, def_tipo_variable;
 non terminal creacion_variable_numero, variable_numero, creacion_variable_string, variable_string, creacion_variable_char, variable_char;
 non terminal creacion_variable_boolean, variable_boolean, creacion_variable_object, variable_object, creacion_variable_objeto, variable_objeto;
 non terminal def_metodo, cuerpo_def_metodo, def_metodo_constructor, cuerpo_metodo_constructor,def_metodo_tipo, cuerpo_metodo_numero, cuerpo_metodo_string, cuerpo_metodo_char, cuerpo_metodo_boolean;
-non terminal cuerpo_metodo_object, cuerpo_metodo_objeto, def_metodo_void, cuerpo_metodo_void, parametros, parametro, tipo;
+non terminal cuerpo_metodo_object, cuerpo_metodo_objeto, def_metodo_void, cuerpo_metodo_void, parametros, parametro;
+non terminal String tipo;
 non terminal bloque, sentencias;
 non terminal asignacion, tipos_asignacion;
 non terminal contenido_variable, contenido_numero, contenido_string, permitidos, cualquier_contenido, opciones_cualquier_contenido, strings, contenido_char, contenido_boolean, contenido_object, contenido_objeto;
@@ -149,7 +189,8 @@ bloque_clase ::= bloque_clase sentencias_clase                             {:Sys
        //        | error                                                     {:System.out.println("[S] error: BAD CLASS BODY");:}
                ;
 
-sentencias_clase ::= def_variable                                          {:System.out.println("[S] sentencia clases: def_var");:}
+sentencias_clase ::= def_variable                                          {:System.out.println("[S] sentencia clases: def_var");
+                                                                             addInfoRestanteVariables(resultParcial.getClase(0).getNombre());:}
                    | def_metodo                                            {:System.out.println("[S] sentencia clases: def_metodo");:}
         //           | error                                                 {:System.out.println("[S] error: SENTENCE EXPECTED: definición de variable o método");:}
                    ;
@@ -159,8 +200,10 @@ def_variable ::= visibilidad def_tipo_variable PUNTO_COMA                       
         //       | error                                                                {:System.out.println("[S] error: BAD VARIABLE DEFINITION, EXPECTED <visibility> <list vars> ;");:}
                ;//comnentamos el error de def var, porque era esta o lo de métodos, y a mi parecer es menos probable que aquí haya un error por haber colocado mal la visibilidad
 
-def_tipo_variable ::= INT creacion_variable_numero                                  {:System.out.println("[S] estructura: def_tipoVar [INT]");:}
-                    | DOUBLE creacion_variable_numero                               {:System.out.println("[S] estructura: def_tipoVar [DOUBLE]");:}
+def_tipo_variable ::= INT creacion_variable_numero                                  {:System.out.println("[S] estructura: def_tipoVar [INT]");
+                                                                                      addTipoNumericoVars("int");:}
+                    | DOUBLE creacion_variable_numero                               {:System.out.println("[S] estructura: def_tipoVar [DOUBLE]");
+                                                                                      addTipoNumericoVars("double");:}
                     | STRING creacion_variable_string                               {:System.out.println("[S] estructura: def_tipoVar [STRING]");:}
                     | CHAR creacion_variable_char                                   {:System.out.println("[S] estructura: def_tipoVar [CHAR]");:}
                     | BOOLEAN creacion_variable_boolean                             {:System.out.println("[S] estructura: def_tipoVar [BOOLEAN]");:}
@@ -177,9 +220,15 @@ creacion_variable_numero ::= creacion_variable_numero COMA variable_numero      
                                                                                                    addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_NUMBER_VAR_CREATION);:}
                            ;/*teríamos COMA, pero con ese no analizaba nada después del error, al menos con PC, ya analiza, un poco mucho tarde xD, pero al menos ya lo hace xD*/
 
-variable_numero ::= NOMBRE IGUAL contenido_numero                       {:System.out.println("[S] substruct: variable_numero: con INI [cont_#]");:}
-                  | NOMBRE IGUAL contenido_char                         {:System.out.println("[S] substruct: variable_numero: con INI [cont_C]");:}
-                  | NOMBRE                                              {:System.out.println("[S] substruct: variable_numero: sin INI");:}
+variable_numero ::= NOMBRE:nombre IGUAL contenido_numero                       {:System.out.println("[S] substruct: variable_numero: con INI [cont_#]");
+                                                                                 addInfoVariables(null, nombre);
+                                                                                 numeroVarsNumericas++;:}
+                  | NOMBRE:nombre IGUAL contenido_char                         {:System.out.println("[S] substruct: variable_numero: con INI [cont_C]");
+                                                                                 addInfoVariables(null, nombre);
+                                                                                 numeroVarsNumericas++;:}//aunque el contenido sea char, el tipo sigue siendo numérico...
+                  | NOMBRE:nombre                                              {:System.out.println("[S] substruct: variable_numero: sin INI");
+                                                                                 addInfoVariables(null, nombre);
+                                                                                 numeroVarsNumericas++;:}
          //         | error                                               {:System.out.println("[S] error: EXPECTED NUMBER VAR DEFINITION <var> = <contenido [int|double|char|var]>; <var>");:}
                   ;/*contenido# puede devolver 1 nombre xD [y tb un#] por eso no add contenido_var*/
 
@@ -189,9 +238,12 @@ creacion_variable_string ::= creacion_variable_string COMA variable_string      
                                                                                                       addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_STRING_VAR_CREATION);:}
                            ;
 
-variable_string ::= NOMBRE IGUAL contenido_variable                      {:System.out.println("[S] substruct: variable_string: con INI [cont_V]");:}
-                  | NOMBRE IGUAL contenido_string  /*contenido_string*/  {:System.out.println("[S] substruct: variable_string: con INI [cont_S]");:}
-                  | NOMBRE                                               {:System.out.println("[S] substruct: variable_string: sin INI");:}
+variable_string ::= NOMBRE:nombre IGUAL contenido_variable                      {:System.out.println("[S] substruct: variable_string: con INI [cont_V]");
+                                                                                  addInfoVariables("String", nombre);:}
+                  | NOMBRE:nombre IGUAL contenido_string  /*contenido_string*/  {:System.out.println("[S] substruct: variable_string: con INI [cont_S]");
+                                                                                  addInfoVariables("String", nombre);:}
+                  | NOMBRE:nombre                                               {:System.out.println("[S] substruct: variable_string: sin INI");
+                                                                                  addInfoVariables("String", nombre);:}
         //          | error                                                {:System.out.println("[S] error: EXPECTED STRING VAR DEFINITION <var> = <contenido [str|var]>; <var>");:}
                   /*con contenido_string me refería a la antigua versión de concat... en todo caso es concat xD, no esa antiguedad jaja*/
                   ;
@@ -202,9 +254,12 @@ creacion_variable_char ::= creacion_variable_char COMA variable_char            
                                                                                                     addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_CHAR_VAR_CREATION);:}
                          ;
 
-variable_char ::= NOMBRE IGUAL contenido_variable                         {:System.out.println("[S] substruct: variable_char: con INI [cont_V]");:}
-                | NOMBRE IGUAL contenido_char                             {:System.out.println("[S] substruct: variable_char: con INI [cont_C]");:}
-                | NOMBRE                                                  {:System.out.println("[S] substruct: variable_char: sin INI");:}
+variable_char ::= NOMBRE:nombre IGUAL contenido_variable                         {:System.out.println("[S] substruct: variable_char: con INI [cont_V]");
+                                                                                   addInfoVariables("char", nombre);:}
+                | NOMBRE:nombre IGUAL contenido_char                             {:System.out.println("[S] substruct: variable_char: con INI [cont_C]");
+                                                                                   addInfoVariables("char", nombre);:}
+                | NOMBRE:nombre                                                  {:System.out.println("[S] substruct: variable_char: sin INI");
+                                                                                   addInfoVariables("char", nombre);:}
         //        | error                                                   {:System.out.println("[S] error: EXPECTED CHAR VAR DEFINITION <ID> = <contenido [char|var]>; <ID>");:}
                 ;/*igual que en def_metodo_char no coloqué contenido#, aquí tampoco porque puede generar variables y variables de enteros no aceptar y doubles ni en valor ni var, lo que permitiría add contenido-# y no dbeería es a los double, porque lo de la variable aún tendŕia que revisar xD si analizara sem xD*/
 
@@ -214,9 +269,12 @@ creacion_variable_boolean ::= creacion_variable_boolean COMA variable_boolean   
                                                                                                       addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_BOOLEAN_VAR_CREATION);:}
                            ;
 
-variable_boolean ::= NOMBRE IGUAL contenido_variable                       {:System.out.println("[S] substruct: variable_boolean: con INI [cont_V]");:}
-                   | NOMBRE IGUAL contenido_boolean /*condiciones*/        {:System.out.println("[S] substruct: variable_boolean: con INI [cont_B]");:}
-                   | NOMBRE                                                {:System.out.println("[S] substruct: variable_boolean: sin Ini");:}
+variable_boolean ::= NOMBRE:nombre IGUAL contenido_variable                       {:System.out.println("[S] substruct: variable_boolean: con INI [cont_V]");
+                                                                                    addInfoVariables("boolean", nombre);:}
+                   | NOMBRE:nombre IGUAL contenido_boolean /*condiciones*/        {:System.out.println("[S] substruct: variable_boolean: con INI [cont_B]");
+                                                                                    addInfoVariables("boolean", nombre);:}
+                   | NOMBRE:nombre                                                {:System.out.println("[S] substruct: variable_boolean: sin Ini");
+                                                                                    addInfoVariables("boolean", nombre);:}
         //           | error                                                {:System.out.println("[S] error: EXPECTED BOOLEAN VAR DEFINITION <ID> = <contenido [boolean|var]>; <ID>");:}
                    ;/*por si acaso da algún conflicto, deja solo booleans y contenido_negs, aunque no creo que vaya a haber*/
 
@@ -226,10 +284,14 @@ creacion_variable_object ::= creacion_variable_object COMA variable_object      
                                                                                                    addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_OBJECT_VAR_CREATION);:}
                            ;
 
-variable_object ::= NOMBRE IGUAL contenido_variable                         {:System.out.println("[S] substruct: variable_object: con INI [cont_V]");:}
-                  | NOMBRE IGUAL contenido_object                           {:System.out.println("[S] substruct: variable_object: con INI [cont_Oc]");:}           
-                  | NOMBRE IGUAL contenido_objeto                           {:System.out.println("[S] substruct: variable_object: con INI [cont_O]");:} 
-                  | NOMBRE                                                  {:System.out.println("[S] substruct: variable_object: sin Ini");:} 
+variable_object ::= NOMBRE:nombre IGUAL contenido_variable                         {:System.out.println("[S] substruct: variable_object: con INI [cont_V]");
+                                                                                     addInfoVariables("Object", nombre);:}
+                  | NOMBRE:nombre IGUAL contenido_object                           {:System.out.println("[S] substruct: variable_object: con INI [cont_Oc]");
+                                                                                     addInfoVariables("Object", nombre);:}
+                  | NOMBRE:nombre IGUAL contenido_objeto                           {:System.out.println("[S] substruct: variable_object: con INI [cont_O]");
+                                                                                     addInfoVariables("Object", nombre);:}
+                  | NOMBRE:nombre                                                  {:System.out.println("[S] substruct: variable_object: sin Ini");
+                                                                                     addInfoVariables("Object", nombre);:}
         //          | error                                                   {:System.out.println("[S] error: EXPECTED STRING VAR DEFINITION <ID> = <contenido [object|objeto|var]>; <ID>");:}
                   ;/*creo que ya no puse lo de string porque se me olvidó o porque vi algún conclicto... yo me acuerdo que si lo había peuesto xD*/                
 
@@ -239,9 +301,12 @@ creacion_variable_objeto ::= creacion_variable_objeto COMA variable_objeto      
                                                                                                    addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_CUSTOM_OBJECT_VAR_CREATION);:}
                            ;
 
-variable_objeto ::= NOMBRE IGUAL contenido_variable                         {:System.out.println("[S] substruct: variable_objetO: con INI [cont_V");:}
-                  | NOMBRE IGUAL contenido_objeto                           {:System.out.println("[S] substruct: variable_objetO: con INI [cont_O");:}
-                  | NOMBRE                                                  {:System.out.println("[S] substruct: variable_objetO: sin Ini");:}
+variable_objeto ::= NOMBRE:nombre IGUAL contenido_variable                         {:System.out.println("[S] substruct: variable_objetO: con INI [cont_V");
+                                                                                     addInfoVariables("Objeto", nombre);:}
+                  | NOMBRE:nombre IGUAL contenido_objeto                           {:System.out.println("[S] substruct: variable_objetO: con INI [cont_O");
+                                                                                     addInfoVariables("Objeto", nombre);:}
+                  | NOMBRE:nombre                                                  {:System.out.println("[S] substruct: variable_objetO: sin Ini");
+                                                                                     addInfoVariables("Objeto", nombre);:}
         //          | error                                                   {:System.out.println("[S] error: EXPECTED STRING VAR DEFINITION <ID> = <contenido [objeto|var]>; <ID>");:}
                   ;/*hay que ver lo de los paréntesis aquí y en los demás cotenidos... parentesis ;-;*/
 
@@ -258,7 +323,8 @@ cuerpo_def_metodo ::= def_metodo_constructor                           {:System.
                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_METHOD_BODY_DECLARATION);:}
                     ;
 
-def_metodo_constructor ::= OBJETO PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_constructor                     {:System.out.println("[S] substruct: def_metodo_constructor");:}
+def_metodo_constructor ::= OBJETO:nombre PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_constructor                     {:System.out.println("[S] substruct: def_metodo_constructor");
+                                                                                                                              addInfoMetodo("constructor", nombre);:}//por ser constructor, aquí su nombre es el lex del Objeto
                          ;
 
 cuerpo_metodo_constructor ::= LLAVE_A bloque LLAVE_C                              {:System.out.println("[S] substruct: no_void [cuerpo_cnstrct [CB]]");:}
@@ -267,13 +333,20 @@ cuerpo_metodo_constructor ::= LLAVE_A bloque LLAVE_C                            
                                                                                     addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_CONSTRUCTOR_BODY_DECLARATION);:}
                             ;
 
-def_metodo_tipo ::= INT NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero                              {:System.out.println("[S] substruct: def_metodo_tipo: INT");:}
-                  | DOUBLE NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero                           {:System.out.println("[S] substruct: def_metodo_tipo: DOUBLE");:}
-                  | STRING NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_string                           {:System.out.println("[S] substruct: def_metodo_tipo: STRING");:}
-                  | CHAR NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_char                               {:System.out.println("[S] substruct: def_metodo_tipo: CHAR");:}
-                  | BOOLEAN NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_boolean                         {:System.out.println("[S] substruct: def_metodo_tipo: BOOLEAN");:}
-                  | OBJECT NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_object                           {:System.out.println("[S] substruct: def_metodo_tipo: OBJECT");:}
-                  | OBJETO NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_objeto                           {:System.out.println("[S] substruct: def_metodo_tipo: OBJETO");:}
+def_metodo_tipo ::= INT NOMBRE:nombre PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero                              {:System.out.println("[S] substruct: def_metodo_tipo: INT");
+                                                                                                                               addInfoMetodo("int", nombre);:}
+                  | DOUBLE NOMBRE:nombre PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero                           {:System.out.println("[S] substruct: def_metodo_tipo: DOUBLE");
+                                                                                                                               addInfoMetodo("double", nombre);:}
+                  | STRING NOMBRE:nombre PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_string                           {:System.out.println("[S] substruct: def_metodo_tipo: STRING");
+                                                                                                                               addInfoMetodo("String", nombre);:}
+                  | CHAR NOMBRE:nombre PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_char                               {:System.out.println("[S] substruct: def_metodo_tipo: CHAR");
+                                                                                                                               addInfoMetodo("char", nombre);:}
+                  | BOOLEAN NOMBRE:nombre PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_boolean                         {:System.out.println("[S] substruct: def_metodo_tipo: BOOLEAN");
+                                                                                                                               addInfoMetodo("boolean", nombre);:}
+                  | OBJECT NOMBRE:nombre PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_object                           {:System.out.println("[S] substruct: def_metodo_tipo: OBJECT");
+                                                                                                                               addInfoMetodo("Object", nombre);:}
+                  | OBJETO NOMBRE:nombre PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_objeto                           {:System.out.println("[S] substruct: def_metodo_tipo: OBJETO");
+                                                                                                                               addInfoMetodo("Objeto", nombre);:}
           //        | error                                                                                             {:System.out.println("[S] error: METHOD CREATION EXPECTED <tipo> ( <param-list> ) { body|e }");:}
                   ;
 
@@ -331,7 +404,8 @@ cuerpo_metodo_objeto ::= LLAVE_A bloque retorno_variable LLAVE_C                
                                                                                     addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_OBJETO_BODY_DECLARATION);:}
                        ;
 
-def_metodo_void ::= VOID NOMBRE cuerpo_metodo_void                                  {:System.out.println("[S] substruct: cuerpo_def_metodo: def_metodo_VOID");:}                    
+def_metodo_void ::= VOID NOMBRE:nombre cuerpo_metodo_void                         {:System.out.println("[S] substruct: cuerpo_def_metodo: def_metodo_VOID");
+                                                                                      addInfoMetodo("void", nombre);:}                    
                   ;
 
 cuerpo_metodo_void ::= PARENTESIS_A parametros PARENTESIS_C LLAVE_A bloque RETURN PUNTO_COMA LLAVE_C                       {:System.out.println("[S] substruct: def_metodo_void [CB, CR]");:}
@@ -349,17 +423,26 @@ parametros ::= parametros COMA parametro                               {:System.
                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_PARAM_LIST);:}
              ;
 
-parametro ::= tipo NOMBRE                                              {:System.out.println("[S] substruct: parametro");:}
+parametro ::= tipo:tipo NOMBRE:nombre                                  {:System.out.println("[S] substruct: parametro");
+                                                                         listaParametros.add(new Variable(tipo,Token.parseToken(nombre).getLexema()));
+                                                                         addInfoVariables(tipo, nombre);:}//si en dado caso surgiera un error con el tipo, aquí se recibiría null, o eso pienso...
         //    | error                                                    {:System.out.println("[S] error: EXPECT PARAM STRUCT <tipo> <identifier>");:}
             ;
 
-tipo ::= INT                            {:System.out.println("[S] tipo: INT");:}
-       | DOUBLE                         {:System.out.println("[S] tipo: DOUBLE");:}
-       | STRING                         {:System.out.println("[S] tipo: STRING");:}
-       | CHAR                           {:System.out.println("[S] tipo: CHAR");:}
-       | BOOLEAN                        {:System.out.println("[S] tipo: BOOLEAN");:}
-       | OBJECT                         {:System.out.println("[S] tipo: OBJECT");:}
-       | OBJETO                         {:System.out.println("[S] tipo: OBJETO");:}
+tipo ::= INT                            {:System.out.println("[S] tipo: INT");
+                                          RESULT = "int";:}
+       | DOUBLE                         {:System.out.println("[S] tipo: DOUBLE");
+                                          RESULT = "double";:}
+       | STRING                         {:System.out.println("[S] tipo: STRING");
+                                          RESULT = "String";:}
+       | CHAR                           {:System.out.println("[S] tipo: CHAR");
+                                          RESULT = "char";:}
+       | BOOLEAN                        {:System.out.println("[S] tipo: BOOLEAN");
+                                          RESULT = "boolean";:}
+       | OBJECT                         {:System.out.println("[S] tipo: OBJECT");
+                                          RESULT = "Object";:}
+       | OBJETO:objeto                  {:System.out.println("[S] tipo: OBJETO");
+                                          RESULT = Token.parseToken(objeto).getLexema();:}
     //   | error                          {:System.out.println("[S] error: TYPE [int|doouble|String|char|boolean|Object|<CUSTOM OBJECT>] EXPECTED");:}
        ;/*ya reemplacé por lo de objeto xD xD*/
 
@@ -368,7 +451,7 @@ bloque ::= bloque sentencias                            {:System.out.println("[S
      //    | error                                        {:System.out.println("[S] error: BAD METHOD or STATEMENT BODY");:}
          ;
 
-sentencias ::= def_variable                                {:System.out.println("[S] sentencias bloque: def_var");:}
+sentencias ::= def_variable                                {:System.out.println("[S] sentencias bloque: def_var");:}//lo las vars, debes setearlo cuando se cree el obj de Método, porque aquí no hay forma que sepas el nombre del método... porque la axn del método se exe hasta el fina... [mira NetBeans..]
              | asignacion                                  {:System.out.println("[S] sentencias bloque: asignacion");:}
              | ciclo                                       {:System.out.println("[S] sentencias bloque: ciclo");:}
              | invocacion                                  {:System.out.println("[S] sentencias bloque: invocacion");:}
@@ -513,18 +596,30 @@ asignacion_for ::= asignacion_completa_for                                      
                                                                                                  addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_FOR_ASSIGNATION);:}
                  ;
 
-asignacion_completa_for ::= INT NOMBRE IGUAL contenido_numero PUNTO_COMA                      {:System.out.println("[S] substruct: ciclo_for: asignacion_C [INT]");:}
-                          | DOUBLE NOMBRE IGUAL contenido_numero PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [DOUBLE]");:}
-                          | STRING NOMBRE IGUAL contenido_string PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [STRING-CS]");:}
-                          | STRING NOMBRE IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [STRING-CV]");:}
-                          | CHAR NOMBRE IGUAL contenido_char PUNTO_COMA                       {:System.out.println("[S] substruct: ciclo_for: asignacion_C [CHAR-CC]");:}
-                          | CHAR NOMBRE IGUAL contenido_variable PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [CHAR-CV]");:}
-                          | BOOLEAN NOMBRE IGUAL contenido_boolean PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [BOOLEAN-CB]");:}
-                          | BOOLEAN NOMBRE IGUAL contenido_variable PUNTO_COMA                {:System.out.println("[S] substruct: ciclo_for: asignacion_C [BOOLEAN-CV]");:}
-                          | OBJECT NOMBRE IGUAL contenido_object PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJECT-COc]");:}
-                          | OBJECT NOMBRE IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETC-CV]");:}
-                          | OBJETO NOMBRE IGUAL contenido_objeto PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETO-CO]");:}
-                          | OBJETO NOMBRE IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETO-CV]");:}
+asignacion_completa_for ::= INT NOMBRE:nombre IGUAL contenido_numero PUNTO_COMA                      {:System.out.println("[S] substruct: ciclo_for: asignacion_C [INT]");
+                                                                                                addInfoVariables("int", nombre);:}
+                          | DOUBLE NOMBRE:nombre IGUAL contenido_numero PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [DOUBLE]");
+                                                                                                addInfoVariables("double", nombre);:}
+                          | STRING NOMBRE:nombre IGUAL contenido_string PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [STRING-CS]");
+                                                                                                addInfoVariables("String", nombre);:}
+                          | STRING NOMBRE:nombre IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [STRING-CV]");
+                                                                                                addInfoVariables("String", nombre);:}
+                          | CHAR NOMBRE:nombre IGUAL contenido_char PUNTO_COMA                       {:System.out.println("[S] substruct: ciclo_for: asignacion_C [CHAR-CC]");
+                                                                                                addInfoVariables("char", nombre);:}
+                          | CHAR NOMBRE:nombre IGUAL contenido_variable PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [CHAR-CV]");
+                                                                                                addInfoVariables("char", nombre);:}
+                          | BOOLEAN NOMBRE:nombre IGUAL contenido_boolean PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [BOOLEAN-CB]");
+                                                                                                addInfoVariables("boolean", nombre);:}
+                          | BOOLEAN NOMBRE:nombre IGUAL contenido_variable PUNTO_COMA                {:System.out.println("[S] substruct: ciclo_for: asignacion_C [BOOLEAN-CV]");
+                                                                                                addInfoVariables("boolean", nombre);:}
+                          | OBJECT NOMBRE:nombre IGUAL contenido_object PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJECT-COc]");
+                                                                                                addInfoVariables("Object", nombre);:}
+                          | OBJECT NOMBRE:nombre IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETC-CV]");
+                                                                                                addInfoVariables("Object", nombre);:}
+                          | OBJETO NOMBRE:nombre IGUAL contenido_objeto PUNTO_COMA                   {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETO-CO]");
+                                                                                                addInfoVariables("Objeto", nombre);:}
+                          | OBJETO NOMBRE:nombre IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETO-CV]");
+                                                                                                addInfoVariables("Objeto", nombre);:}
                 //          | error                                                             {:System.out.println("[S] error: FULL ASSIGNMENT EXPECTED");:}
                           ;/*solo donde hay cont# no porque ese por sí solo permite el cont_var xD*/
 

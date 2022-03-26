@@ -6,6 +6,7 @@
 package Backend.Objetos.Auxiliares;
 
 import Backend.Objetos.Resultado.Comentario;
+import Backend.Objetos.Resultado.Metodo;
 import Backend.Objetos.Resultado.Variable;
 
 /**
@@ -13,6 +14,7 @@ import Backend.Objetos.Resultado.Variable;
  * @author phily
  */
 public class Match {
+    private Metodo metodo;
     private Variable variable;
     private Comentario comentario;
     private int involucrados = 0;
@@ -24,6 +26,10 @@ public class Match {
     
     public Match(Comentario elComentario){
         this.comentario = elComentario;
+    }
+    
+    public Match(Metodo metodo){
+        this.metodo = metodo;
     }
     
     public void addInvolucrado(){
@@ -42,6 +48,10 @@ public class Match {
         return comentario;
     }
 
+    public Metodo getMetodo(){
+        return this.metodo;
+    }
+    
     public int getInvolucrados() {
         return involucrados;
     }

@@ -15,6 +15,8 @@ import Backend.Objetos.Enums.SintaxError;
  */
 
 public class Error {
+    private String proyecto;
+    private String clase;//en el lexer, podremos saber qué clase es a partir del campo del result...
     private String lexema;
     private int linea;
     private int columna;    

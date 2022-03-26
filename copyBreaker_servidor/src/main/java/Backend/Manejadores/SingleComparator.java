@@ -19,11 +19,11 @@ import java.util.ArrayList;
 public class SingleComparator {
     private int comentariosInvolucrados;
     private int variablesInvoucradas;
+    private int metodosInvolucrados;//puesto que se pueden sobrecargar métodos: 1 de las opciones de esto es que aunque tengan el mismo nombre, tipo y parámetros, si estos últimos no se colocan en el mismo orden, entonces los métodos los toma como diferentes...
     
     //si alguno de los criterios son TRUE, se devolverá un nuevo objeto Clase
     //con los datos corresp y las fusiones nec, para ser add al obj RESULT_Repintencia
-    //Creado en el analizadorRepitencia [de forma eqq con las demás estructuras
-    
+    //Creado en el analizadorRepitencia [de forma eqq con las demás estructuras)    
     public RESULT fueCopiada(RESULT resultClase1, ArrayList<RESULT> resultadosClase2){
         for (RESULT resultClase2 : resultadosClase2) {
             if(resultClase1.getClase(0).getNombre().equals(resultClase2.getClase(0).getNombre())///pongo 0, porque como cada RESULT parcial se creará por clase, entonces no hay más de una en sus listados... cuando en el archivo no haya nada [ni siquiera el esqueleto de una clase, el parser informará de un error, porque al menos debería tener eso [yo pienso que está bien que lo reporte como tal] y por ese motivo no se exe esto y por ello NUNCA habrá problema de un NullPosnter con respecto a eso xD
@@ -31,8 +31,7 @@ public class SingleComparator {
                 
                 return resultClase2;//para que así se pueda hacer la eli deseada en el método que invoca a este, para reducir las búsquedas... xD
             }             
-        }        
-        
+        }
         return null;
     }//nice
     
@@ -41,8 +40,9 @@ public class SingleComparator {
             return false;
         }        
         
+        ArrayList<Metodo> auxiliarMetodos2 = listaMetodos2;//puesto que se eliminarán elementos para así no detectar falsas repeticiones        
         for (int actualRevisada = 0; actualRevisada < listaMetodos1.size(); actualRevisada++) {
-            if(!existeMetodoIgual(listaMetodos1.get(actualRevisada).getNombre(), listaMetodos2)){
+            if(!existeMetodoIgual(listaMetodos1.get(actualRevisada).getNombre(), auxiliarMetodos2)){
                 return false;
             }
         }       
@@ -50,8 +50,9 @@ public class SingleComparator {
     }
     
     private boolean existeMetodoIgual(String metodo1, ArrayList<Metodo> listaMetodos2){
-        for (int actual = 0; actual < listaMetodos2.size(); actual++) {
-            if(metodo1.equals(listaMetodos2.get(actual).getNombre())){        
+        for (Metodo metodo2 : listaMetodos2) {
+            if(metodo1.equals(metodo2.getNombre())){   
+                listaMetodos2.remove(metodo2);//no provocará problemas con el forEach, puesto que ya no se vuelve a exe, por el retorno que se hace justo después de eliminar...
                 return true;
             }
         }
@@ -64,6 +65,7 @@ public class SingleComparator {
         for (Match agrupacion : agrupacionComentarios2) {
             if(comentario1.getTexto().equals(agrupacion.getComentario().getTexto())){                   
                 this.comentariosInvolucrados = ((agrupacion.fueUtilizado())?0:agrupacion.getInvolucrados());
+                agrupacion.setUtilizado();
                 return new Comentario(comentario1.getTexto());
             }
        }
@@ -97,8 +99,9 @@ public class SingleComparator {
                 variableClase1.getNombre().equals(agrupacion.getVariable().getNombre())){
                 
                 this.variablesInvoucradas = ((agrupacion.fueUtilizado())?0:agrupacion.getInvolucrados());
+                agrupacion.setUtilizado();
                 return new Variable(variableClase1.getTipo(), variableClase1.getNombre(), 
-                        (variableClase1.getFuncion()+" "+agrupacion.getVariable().getFuncion()));
+                        (variableClase1.getFuncion()+" | "+agrupacion.getVariable().getFuncion()));
             }
        }
        return null;
@@ -120,7 +123,7 @@ public class SingleComparator {
                    listaAuxiliar.get(anterior).getNombre().equals(listaAuxiliar.get(actual).getNombre())){
                     
                     agrupaciones.get(agrupaciones.size()-1).addInvolucrado();//y así tener el #vars iguales[tipo y nombre] del proy2
-                    agrupaciones.get(agrupaciones.size()-1).getVariable().setFuncion(listaAuxiliar.get(actual).getFuncion());
+                    agrupaciones.get(agrupaciones.size()-1).getVariable().setFuncion("", listaAuxiliar.get(actual).getFuncion());
                     listaAuxiliar.remove(actual);
                     actual--;//para que así pueda estudiar el que ahora ocupa el lugar
                 }
@@ -129,16 +132,46 @@ public class SingleComparator {
         return agrupaciones;
     }
     
-    public Metodo fueCopiado(Metodo metodo1, ArrayList<Metodo> metodosClase2){
-        for (Metodo metodo2 : metodosClase2) {
-            if(metodo1.getTipo().equals(metodo2.getTipo()) && metodo1.getNombre().equals(metodo2.getNombre())
-               && this.compararParametros(metodo1.getParametros(), metodo2.getParametros())){
+    public Metodo fueCopiado(Metodo metodo1, ArrayList<Match> agrupacionMetodosClase2){
+        this.metodosInvolucrados = 0;
+        
+        for (Match agrupacion : agrupacionMetodosClase2) {
+            if(metodo1.getTipo().equals(agrupacion.getMetodo().getTipo()) && 
+               metodo1.getNombre().equals(agrupacion.getMetodo().getNombre()) && 
+               this.compararParametros(metodo1.getParametros(), agrupacion.getMetodo().getParametros())){
                 
+                this.metodosInvolucrados = ((agrupacion.fueUtilizado())?0:agrupacion.getInvolucrados());
+                agrupacion.setUtilizado();//debe ser así puesto que no importa en qué clase del proy1, el método del match se halla encontrado repetido, su aparición de repitencia no debe volver a contarse [igual que con variable y comentario de match...
                 return new Metodo(metodo1.getTipo(), metodo1.getNombre(), metodo1.getParametros().size());//puesto que por la lógica de java, cada método en cada clase es único
             }        
-        }
-        
+        }        
         return null;
+    }    
+    
+    //creado para no tener que revisar cada método de nuevo, puesto que 
+    //pueden haber métodos iguales [según los criterios de la práctica 
+    //en una misma clase, cuando tengan el mismo nombre, tipo y parámetros
+    //aunque esos estén en orden diferente]
+    public ArrayList<Match> getMetodossMatch(ArrayList<Metodo> listaMetodosClase2){
+        ArrayList<Metodo> listaAuxiliar = listaMetodosClase2;
+        ArrayList<Match> agrupaciones = new ArrayList<>();
+        
+        for (int anterior = 0; anterior < listaAuxiliar.size(); anterior++) {//debe llegar hasta la última posición, puesto que el listado de agrupaciones tiene un nodo por cada var != a cualquiera de los nodos que ya se encuentren en la lista xD
+            agrupaciones.add(new Match(new Metodo(listaAuxiliar.get(anterior).getTipo(),
+            listaAuxiliar.get(anterior).getNombre(), listaAuxiliar.get(anterior).getParametros())));
+            
+            for (int actual = (anterior+1); actual < listaAuxiliar.size(); actual++) {
+                if(listaAuxiliar.get(anterior).getTipo().equals(listaAuxiliar.get(actual).getTipo()) &&
+                   listaAuxiliar.get(anterior).getNombre().equals(listaAuxiliar.get(actual).getNombre()) &&
+                   compararParametros(listaAuxiliar.get(anterior).getParametros(), listaAuxiliar.get(actual).getParametros())){
+                    
+                    agrupaciones.get(agrupaciones.size()-1).addInvolucrado();//y así tener el #vars iguales[tipo y nombre] del proy2                    
+                    listaAuxiliar.remove(actual);
+                    actual--;//para que así pueda estudiar el que ahora ocupa el lugar
+                }
+            }
+        }        
+        return agrupaciones;
     }
     
     private boolean compararParametros(ArrayList<Variable> parametros1, ArrayList<Variable> parametros2){
@@ -150,8 +183,7 @@ public class SingleComparator {
             if(!this.existeParametroIgual(parametro1, parametros2)){
                 return false;
             }
-        }
-        
+        }        
         return true;//igual que con la clase, dará true cuando no tengan paráms y eso debe ser así xD
     }//no dijo que debían estar en orden, solo que fueran los mismos...
     
@@ -166,25 +198,27 @@ public class SingleComparator {
     }  
     
     /**
-     * El dato de esta variable existe entre el espacio
-     * después de haber empleado fueReptedio [comment]
-     * y la inocación de este mismo método [si es que 
-     * se realiza a la misma instancia]
+     * Esta var mantiene sus datos entre la finalización
+     * e invocación de este mismo método
      * @return
      */
     public int getComentariosInvolucrados(){
         return this.comentariosInvolucrados;
     }
-    
-    
     /**
-     * El dato de esta variable existe entre el espacio
-     * después de haber empleado fueReptedio [variable]
-     * y la inocación de este mismo método [si es que 
-     * se realiza a la misma instancia]
+     * Esta var mantiene sus datos entre la finalización
+     * e invocación de este mismo método
      * @return
      */
     public int getVariablesInvolucradas(){
         return this.variablesInvoucradas;
+    }    
+    /**
+     * Esta var mantiene sus datos entre la finalización
+     * e invocación de este mismo método
+     * @return
+     */
+    public int getMetodosInvolucrados(){
+        return this.metodosInvolucrados;
     }
 }

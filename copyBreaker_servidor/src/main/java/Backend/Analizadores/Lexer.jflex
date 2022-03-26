@@ -2,7 +2,11 @@
 package Backend.Analizadores;
 import java_cup.runtime.*;
 import Backend.Objetos.Token;
+import Backend.Objetos.Resultado.RESULT;
+import Backend.Objetos.Resultado.Clase;
+import Backend.Objetos.Resultado.Comentario;
 import static Backend.Analizadores.ParserSym.*;
+import Backend.Manejadores.ManejadorErrores;
 //import Objetos.ReporteError;//yo supongo que si se debe importar para usar el eqq de ctes static, aunque sea kotlin... solo era para probar que si jala cosas de kotlin en Java xD
 
 %%
@@ -50,10 +54,16 @@ comentarioDocumentacion = "/**" {contenidoComentario} "*"+ "/"
 contenidoComentario = ( [^*] | \*+ [^/*] )*
 
 %{      
+    RESULT result;    
+    String proyecto = "";//este será útil para rellenar la info que req Error
+    //no se req un campo para el nombre de la clase, puesto que esta info ya la posee el RESULT
     String[] nombreClases = {"clasePrueba"};//quizá se reeemplzace con una lista... ahí te acuerdas de poner el seter...
+    ManejadorErrores ManejadorErrores;
 
     boolean requeriaCompania = false;
     Token tokenAnterior = null;
+
+    private boolean fueReservadaImport = false;    
 
     String operadorAnterior = null;
     Symbol endOperator = null;
@@ -75,6 +85,7 @@ contenidoComentario = ( [^*] | \*+ [^/*] )*
 
     private Symbol acccionReservada(int tipo){//por el momneot es void xD    
         System.out.println("[L] reservada: "+ yytext());        
+        fueReservadaImport = (tipo == IIMPORT);//para que así media vez se llegue a class o public [suponiendo una sintaxis correcta], se haga las revisiones que se tienen en el método del identificador...        
 
         return symbol(tipo, yytext(), false);    
     }    
@@ -123,12 +134,14 @@ contenidoComentario = ( [^*] | \*+ [^/*] )*
     }
 
     private Symbol accionIdentificador(){
-        for(int claseActual = 0; claseActual < nombreClases.length; claseActual++){
-            if(yytext().equals(nombreClases[claseActual])){
-                System.out.println("[L] OBJETO: "+ yytext());
-                return symbol(OBJETO, yytext(), false);
+        if(!fueReservadaImport){
+            for(int claseActual = 0; claseActual < nombreClases.length; claseActual++){
+                if(yytext().equals(nombreClases[claseActual])){
+                    System.out.println("[L] OBJETO: "+ yytext());                            
+                    return symbol(OBJETO, yytext(), false);
+                }
             }
-        }
+        }//con esto se logra que el import tenga solo nombres,con eso se permite que la dirección pueda estar mala, al no especificar que un OBJ puede venir solo al final, pero como no se analizará semánticamente, entonces se dejará así...
         System.out.println("[L] identificador: "+ yytext());
         return symbol(NOMBRE, yytext(), false);
     }
@@ -149,9 +162,14 @@ contenidoComentario = ( [^*] | \*+ [^/*] )*
         yybegin(YYINITIAL);//ese operador ternario lo puse para que se justifique el hecho de que después de error no se muestre el contenido errado, puesto que contenido va a tener length = 0 si el error surgió en STRING [puesto que se llegará a error cuando haya salto de línea o retorno de carro no explícito] entonces puedo utilizar eso para personalizar el msje [cabe reslatar que si el error surge en el YYINI, siempre tendrá maś de algo contenido, puesto que desde ese estado se puede llegar a error si se encuentra con algo que no es aceptado y ahí el \n y \r son ignorados, es decir técnicamente aceptados xD]
     }//si la justificación por la cual uso el operador ternario no funciona, entonces guarda el stado y si ese es == SSTRING entonces pones ese msje xD, ahí si el msje estaría correcto siempre xD
 
-    public void setListaClases(String[] listaClases){
+    public void setInfoNecesaria(RESULT elResult, String elProyecto, 
+    String[] listaClases, ManejadorErrores elManejadorErrores){
+
+        result = elResult;
+        proyecto = elProyecto;        
         nombreClases = listaClases;
-    }
+        ManejadorErrores = elManejadorErrores;
+    }//el RESULT ya tendrá seteada la clase respectiva sin problemas xD
 %}
 
 %eof{
@@ -167,7 +185,7 @@ contenidoComentario = ( [^*] | \*+ [^/*] )*
 //Reglas léxicas
 <YYINITIAL> "import"               {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(IIMPORT);}}
 <YYINITIAL> "new"                  {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(NEW);}}
-<YYINITIAL> "this"                  {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(THIS);}}
+<YYINITIAL> "this"                 {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(THIS);}}
 <YYINITIAL> "public"               {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(PUBLIC);}}
 <YYINITIAL> "protected"            {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(PROTECTED);}}
 <YYINITIAL> "private"              {if(operadorAnterior != null){return sendSingleOperator();}else{return acccionReservada(PRIVATE);}}
@@ -195,7 +213,8 @@ contenidoComentario = ( [^*] | \*+ [^/*] )*
 <YYINITIAL, ERROR> {simbolosAceptados}    {if(operadorAnterior != null){return sendSingleOperator();}else{return accionSimbolosAceptados();}}
 
 <YYINITIAL>{
-    {comentarioLinea}                 {if(operadorAnterior != null){return sendSingleOperator();}else{System.out.println("[L] comentario-línea: "+ yytext().substring(2).trim());}/*se add a la lista de comments*/}
+    {comentarioLinea}                 {if(operadorAnterior != null){return sendSingleOperator();}else{System.out.println("[L] comentario-línea: "+ yytext().substring(2).trim());
+                                       result.addComentario(new Comentario(yytext().substring(2).trim()));}}//debe establecerse el comentario cuando se entre al else, sino se estaría enviando 2 veces...
 
     {numero}                          {if(operadorAnterior != null){return sendSingleOperator();}else{System.out.println("[L] numero: "+ yytext());return symbol(NUMERO, yytext(), false);}}//son los signos de operación en sí quienes requieren del anterior
 
@@ -210,7 +229,8 @@ contenidoComentario = ( [^*] | \*+ [^/*] )*
 
     {caracter}                        {if(operadorAnterior != null){return sendSingleOperator();}else{System.out.println("[L] caracter: "+ yytext().substring(1,2));return symbol(CARACTER, yytext().substring(1,2), false);}}
 
-    {CommentarioMultiLinea}           {if(operadorAnterior != null){return sendSingleOperator();}else{System.out.println("[L] comentario-multiLinea: "+ yytext().substring(2, yytext().length()-2).trim());}/*se add a la lista de comments*/}  
+    {CommentarioMultiLinea}           {if(operadorAnterior != null){return sendSingleOperator();}else{System.out.println("[L] comentario-multiLinea: "+ yytext().substring(2, yytext().length()-2).trim());
+                                       result.addComentario(new Comentario(yytext().substring(2, yytext().length()-2).trim()));}}
 
     {espacioEnBlanco}                 {/*se ignora*/}
 }

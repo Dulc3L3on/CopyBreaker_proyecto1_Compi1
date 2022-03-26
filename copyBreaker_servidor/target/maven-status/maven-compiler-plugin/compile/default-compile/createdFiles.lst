@@ -6,11 +6,13 @@ Backend/Objetos/Enums/LexerError.class
 Backend/Objetos/Resultado/Variable.class
 com/mycompany/servidor_copybreaker/PruebasSintaxis.class
 Backend/Objetos/Auxiliares/Match.class
+Backend/Manejadores/ManejadorArchivos.class
 Backend/Analizadores/Parser.class
 Backend/Objetos/Resultado/Metodo.class
 Backend/Objetos/Enums/SintaxError.class
 Backend/Manejadores/ManejadorErrores.class
 Backend/Analizadores/ParserSym.class
+Backend/Herramientas/Herramienta.class
 Frontend/Log.class
 Backend/Objetos/Resultado/RESULT.class
 Backend/Objetos/Token.class

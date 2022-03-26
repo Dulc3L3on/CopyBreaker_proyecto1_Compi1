@@ -28,7 +28,7 @@ public class Log extends javax.swing.JFrame {
         initComponents();
         
         
-        this.manejadorAnalisis.analizarClase(new File(pathTxt_withErrors));
+      //  this.manejadorAnalisis.analizarClase(new File(pathTxt_2));
         
     }
 

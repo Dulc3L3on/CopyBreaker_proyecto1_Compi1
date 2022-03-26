@@ -7,6 +7,8 @@ package Backend.Manejadores;
 
 import Backend.Analizadores.Lexer;
 import Backend.Analizadores.Parser;
+import Backend.Herramientas.Herramienta;
+import Backend.Objetos.Resultado.Clase;
 import Backend.Objetos.Resultado.RESULT;
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,39 +22,83 @@ import java.util.ArrayList;
  * @author phily
  */
 public class ManejadorAnalisis {//para mientras que estos métodos son del servidor...
+    private Herramienta herramienta;
+    private ComplexComparator complexComparator;
+    private final int NUMERO_PROYECTOS_ANALIZAR = 2;
+    
+    public ManejadorAnalisis(){
+        this.herramienta = new Herramienta();        
+    }
  
-    public ArrayList<RESULT> analizarProyectos(ArrayList<File> clases){
-        ArrayList<RESULT> listaTablaSimbolos = new ArrayList<>();
+    public void analizarProyectos(ArrayList<ArrayList<File>> archivosProyectos){       
+        ManejadorErrores[] manejadoresError = new ManejadorErrores[]{new ManejadorErrores(), new ManejadorErrores()};
+        ArrayList<ArrayList<RESULT>> listadoRESULTS = new ArrayList<>();
         
-        for (int claseActual = 0; claseActual < clases.size(); claseActual++) {
-                this.analizarClase(clases.get(claseActual).getAbsoluteFile());
+        for (int actual = 0; actual < NUMERO_PROYECTOS_ANALIZAR; actual++) {
+            listadoRESULTS.add(analizarClases(archivosProyectos.get(actual), 
+                this.herramienta.getNombreArchivos(archivosProyectos.get(actual)),
+                manejadoresError[actual], (actual+1)));            
         }
         
-        return listaTablaSimbolos;
+        if(manejadoresError[0].getListaErrores().isEmpty() && manejadoresError[0].getListaErrores().isEmpty()){
+            complexComparator = new ComplexComparator(listadoRESULTS.get(0), listadoRESULTS.get(1));
+            
+            //ya tendríamos que tener la lógica para escribir el JSON o para formarlo después de tener el RESULT final
+           //mira que conviene ojo mira que conviene
+        }else{
+            for (int actual = 0; actual < NUMERO_PROYECTOS_ANALIZAR; actual++) {
+                //se llama al manejador de la tabla/interfaz para que add los errores a la consola, pensaba usar una tabla para más orden, pero por el scroll, quizá me quede con el JTxtArea
+            }
+        }        
+        
+        /*
+          this.analizarClase(clases.get(claseActual).getAbsoluteFile());
+        }*/
+        
+        
     }//se invocará una vez por cada proyecto, para que así recorra la lista de files de cada carpeta y cree una lista por separado
     
+    public ArrayList<RESULT> analizarClases(ArrayList<File> archivosProyecto, 
+            String[] nombreClases, ManejadorErrores manejadorErrores, int numeroProyecto){
+        
+        ArrayList<RESULT> resultados = new ArrayList<>();
+                
+        for (int actual = 0; actual < archivosProyecto.size(); actual++) {
+            resultados.add(this.analizarClase(archivosProyecto.get(actual),
+                    nombreClases, nombreClases[actual], manejadorErrores, numeroProyecto));            
+        }
+        
+        return resultados;//si la clase no tiene contenido, entonces solo ese listado tendrá un ele, los demás estarán vacíos...
+    }
+    
     //yo imagino que esto se envlverá en un for para crear la TS de cada clase y así addla a la lista de TS...    
-    public void analizarClase(File clase){
-        /*TablaSimbolos tablaSimbolos = new TablaSimbolos();*/
+    public RESULT analizarClase(File clase, String[] nombreClases, String nombreClase, 
+            ManejadorErrores manejadorErrores, int numeroProyecto){
+        
+        RESULT result = new RESULT();
+        result.addClase(new Clase(nombreClase));//puesto que se req esta info desde el ini, para los errores en el caso del lexer, y para el seteo de la info de las var además de los errores en el caso del parser
         
         try {            
             String string = Files.readString(clase.toPath());
-            System.out.println(string);
+            System.out.println(string);            
             
+            Lexer lexer = new Lexer(new StringReader(string));
+            lexer.setInfoNecesaria(result, "Proyecto "+numeroProyecto, 
+               nombreClases, manejadorErrores);
             
-            Lexer  lexer = new Lexer(new StringReader(string));
-            Parser parser = new Parser(lexer);
-        
-            parser.debug_parse();
+            Parser parser = new Parser(lexer,result, manejadorErrores);        
+            parser.debug_parse();                        
         } catch (Exception ex) {
             System.out.println("excepción [ex]: "+ ex.getMessage());
             ex.printStackTrace();            
         }
         
-        /*return tablaSimbolos;*/
+        return result;//puesto que al ser por referencia, las modificaciones hechas por el lexer y/o el parser se encuentran aquí...
     }
     
 }
+
+
 
 
 //lo primero que hice para leer el archivo fue usar un new FileReader(clase)

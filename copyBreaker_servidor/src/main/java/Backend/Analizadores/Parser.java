@@ -8,6 +8,9 @@ package Backend.Analizadores;
 import java_cup.runtime.*;
 import java.util.List;
 import java.util.ArrayList;
+import Backend.Objetos.Resultado.RESULT;
+import Backend.Objetos.Resultado.Metodo;
+import Backend.Objetos.Resultado.Variable;
 import Backend.Objetos.Token;
 import Backend.Manejadores.ManejadorErrores;
 import Backend.Objetos.Error;
@@ -1379,11 +1382,14 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 /*código que modifica el comportamiento del parser [sobreescribiendo o creado métodos]    */
     private ManejadorErrores manejadorErrores;
+    private RESULT resultParcial;
+    private ArrayList<Variable> listaParametros = new ArrayList<>();
 
-    public Parser(Lexer lexer){/*nuevo constructor*/
+    public Parser(Lexer lexer, RESULT resultadoLexer, ManejadorErrores manejadorErroresLex){/*nuevo constructor*/
         super(lexer);        
 
-        manejadorErrores = new ManejadorErrores();
+        manejadorErrores = manejadorErroresLex;
+        resultParcial = resultadoLexer;//ya tiene el listado de comentarios y clase [que tiene 1 sola clase xD], agregados... aunque quizá halla un poco de riesgo, al establecer la clase en el lexer, nec que sea allá para que así se seteen sin tantas vueltas el campo función de las clases globales... de todos modos en un caso en el que todo está bien, el searlo en el lexer está bien, lo raro sucedería al haber errores xD
     }    
 
     public void report_fatal_error(String message, Object info){
@@ -1395,15 +1401,48 @@ public class Parser extends java_cup.runtime.lr_parser {
         return 1;
     }/*para que establezca que con un token bien leido basta para recuperarse...   */
 
-    public ArrayList<Error> getListaErrores(){
-        return manejadorErrores.getListaErrores();
-    }
-
 
 /** Cup generated class to encapsulate user supplied action code.*/
 @SuppressWarnings({"rawtypes", "unchecked", "unused"})
 class CUP$Parser$actions {
 
+
+    int numeroVarsNumericas = 0;
+    int numeroVarCreadas = 0;
+
+    private void addInfoMetodo(String tipo, Object nombre){
+        addInfoRestanteVariables("metodo: "+Token.parseToken(nombre).getLexema());
+        resultParcial.addMetodo(new Metodo(tipo, Token.parseToken(nombre).getLexema(), listaParametros));
+        listaParametros.clear();
+    }
+
+    private void addInfoVariables(String tipo, Object nombre){
+        if(tipo != null){
+            resultParcial.addVariable(new Variable(tipo, Token.parseToken(nombre).getLexema()));
+        }else{
+            resultParcial.addVariable(new Variable(Token.parseToken(nombre).getLexema()));            
+        }  
+        numeroVarCreadas++;      
+    }
+
+    private void addTipoNumericoVars(String tipo){
+        ArrayList<Variable> variables = resultParcial.getVariables();
+
+        for(int actual = (variables.size()-numeroVarsNumericas); actual < variables.size(); actual++){            
+            variables.get(actual).setTipo(tipo);                                
+        }
+        numeroVarsNumericas = 0;
+    }
+
+    private void addInfoRestanteVariables(String funcion){
+        ArrayList<Variable> variables = resultParcial.getVariables();
+
+        for(int actual = (variables.size()-numeroVarCreadas); actual < variables.size(); actual++){         
+            variables.get(actual).setFuncion(" ", funcion);
+        }
+        
+        numeroVarCreadas = 0;
+    }//este se invoca en las def_var de los bloques: clase y método, puesto que ahí se completa la info...
 
     private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error        
         if(token == null){//quiere decir que no existe el T que se esperaba
@@ -1419,7 +1458,7 @@ class CUP$Parser$actions {
         String lista = "";
 
         for(int idActual = 0; idActual < tokensAMostrar; idActual++){
-            lista += symbl_name_from_id(expected.get(idActual)) + " ";
+            lista += symbl_name_from_id(expected.get(idActual)) + " ";//De alguna manera, esta línea da ArrayIndexOutBoundsEx...
         }
         return lista;
     }  
@@ -1674,6 +1713,7 @@ class CUP$Parser$actions {
             {
               Object RESULT =null;
 		System.out.println("[S] sentencia clases: def_var");
+                                                                             addInfoRestanteVariables(resultParcial.getClase(0).getNombre());
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("sentencias_clase",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1710,6 +1750,7 @@ class CUP$Parser$actions {
             {
               Object RESULT =null;
 		System.out.println("[S] estructura: def_tipoVar [INT]");
+                                                                                      addTipoNumericoVars("int");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("def_tipo_variable",11, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1719,6 +1760,7 @@ class CUP$Parser$actions {
             {
               Object RESULT =null;
 		System.out.println("[S] estructura: def_tipoVar [DOUBLE]");
+                                                                                      addTipoNumericoVars("double");
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("def_tipo_variable",11, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1816,7 +1858,12 @@ class CUP$Parser$actions {
           case 38: // variable_numero ::= NOMBRE IGUAL contenido_numero 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_numero: con INI [cont_#]");
+                                                                                 addInfoVariables(null, nombre);
+                                                                                 numeroVarsNumericas++;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_numero",13, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1825,7 +1872,12 @@ class CUP$Parser$actions {
           case 39: // variable_numero ::= NOMBRE IGUAL contenido_char 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_numero: con INI [cont_C]");
+                                                                                 addInfoVariables(null, nombre);
+                                                                                 numeroVarsNumericas++;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_numero",13, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1834,7 +1886,12 @@ class CUP$Parser$actions {
           case 40: // variable_numero ::= NOMBRE 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		System.out.println("[S] substruct: variable_numero: sin INI");
+                                                                                 addInfoVariables(null, nombre);
+                                                                                 numeroVarsNumericas++;
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_numero",13, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1874,7 +1931,11 @@ class CUP$Parser$actions {
           case 44: // variable_string ::= NOMBRE IGUAL contenido_variable 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_string: con INI [cont_V]");
+                                                                                  addInfoVariables("String", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_string",15, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1883,7 +1944,11 @@ class CUP$Parser$actions {
           case 45: // variable_string ::= NOMBRE IGUAL contenido_string 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_string: con INI [cont_S]");
+                                                                                  addInfoVariables("String", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_string",15, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1892,7 +1957,11 @@ class CUP$Parser$actions {
           case 46: // variable_string ::= NOMBRE 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		System.out.println("[S] substruct: variable_string: sin INI");
+                                                                                  addInfoVariables("String", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_string",15, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1932,7 +2001,11 @@ class CUP$Parser$actions {
           case 50: // variable_char ::= NOMBRE IGUAL contenido_variable 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_char: con INI [cont_V]");
+                                                                                   addInfoVariables("char", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_char",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1941,7 +2014,11 @@ class CUP$Parser$actions {
           case 51: // variable_char ::= NOMBRE IGUAL contenido_char 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_char: con INI [cont_C]");
+                                                                                   addInfoVariables("char", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_char",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1950,7 +2027,11 @@ class CUP$Parser$actions {
           case 52: // variable_char ::= NOMBRE 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		System.out.println("[S] substruct: variable_char: sin INI");
+                                                                                   addInfoVariables("char", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_char",17, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1990,7 +2071,11 @@ class CUP$Parser$actions {
           case 56: // variable_boolean ::= NOMBRE IGUAL contenido_variable 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_boolean: con INI [cont_V]");
+                                                                                    addInfoVariables("boolean", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_boolean",19, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1999,7 +2084,11 @@ class CUP$Parser$actions {
           case 57: // variable_boolean ::= NOMBRE IGUAL contenido_boolean 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_boolean: con INI [cont_B]");
+                                                                                    addInfoVariables("boolean", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_boolean",19, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2008,7 +2097,11 @@ class CUP$Parser$actions {
           case 58: // variable_boolean ::= NOMBRE 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		System.out.println("[S] substruct: variable_boolean: sin Ini");
+                                                                                    addInfoVariables("boolean", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_boolean",19, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2048,7 +2141,11 @@ class CUP$Parser$actions {
           case 62: // variable_object ::= NOMBRE IGUAL contenido_variable 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_object: con INI [cont_V]");
+                                                                                     addInfoVariables("Object", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_object",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2057,7 +2154,11 @@ class CUP$Parser$actions {
           case 63: // variable_object ::= NOMBRE IGUAL contenido_object 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_object: con INI [cont_Oc]");
+                                                                                     addInfoVariables("Object", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_object",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2066,7 +2167,11 @@ class CUP$Parser$actions {
           case 64: // variable_object ::= NOMBRE IGUAL contenido_objeto 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_object: con INI [cont_O]");
+                                                                                     addInfoVariables("Object", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_object",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2075,7 +2180,11 @@ class CUP$Parser$actions {
           case 65: // variable_object ::= NOMBRE 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		System.out.println("[S] substruct: variable_object: sin Ini");
+                                                                                     addInfoVariables("Object", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_object",21, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2115,7 +2224,11 @@ class CUP$Parser$actions {
           case 69: // variable_objeto ::= NOMBRE IGUAL contenido_variable 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_objetO: con INI [cont_V");
+                                                                                     addInfoVariables("Objeto", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_objeto",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2124,7 +2237,11 @@ class CUP$Parser$actions {
           case 70: // variable_objeto ::= NOMBRE IGUAL contenido_objeto 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		System.out.println("[S] substruct: variable_objetO: con INI [cont_O");
+                                                                                     addInfoVariables("Objeto", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_objeto",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2133,7 +2250,11 @@ class CUP$Parser$actions {
           case 71: // variable_objeto ::= NOMBRE 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		System.out.println("[S] substruct: variable_objetO: sin Ini");
+                                                                                     addInfoVariables("Objeto", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("variable_objeto",23, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2200,7 +2321,11 @@ class CUP$Parser$actions {
           case 78: // def_metodo_constructor ::= OBJETO PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_constructor 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
 		System.out.println("[S] substruct: def_metodo_constructor");
+                                                                                                                              addInfoMetodo("constructor", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("def_metodo_constructor",26, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2240,7 +2365,11 @@ class CUP$Parser$actions {
           case 82: // def_metodo_tipo ::= INT NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
 		System.out.println("[S] substruct: def_metodo_tipo: INT");
+                                                                                                                               addInfoMetodo("int", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("def_metodo_tipo",28, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2249,7 +2378,11 @@ class CUP$Parser$actions {
           case 83: // def_metodo_tipo ::= DOUBLE NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_numero 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
 		System.out.println("[S] substruct: def_metodo_tipo: DOUBLE");
+                                                                                                                               addInfoMetodo("double", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("def_metodo_tipo",28, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2258,7 +2391,11 @@ class CUP$Parser$actions {
           case 84: // def_metodo_tipo ::= STRING NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_string 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
 		System.out.println("[S] substruct: def_metodo_tipo: STRING");
+                                                                                                                               addInfoMetodo("String", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("def_metodo_tipo",28, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2267,7 +2404,11 @@ class CUP$Parser$actions {
           case 85: // def_metodo_tipo ::= CHAR NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_char 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
 		System.out.println("[S] substruct: def_metodo_tipo: CHAR");
+                                                                                                                               addInfoMetodo("char", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("def_metodo_tipo",28, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2276,7 +2417,11 @@ class CUP$Parser$actions {
           case 86: // def_metodo_tipo ::= BOOLEAN NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_boolean 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
 		System.out.println("[S] substruct: def_metodo_tipo: BOOLEAN");
+                                                                                                                               addInfoMetodo("boolean", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("def_metodo_tipo",28, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2285,7 +2430,11 @@ class CUP$Parser$actions {
           case 87: // def_metodo_tipo ::= OBJECT NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_object 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
 		System.out.println("[S] substruct: def_metodo_tipo: OBJECT");
+                                                                                                                               addInfoMetodo("Object", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("def_metodo_tipo",28, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2294,7 +2443,11 @@ class CUP$Parser$actions {
           case 88: // def_metodo_tipo ::= OBJETO NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_objeto 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-4)).value;
 		System.out.println("[S] substruct: def_metodo_tipo: OBJETO");
+                                                                                                                               addInfoMetodo("Objeto", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("def_metodo_tipo",28, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-5)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2633,7 +2786,11 @@ class CUP$Parser$actions {
           case 123: // def_metodo_void ::= VOID NOMBRE cuerpo_metodo_void 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		System.out.println("[S] substruct: cuerpo_def_metodo: def_metodo_VOID");
+                                                                                      addInfoMetodo("void", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("def_metodo_void",35, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2731,7 +2888,15 @@ class CUP$Parser$actions {
           case 133: // parametro ::= tipo NOMBRE 
             {
               Object RESULT =null;
+		int tipoleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
+		int tiporight = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
+		String tipo = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		System.out.println("[S] substruct: parametro");
+                                                                         listaParametros.add(new Variable(tipo,Token.parseToken(nombre).getLexema()));
+                                                                         addInfoVariables(tipo, nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("parametro",38, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2739,8 +2904,9 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 134: // tipo ::= INT 
             {
-              Object RESULT =null;
+              String RESULT =null;
 		System.out.println("[S] tipo: INT");
+                                          RESULT = "int";
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipo",39, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2748,8 +2914,9 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 135: // tipo ::= DOUBLE 
             {
-              Object RESULT =null;
+              String RESULT =null;
 		System.out.println("[S] tipo: DOUBLE");
+                                          RESULT = "double";
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipo",39, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2757,8 +2924,9 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 136: // tipo ::= STRING 
             {
-              Object RESULT =null;
+              String RESULT =null;
 		System.out.println("[S] tipo: STRING");
+                                          RESULT = "String";
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipo",39, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2766,8 +2934,9 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 137: // tipo ::= CHAR 
             {
-              Object RESULT =null;
+              String RESULT =null;
 		System.out.println("[S] tipo: CHAR");
+                                          RESULT = "char";
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipo",39, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2775,8 +2944,9 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 138: // tipo ::= BOOLEAN 
             {
-              Object RESULT =null;
+              String RESULT =null;
 		System.out.println("[S] tipo: BOOLEAN");
+                                          RESULT = "boolean";
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipo",39, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2784,8 +2954,9 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 139: // tipo ::= OBJECT 
             {
-              Object RESULT =null;
+              String RESULT =null;
 		System.out.println("[S] tipo: OBJECT");
+                                          RESULT = "Object";
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipo",39, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2793,8 +2964,12 @@ class CUP$Parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 140: // tipo ::= OBJETO 
             {
-              Object RESULT =null;
+              String RESULT =null;
+		int objetoleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int objetoright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object objeto = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		System.out.println("[S] tipo: OBJETO");
+                                          RESULT = Token.parseToken(objeto).getLexema();
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("tipo",39, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3485,7 +3660,11 @@ class CUP$Parser$actions {
           case 215: // asignacion_completa_for ::= INT NOMBRE IGUAL contenido_numero PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [INT]");
+                                                                                                addInfoVariables("int", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3494,7 +3673,11 @@ class CUP$Parser$actions {
           case 216: // asignacion_completa_for ::= DOUBLE NOMBRE IGUAL contenido_numero PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [DOUBLE]");
+                                                                                                addInfoVariables("double", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3503,7 +3686,11 @@ class CUP$Parser$actions {
           case 217: // asignacion_completa_for ::= STRING NOMBRE IGUAL contenido_string PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [STRING-CS]");
+                                                                                                addInfoVariables("String", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3512,7 +3699,11 @@ class CUP$Parser$actions {
           case 218: // asignacion_completa_for ::= STRING NOMBRE IGUAL contenido_variable PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [STRING-CV]");
+                                                                                                addInfoVariables("String", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3521,7 +3712,11 @@ class CUP$Parser$actions {
           case 219: // asignacion_completa_for ::= CHAR NOMBRE IGUAL contenido_char PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [CHAR-CC]");
+                                                                                                addInfoVariables("char", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3530,7 +3725,11 @@ class CUP$Parser$actions {
           case 220: // asignacion_completa_for ::= CHAR NOMBRE IGUAL contenido_variable PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [CHAR-CV]");
+                                                                                                addInfoVariables("char", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3539,7 +3738,11 @@ class CUP$Parser$actions {
           case 221: // asignacion_completa_for ::= BOOLEAN NOMBRE IGUAL contenido_boolean PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [BOOLEAN-CB]");
+                                                                                                addInfoVariables("boolean", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3548,7 +3751,11 @@ class CUP$Parser$actions {
           case 222: // asignacion_completa_for ::= BOOLEAN NOMBRE IGUAL contenido_variable PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [BOOLEAN-CV]");
+                                                                                                addInfoVariables("boolean", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3557,7 +3764,11 @@ class CUP$Parser$actions {
           case 223: // asignacion_completa_for ::= OBJECT NOMBRE IGUAL contenido_object PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJECT-COc]");
+                                                                                                addInfoVariables("Object", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3566,7 +3777,11 @@ class CUP$Parser$actions {
           case 224: // asignacion_completa_for ::= OBJECT NOMBRE IGUAL contenido_variable PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETC-CV]");
+                                                                                                addInfoVariables("Object", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3575,7 +3790,11 @@ class CUP$Parser$actions {
           case 225: // asignacion_completa_for ::= OBJETO NOMBRE IGUAL contenido_objeto PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETO-CO]");
+                                                                                                addInfoVariables("Objeto", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3584,7 +3803,11 @@ class CUP$Parser$actions {
           case 226: // asignacion_completa_for ::= OBJETO NOMBRE IGUAL contenido_variable PUNTO_COMA 
             {
               Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETO-CV]");
+                                                                                                addInfoVariables("Objeto", nombre);
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("asignacion_completa_for",63, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

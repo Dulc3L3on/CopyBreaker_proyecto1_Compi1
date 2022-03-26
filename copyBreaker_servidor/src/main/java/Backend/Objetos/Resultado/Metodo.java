@@ -23,7 +23,9 @@ public class Metodo {
         this.parametros = parametros;
         this.numeroParametros = this.parametros.size();
     }
-    
+
+    //este se va a utilizar cuando se cree un obj Método para addlo al RESULT
+    //final [el que queda después de haber hecho las comparaciones]
     public Metodo(String tipo, String nombre, int numeroParametros){
         this.tipo = tipo;
         this.nombre = nombre;        
@@ -49,7 +51,7 @@ public class Metodo {
     public String asString(){
         return "{ Nombre: \""+ this.nombre + "\", "
               + "Tipo: \"" + this.tipo + "\","
-              + "Parametros: " + "\"" + String.valueOf(this.parametros.size())+"\" }";
+              + "Parametros: " + this.parametros.size() + " }";
     }
     
 }
