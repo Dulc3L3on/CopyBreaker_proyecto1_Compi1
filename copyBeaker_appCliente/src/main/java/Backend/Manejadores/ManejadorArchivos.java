@@ -15,10 +15,10 @@ import javax.swing.JFileChooser;
  */
 public class ManejadorArchivos {
     private final String ACCEPTED_EXTENSION = ".java";
-    private ArrayList<File> listaArchivos;
+    private ArrayList<File> listaArchivos = null;
     private String[] nombreArchivos;
     
-    public ArrayList<File> getFiles(){
+    public void setFiles(){
         this.listaArchivos = new ArrayList<>();
         File archivo = new File(this.getPath());
         
@@ -27,8 +27,6 @@ public class ManejadorArchivos {
             this.getAllFiles(archivos);
             this.getNombreArchivos(listaArchivos);
         }
-                 
-        return listaArchivos;
     }
     
     private String getPath(){
@@ -65,6 +63,10 @@ public class ManejadorArchivos {
         }
         
         return nombreArchivos;
+    }
+    
+    public ArrayList<File> getFiles(){
+        return this.listaArchivos;
     }
     
     public String[] getNombreArchivos(){

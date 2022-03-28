@@ -5,11 +5,13 @@
  */
 package Backend.Objetos.Resultado;
 
+import java.io.Serializable;
+
 /**
  *
  * @author phily
  */
-public class Comentario {
+public class Comentario implements Serializable{
     private String texto;
     
     public Comentario(String texto){
@@ -24,7 +26,6 @@ public class Comentario {
     //lo que contiene cada {} del JSON
     public String asString(){
         return "{ Texto: \""+ this.texto + "\" }";
-    }
-    
+    }    
     
 }

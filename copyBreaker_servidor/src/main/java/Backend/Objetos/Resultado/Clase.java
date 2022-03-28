@@ -5,11 +5,13 @@
  */
 package Backend.Objetos.Resultado;
 
+import java.io.Serializable;
+
 /**
  *
  * @author phily
  */
-public class Clase {
+public class Clase implements Serializable{
     private String nombre;
 
     public Clase(String nombre) {

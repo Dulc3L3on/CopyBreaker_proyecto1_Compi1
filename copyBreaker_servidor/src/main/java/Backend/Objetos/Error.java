@@ -14,16 +14,17 @@ import Backend.Objetos.Enums.SintaxError;
  * @author phily
  */
 
-public class Error {
-    private String proyecto;
-    private String clase;//en el lexer, podremos saber qué clase es a partir del campo del result...
+public class Error {    
+    //el colocar el proyecto no lo veo nec, puesto que habrá una lista por cada proyecto...
+    private final String clase;//en el lexer, podremos saber qué clase es a partir del campo del result...
     private String lexema;
     private int linea;
     private int columna;    
-    private String tipo;
+    private final String tipo;
     private String descripcion;
     
-    public Error(String lexema, int linea, int columna, LexerError tipo, String extra){//Ese extra será para el maybe xD
+    public Error(String clase, String lexema, int linea, int columna, LexerError tipo, String extra){//Ese extra será para el maybe xD
+        this.clase = clase;
         this.lexema = lexema;
         this.linea = linea;
         this.columna = columna;
@@ -31,7 +32,8 @@ public class Error {
         this.descripcion = this.lexerErrors[tipo.ordinal()]+extra;//Se enviará "" cuando no se req, entonces NO problem xD
     }
     
-    public Error(String lexema, int linea, int columna, SintaxError tipo, String listaEspera){
+    public Error(String clase, String lexema, int linea, int columna, SintaxError tipo, String listaEspera){
+        this.clase = clase;
         this.lexema = lexema;
         this.linea = linea;
         this.columna = columna;        
@@ -39,7 +41,8 @@ public class Error {
         this.descripcion = this.sintaxErrors[tipo.ordinal()] + listaEspera;        
     }
     
-    public Error(String lexema, int linea, int columna, SintaxError tipo){
+    public Error(String clase, String lexema, int linea, int columna, SintaxError tipo){
+        this.clase = clase;
         this.lexema = lexema;
         this.linea = linea;
         this.columna = columna;        
@@ -61,6 +64,10 @@ public class Error {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+    
+    public String getClase(){
+        return this.clase;
     }
 
     public String getLexema() {
@@ -85,8 +92,7 @@ public class Error {
     
     private final String lexerErrors[] = new String[] {
         "Palabra no aceptada en el lenguaje",
-        "Quizá quisiste decir "//y se concatena la recomendación xD
-        
+        "Quizá quisiste decir "//y se concatena la recomendación xD        
     };
 
     private final String sintaxErrors[] = new String[]{

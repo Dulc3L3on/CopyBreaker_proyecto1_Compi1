@@ -6,30 +6,40 @@
 package Frontend;
 
 import Backend.Manejadores.ManejadorAnalisis;
+import Backend.Manejadores.ManejadorInterfaz;
+import Backend.Sockets.ServerProcess;
 import java.io.File;
 
 /**
  *
  * @author phily
  */
-public class Log extends javax.swing.JFrame {
-     private ManejadorAnalisis manejadorAnalisis = new ManejadorAnalisis();
-     private String pathJava = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_2.java";
-     private String pathTxt_0 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_nivel0.txt";
-     private String pathTxt_1 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba.txt";
-     private String pathTxt_2 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_nivel2.txt";
-     private String pathTxt_3 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_nivel3.txt";
-     private String pathTxt_withErrors = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_withErrors.txt";
+public class Log extends javax.swing.JFrame {    
+    private final ServerProcess serverProcess;
+    private final ManejadorAnalisis manejadorAnalisis;
+    private final ManejadorInterfaz manejadorInterfaz;    
+     
+    private final String pathJava = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_2.java";
+    private final String pathTxt_0 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_nivel0.txt";
+    private final String pathTxt_1 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba.txt";
+    private final String pathTxt_2 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_nivel2.txt";
+    private final String pathTxt_3 = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_nivel3.txt";
+    private final String pathTxt_withErrors = "/home/phily/Documentos/CarpetaDeEstudios/2022/1erSemestre-2022/Compi1/Lab/Proyectos/Proyecto1/resources/archivoPrueba_withErrors.txt";
      
     /**
      * Creates new form Log
      */
-    public Log() {
-        initComponents();
+    public Log(){                
+        this.serverProcess = new ServerProcess();
+        this.manejadorAnalisis = this.serverProcess.getManejadorAnalisis();
+        this.manejadorInterfaz = this.serverProcess.getManejadorAnalisis().getManejadorInterfaz();//para este punto, la apariencia ya habrá sido cambiada xD
+        this.serverProcess.getManejadorAnalisis().getManejadorInterfaz().setComponentes(tbl_log, cbBox_proyecto);//a mi pensar debería funcionar tb si se lo seteo al manejador de interfaz de aquí        
+        System.out.println("el seteo se corre a todos los que le apuntan?? "+ this.manejadorInterfaz.getTable());
         
+        initComponents();        
         
       //  this.manejadorAnalisis.analizarClase(new File(pathTxt_2));
-        
+      
     }
 
     /**
@@ -41,34 +51,151 @@ public class Log extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        cbBox_proyecto = new javax.swing.JComboBox<>();
+        jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        txtA_logServer = new javax.swing.JTextArea();
+        tbl_log = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
-        txtA_logServer.setColumns(20);
-        txtA_logServer.setRows(5);
-        jScrollPane1.setViewportView(txtA_logServer);
+        cbBox_proyecto.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Proyecto1", "Proyecto2" }));
+        cbBox_proyecto.setEnabled(false);
+        cbBox_proyecto.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbBox_proyectoItemStateChanged(evt);
+            }
+        });
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        tbl_log.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "No.", "Clase", "Linea", "Columna", "Tipo", "Error", "Descripcion"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(tbl_log);
+        if (tbl_log.getColumnModel().getColumnCount() > 0) {
+            tbl_log.getColumnModel().getColumn(0).setMinWidth(50);
+            tbl_log.getColumnModel().getColumn(0).setPreferredWidth(50);
+            tbl_log.getColumnModel().getColumn(0).setMaxWidth(50);
+            tbl_log.getColumnModel().getColumn(1).setMinWidth(105);
+            tbl_log.getColumnModel().getColumn(1).setPreferredWidth(105);
+            tbl_log.getColumnModel().getColumn(1).setMaxWidth(105);
+            tbl_log.getColumnModel().getColumn(2).setMinWidth(55);
+            tbl_log.getColumnModel().getColumn(2).setPreferredWidth(55);
+            tbl_log.getColumnModel().getColumn(2).setMaxWidth(55);
+            tbl_log.getColumnModel().getColumn(3).setMinWidth(55);
+            tbl_log.getColumnModel().getColumn(3).setPreferredWidth(55);
+            tbl_log.getColumnModel().getColumn(3).setMaxWidth(55);
+            tbl_log.getColumnModel().getColumn(4).setMinWidth(105);
+            tbl_log.getColumnModel().getColumn(4).setPreferredWidth(105);
+            tbl_log.getColumnModel().getColumn(4).setMaxWidth(105);
+            tbl_log.getColumnModel().getColumn(5).setMinWidth(105);
+            tbl_log.getColumnModel().getColumn(5).setPreferredWidth(105);
+            tbl_log.getColumnModel().getColumn(5).setMaxWidth(105);
+        }
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 902, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 342, Short.MAX_VALUE)
+        );
+
+        jLabel2.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/red.png"))); // NOI18N
+        jLabel2.setText("LOG");
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/orange.png"))); // NOI18N
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/orange1.png"))); // NOI18N
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(4, 4, 4)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbBox_proyecto, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cbBox_proyecto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(22, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 832, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(21, 21, 21))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(20, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 333, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(20, 20, 20))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        this.serverProcess.stopServerProcess();
+    }//GEN-LAST:event_formWindowClosing
+
+    private void cbBox_proyectoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbBox_proyectoItemStateChanged
+        this.manejadorInterfaz.setErrores(this.manejadorAnalisis.getErrores(this.cbBox_proyecto.getSelectedIndex()));
+    }//GEN-LAST:event_cbBox_proyectoItemStateChanged
 
     /**
      * @param args the command line arguments
@@ -106,7 +233,13 @@ public class Log extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> cbBox_proyecto;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextArea txtA_logServer;
+    private javax.swing.JTable tbl_log;
     // End of variables declaration//GEN-END:variables
 }

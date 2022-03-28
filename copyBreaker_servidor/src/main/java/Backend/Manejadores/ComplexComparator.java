@@ -18,7 +18,7 @@ import java.util.ArrayList;
  */
 public class ComplexComparator {
     private SingleComparator singleComparator;
-    private RESULT result;
+    private RESULT result = null;
     
     public ComplexComparator(ArrayList<RESULT> resultadosProyecto1, ArrayList<RESULT> resultadosProyecto2){
         this.singleComparator = new SingleComparator();
@@ -140,7 +140,7 @@ public class ComplexComparator {
         this.result.addSubScore(aparicionesRepetidas, metodosTotales);
     }//se va a mantener fijo el RESULT de la clase actual del proy1, hasta que se acaben las clases del proy2    
     
-    public RESULT getRESULT(){
+    public RESULT getRESULT(){//nunca devolverá null, puesto que esta clase solo será instanciada si no hubieron errores, lo que si puede llegar a pasar es que devuelva un result vacío
         return this.result;
     }    
 }

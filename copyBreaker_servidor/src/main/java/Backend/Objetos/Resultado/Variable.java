@@ -5,11 +5,13 @@
  */
 package Backend.Objetos.Resultado;
 
+import java.io.Serializable;
+
 /**
  *
  * @author phily
  */
-public class Variable {
+public class Variable implements Serializable{
     private String tipo;
     private String nombre;    
     private String funcion = "";//ámbito de uso xD

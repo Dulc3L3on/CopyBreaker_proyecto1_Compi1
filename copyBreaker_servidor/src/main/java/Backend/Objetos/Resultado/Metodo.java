@@ -5,15 +5,16 @@
  */
 package Backend.Objetos.Resultado;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author phily
  */
-public class Metodo {
-    private String tipo;
-    private String nombre;    
+public class Metodo implements Serializable{
+    private final String tipo;
+    private final String nombre;    
     private ArrayList<Variable> parametros;//a estos obj simplemente no se les seteará la función puesto que es obvi de donde son xD
     private int numeroParametros;
     

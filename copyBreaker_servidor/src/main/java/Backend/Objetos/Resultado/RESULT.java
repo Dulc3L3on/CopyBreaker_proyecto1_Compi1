@@ -5,24 +5,30 @@
  */
 package Backend.Objetos.Resultado;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author phily
  */
-public class RESULT {
+public class RESULT implements Serializable{    
+    private String JSON;//para que así no haya problemas al momento de enviar la respuesta hacia el cliente...
     private double score = 0;
     private ArrayList<Clase> clases;
     private ArrayList<Comentario> comentarios;
     private ArrayList<Variable> variables;
     private ArrayList<Metodo> metodos;
 
-    public RESULT(){
+    public RESULT(){    
         this.clases = new ArrayList<>();
         this.comentarios = new ArrayList<>();
         this.variables = new ArrayList<>();
         this.metodos = new ArrayList<>();
+    }
+    
+    public void setJSON(String JSON){
+        this.JSON = JSON;
     }
     
     public void addClase(Clase clase){
@@ -45,6 +51,10 @@ public class RESULT {
         if(total > 0){
             this.score += ((repetidos/total)*0.25);
         }        
+    }
+    
+    public String getJSON(){
+        return this.JSON;
     }
     
     public Clase getClase(int posicion){
@@ -81,42 +91,50 @@ public class RESULT {
 
     public double getScore() {
         return this.score;
-    }        
+    }    
     
     public String getClassObjects(boolean esParaReporte){
         String clasesRepetidas = "";
         
-        for (Clase clase : clases) {
-            clasesRepetidas += clase.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
-        }        
-        return clasesRepetidas;
+        for (int actual = 0; actual < (clases.size()-1); actual++) {
+            clasesRepetidas += ((esParaReporte)?"\t\t\t":"")+clases.get(actual).asString()
+                    + ((esParaReporte)?"\n":",\n");//puesto que ya tienen incluidos las {} xD
+        }                       
+        return (clasesRepetidas+= ((esParaReporte)?"\t\t\t":"") + clases.get((clases.size()-1)));
     }
     
     public String getCommentsObjects(boolean esParaReporte){
         String cometariosRepetidos = "";
         
-        for (Comentario comentario : comentarios) {
-            cometariosRepetidos += comentario.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
+        for (int actual = 0; actual < (comentarios.size()-1); actual++) {
+            cometariosRepetidos += ((esParaReporte)?"\t\t\t":"") + comentarios.get(actual).asString()
+                    + ((esParaReporte)?"\n":",\n");//puesto que ya tienen incluidos las {} xD
         }        
-        return cometariosRepetidos;
+        return (cometariosRepetidos+= ((esParaReporte)?"\t\t\t":"") + comentarios.get((comentarios.size()-1)));
     }
     
     public String getVariablesObjects(boolean esParaReporte){
         String variablesRepetidas = "";
         
-        for (Variable variable : variables) {
-            variablesRepetidas += variable.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
+        for (int actual = 0; actual < (variables.size()-1); actual++) {
+            variablesRepetidas += ((esParaReporte)?"\t\t\t":"") + variables.get(actual).asString()
+                    + ((esParaReporte)?"\n":",\n");//puesto que ya tienen incluidos las {} xD
         }        
-        return variablesRepetidas;
+        return (variablesRepetidas += ((esParaReporte)?"\t\t\t":"") + (variables.get((variables.size()-1))));
     }
     
     public String getMethodObjects(boolean esParaReporte){
         String metodosRepetidos = "";
         
-        for (Metodo metodo : metodos) {
-            metodosRepetidos += metodo.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
+        for (int actual = 0; actual < (metodos.size()-1); actual++) {
+            metodosRepetidos += ((esParaReporte)?"\t\t\t":"") + metodos.get(actual).asString()
+                    + ((esParaReporte)?"\n":",\n");//puesto que ya tienen incluidos las {} xD
         }        
-        return metodosRepetidos;
+        return (metodosRepetidos += ((esParaReporte)?"\t\t\t":"") + (metodos.get((metodos.size()-1))));
+    }
+    
+    public boolean isEpmty(){
+        return (this.score==0);
     }
     
 }//a partir de esta clase se crerá el JSON, otambién lo que podrías hacer es que de forma simultánea

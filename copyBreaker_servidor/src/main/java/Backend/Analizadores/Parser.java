@@ -1393,7 +1393,7 @@ public class Parser extends java_cup.runtime.lr_parser {
     }    
 
     public void report_fatal_error(String message, Object info){
-        manejadorErrores.setError(new Error(info.toString(), -1, 
+        manejadorErrores.setError(new Error(resultParcial.getClase(0).getNombre(), ((info != null)?info.toString():""), -1, 
         -1, SintaxError.FATAL_ERROR));
     }
 
@@ -1446,9 +1446,9 @@ class CUP$Parser$actions {
 
     private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error        
         if(token == null){//quiere decir que no existe el T que se esperaba
-            manejadorErrores.setError(new Error("", linea, columna, SintaxError.PARSER_EXPECTED, "concatExpected()"));
+            manejadorErrores.setError(new Error(resultParcial.getClase(0).getNombre(), "", linea, columna, SintaxError.PARSER_EXPECTED, "concatExpected()"));
         }else{                
-            manejadorErrores.setError(new Error(Token.parseToken(token).getLexema(), linea, columna, error));
+            manejadorErrores.setError(new Error(resultParcial.getClase(0).getNombre(), Token.parseToken(token).getLexema(), linea, columna, error));
         }                    
     }
 

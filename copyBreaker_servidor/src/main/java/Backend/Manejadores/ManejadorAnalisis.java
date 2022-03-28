@@ -10,9 +10,8 @@ import Backend.Analizadores.Parser;
 import Backend.Herramientas.Herramienta;
 import Backend.Objetos.Resultado.Clase;
 import Backend.Objetos.Resultado.RESULT;
-import java.io.BufferedReader;
+import Backend.Objetos.Error;
 import java.io.File;
-import java.io.FileReader;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -22,17 +21,23 @@ import java.util.ArrayList;
  * @author phily
  */
 public class ManejadorAnalisis {//para mientras que estos métodos son del servidor...
-    private Herramienta herramienta;
+    private final Herramienta herramienta;
     private ComplexComparator complexComparator;
+    private ManejadorErrores[] manejadoresError;
+    private final ManejadorInterfaz manejadorInterfaz;
+    private final EscritorJSON escritorJSON;
+    private ArrayList<ArrayList<RESULT>> listadoRESULTS;
     private final int NUMERO_PROYECTOS_ANALIZAR = 2;
     
     public ManejadorAnalisis(){
-        this.herramienta = new Herramienta();        
+        this.herramienta = new Herramienta();   
+        this.manejadorInterfaz = new ManejadorInterfaz();
+        this.escritorJSON = new EscritorJSON();
     }
  
     public void analizarProyectos(ArrayList<ArrayList<File>> archivosProyectos){       
-        ManejadorErrores[] manejadoresError = new ManejadorErrores[]{new ManejadorErrores(), new ManejadorErrores()};
-        ArrayList<ArrayList<RESULT>> listadoRESULTS = new ArrayList<>();
+        manejadoresError = new ManejadorErrores[]{new ManejadorErrores(), new ManejadorErrores()};
+        listadoRESULTS = new ArrayList<>();        
         
         for (int actual = 0; actual < NUMERO_PROYECTOS_ANALIZAR; actual++) {
             listadoRESULTS.add(analizarClases(archivosProyectos.get(actual), 
@@ -40,25 +45,18 @@ public class ManejadorAnalisis {//para mientras que estos métodos son del servi
                 manejadoresError[actual], (actual+1)));            
         }
         
-        if(manejadoresError[0].getListaErrores().isEmpty() && manejadoresError[0].getListaErrores().isEmpty()){
-            complexComparator = new ComplexComparator(listadoRESULTS.get(0), listadoRESULTS.get(1));
-            
-            //ya tendríamos que tener la lógica para escribir el JSON o para formarlo después de tener el RESULT final
-           //mira que conviene ojo mira que conviene
-        }else{
-            for (int actual = 0; actual < NUMERO_PROYECTOS_ANALIZAR; actual++) {
-                //se llama al manejador de la tabla/interfaz para que add los errores a la consola, pensaba usar una tabla para más orden, pero por el scroll, quizá me quede con el JTxtArea
-            }
+        if(!this.hubieronErrores()){
+            complexComparator = new ComplexComparator(listadoRESULTS.get(0), listadoRESULTS.get(1));           
+            this.escritorJSON.escribirJSON(this.complexComparator.getRESULT());
+            this.complexComparator.getRESULT().setJSON(this.escritorJSON.getJSON());
+        }else{            
+            this.manejadorInterfaz.setErrores(manejadoresError[0].getListaErrores());//los errores por defecto...    
         }        
-        
-        /*
-          this.analizarClase(clases.get(claseActual).getAbsoluteFile());
-        }*/
-        
-        
+              
+        this.manejadorInterfaz.habilitarComboBox();//independientemente de si haya o no errores, el usuario tendría que ser capaza de usar ese comboBox xD xD
     }//se invocará una vez por cada proyecto, para que así recorra la lista de files de cada carpeta y cree una lista por separado
     
-    public ArrayList<RESULT> analizarClases(ArrayList<File> archivosProyecto, 
+    private ArrayList<RESULT> analizarClases(ArrayList<File> archivosProyecto, 
             String[] nombreClases, ManejadorErrores manejadorErrores, int numeroProyecto){
         
         ArrayList<RESULT> resultados = new ArrayList<>();
@@ -69,10 +67,9 @@ public class ManejadorAnalisis {//para mientras que estos métodos son del servi
         }
         
         return resultados;//si la clase no tiene contenido, entonces solo ese listado tendrá un ele, los demás estarán vacíos...
-    }
+    }    
     
-    //yo imagino que esto se envlverá en un for para crear la TS de cada clase y así addla a la lista de TS...    
-    public RESULT analizarClase(File clase, String[] nombreClases, String nombreClase, 
+    private RESULT analizarClase(File clase, String[] nombreClases, String nombreClase, 
             ManejadorErrores manejadorErrores, int numeroProyecto){
         
         RESULT result = new RESULT();
@@ -94,11 +91,39 @@ public class ManejadorAnalisis {//para mientras que estos métodos son del servi
         }
         
         return result;//puesto que al ser por referencia, las modificaciones hechas por el lexer y/o el parser se encuentran aquí...
+    }   
+    
+    private boolean hubieronErrores(){
+        return !(manejadoresError[0].getListaErrores().isEmpty() && manejadoresError[1].getListaErrores().isEmpty());
     }
     
+    public ManejadorInterfaz getManejadorInterfaz(){
+        return this.manejadorInterfaz;
+    }
+
+    /**
+     * Esto es para el uso del cbBox del Log
+     * @param indice
+     * @return
+     */
+
+    public ArrayList<Error> getErrores(int indice){
+        return this.manejadoresError[indice].getListaErrores();
+    }
+    
+    /**
+     * Si se invoca al haber errores, habrá un nullPointer
+     * puesto que el comparador solo se instancia si ellos
+     * no existen
+     * @return
+     */
+    public RESULT getRESULT(){        
+        if(!hubieronErrores()){
+            return this.complexComparator.getRESULT();        
+        }
+        return null;
+    }       
 }
-
-
 
 
 //lo primero que hice para leer el archivo fue usar un new FileReader(clase)
