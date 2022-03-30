@@ -119,16 +119,16 @@ public class Log extends javax.swing.JFrame {
             tbl_log.getColumnModel().getColumn(4).setMinWidth(105);
             tbl_log.getColumnModel().getColumn(4).setPreferredWidth(105);
             tbl_log.getColumnModel().getColumn(4).setMaxWidth(105);
-            tbl_log.getColumnModel().getColumn(5).setMinWidth(105);
-            tbl_log.getColumnModel().getColumn(5).setPreferredWidth(105);
-            tbl_log.getColumnModel().getColumn(5).setMaxWidth(105);
+            tbl_log.getColumnModel().getColumn(5).setMinWidth(115);
+            tbl_log.getColumnModel().getColumn(5).setPreferredWidth(115);
+            tbl_log.getColumnModel().getColumn(5).setMaxWidth(115);
         }
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 963, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 987, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

@@ -8,6 +8,7 @@ package Backend.Manejadores;
 import java.io.File;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -58,13 +59,15 @@ public class ManejadorInterfaz {
         }         
     }          
     
-    public void addArchivosALista(JList<String> lista, String[] archivosCargados){                 
+    public void addArchivosALista(JList<String> lista, String[] archivosCargados, JTextArea areaTexto){                 
         DefaultListModel<String> modeloLista = new DefaultListModel<>();
         lista.setModel(modeloLista);
                 
         for (String archivoCargado : archivosCargados) {
             modeloLista.addElement(archivoCargado);
-        }        
+        }      
+        
+        areaTexto.setText("");
     }  
       
     public void addResultados_JSON(String JSON){
@@ -72,12 +75,17 @@ public class ManejadorInterfaz {
         this.txtA_JSON.updateUI();
     }
     
-    public int getRow(){
-        return 0;
-    }
-    
-    public int getColumn(){
-        return 0;
+    public void addUbicacion(JTextArea areaTexto, JLabel etiquetaPosicion){
+        try {
+           int posicionCareta = areaTexto.getCaretPosition();
+           int linea= areaTexto.getLineOfOffset(posicionCareta);
+           int columna = posicionCareta - areaTexto.getLineStartOffset(linea);
+       
+            // Ya que las líneas las cuenta desde la 0
+            linea += 1;
+            
+            etiquetaPosicion.setText("  línea: "+ linea +"    columna: "+columna);
+        } catch(Exception ex) { }
     }
     
     //ahora que lo pienso creo que para los reportes no hace falta tener un método a menos que te DIERA TIEMPO y decidieras hacer que se remarcaran los lugares con errores    

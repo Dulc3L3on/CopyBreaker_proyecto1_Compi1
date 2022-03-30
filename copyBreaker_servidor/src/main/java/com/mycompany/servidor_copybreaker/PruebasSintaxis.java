@@ -528,6 +528,11 @@ public void pruebaAsignacionesPermitidas(){
     
 }//sé que permite otros,pero creo que ignoaré esto porque implica más trabajo y no creo que evalúen hasta ese punto 
 
+public int getNumero(int numero){
+    return numero;
+}
+
+
 public void pruebaOpcionesSwitch(){
     int entero = 5;
     double doble = 7.7;    
@@ -537,7 +542,9 @@ public void pruebaOpcionesSwitch(){
     PruebasSintaxis pruebas = new PruebasSintaxis();
     Object objeto = new Object();
     
-    switch(5){
+    this.varGlobal++;
+    
+    switch(this.getNumero(5)){
         //case 5+5*entero:
          case 5+5*3:
     }

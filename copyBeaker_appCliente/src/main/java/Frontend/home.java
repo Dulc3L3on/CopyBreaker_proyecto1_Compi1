@@ -64,20 +64,20 @@ public class home extends javax.swing.JFrame {
         txtA_proyecto1 = new javax.swing.JTextArea();
         scroll_proyecto2 = new javax.swing.JScrollPane();
         txtA_proyecto2 = new javax.swing.JTextArea();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        lbl_ubicacion_Proyecto1 = new javax.swing.JLabel();
+        lbl_ubicacion_Proyecto2 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         scroll_txtA_JSON = new javax.swing.JScrollPane();
         txt_JSON = new javax.swing.JTextArea();
         jButton2 = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
+        lbl_ubicacion_JSON = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jTextField2 = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         scroll_TxtA_Reportes = new javax.swing.JScrollPane();
@@ -86,9 +86,9 @@ public class home extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
+        lbl_ubicacion_Reportes = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -124,17 +124,17 @@ public class home extends javax.swing.JFrame {
 
         lista_Carga1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         lista_Carga1.setFont(new java.awt.Font("Lato Medium", 0, 14)); // NOI18N
-        lista_Carga1.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                lista_Carga1ValueChanged(evt);
+        lista_Carga1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lista_Carga1MouseClicked(evt);
             }
         });
         jScrollPane3.setViewportView(lista_Carga1);
 
         lista_Carga2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        lista_Carga2.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                lista_Carga2ValueChanged(evt);
+        lista_Carga2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lista_Carga2MouseClicked(evt);
             }
         });
         jScrollPane4.setViewportView(lista_Carga2);
@@ -151,23 +151,33 @@ public class home extends javax.swing.JFrame {
         txtA_proyecto1.setColumns(20);
         txtA_proyecto1.setRows(5);
         txtA_proyecto1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        txtA_proyecto1.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                txtA_proyecto1CaretUpdate(evt);
+            }
+        });
         scroll_proyecto1.setViewportView(txtA_proyecto1);
 
         txtA_proyecto2.setEditable(false);
         txtA_proyecto2.setColumns(20);
         txtA_proyecto2.setRows(5);
         txtA_proyecto2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        txtA_proyecto2.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                txtA_proyecto2CaretUpdate(evt);
+            }
+        });
         scroll_proyecto2.setViewportView(txtA_proyecto2);
 
-        jLabel4.setBackground(new java.awt.Color(206, 214, 228));
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel4.setText("linea: 0    columna: 0  ");
-        jLabel4.setOpaque(true);
+        lbl_ubicacion_Proyecto1.setBackground(new java.awt.Color(219, 227, 241));
+        lbl_ubicacion_Proyecto1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lbl_ubicacion_Proyecto1.setText("linea: 0    columna: 0  ");
+        lbl_ubicacion_Proyecto1.setOpaque(true);
 
-        jLabel9.setBackground(new java.awt.Color(206, 214, 228));
-        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel9.setText("linea: 0    columna: 0  ");
-        jLabel9.setOpaque(true);
+        lbl_ubicacion_Proyecto2.setBackground(new java.awt.Color(206, 214, 228));
+        lbl_ubicacion_Proyecto2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        lbl_ubicacion_Proyecto2.setText("linea: 0    columna: 0  ");
+        lbl_ubicacion_Proyecto2.setOpaque(true);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -178,20 +188,19 @@ public class home extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btn_analizar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(btn_carga1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE))
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 267, Short.MAX_VALUE)
-                            .addComponent(btn_carga2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)
+                            .addComponent(btn_carga1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btn_carga2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
-                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(scroll_proyecto1, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
-                            .addComponent(scroll_proyecto2)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, Short.MAX_VALUE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(scroll_proyecto1, javax.swing.GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
+                            .addComponent(lbl_ubicacion_Proyecto2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(scroll_proyecto2, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lbl_ubicacion_Proyecto1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -202,20 +211,20 @@ public class home extends javax.swing.JFrame {
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(scroll_proyecto1, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lbl_ubicacion_Proyecto1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(29, 29, 29)
                         .addComponent(scroll_proyecto2, javax.swing.GroupLayout.PREFERRED_SIZE, 347, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(2, 2, 2)
-                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(lbl_ubicacion_Proyecto2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 756, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                         .addComponent(jScrollPane3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_carga1, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(30, 30, 30)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 325, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_carga1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_carga2, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btn_carga2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addComponent(btn_analizar, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -226,13 +235,18 @@ public class home extends javax.swing.JFrame {
         txt_JSON.setColumns(20);
         txt_JSON.setRows(5);
         txt_JSON.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        txt_JSON.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                txt_JSONCaretUpdate(evt);
+            }
+        });
         scroll_txtA_JSON.setViewportView(txt_JSON);
 
         jButton2.setText("if(edit == 0)?Ed:Analiz");
 
-        jLabel2.setBackground(new java.awt.Color(229, 233, 239));
-        jLabel2.setText("  línea: 0    columna: 0");
-        jLabel2.setOpaque(true);
+        lbl_ubicacion_JSON.setBackground(new java.awt.Color(229, 233, 239));
+        lbl_ubicacion_JSON.setText("  línea: 0    columna: 0");
+        lbl_ubicacion_JSON.setOpaque(true);
 
         jPanel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -258,13 +272,14 @@ public class home extends javax.swing.JFrame {
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addGap(0, 40, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(0, 26, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         jTextField2.setText("jTextField1");
 
-        jLabel7.setText("Buscar: ");
+        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/lupa-icon.png"))); // NOI18N
+        jLabel10.setText("Buscar: ");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -277,12 +292,12 @@ public class home extends javax.swing.JFrame {
                     .addComponent(scroll_txtA_JSON)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 524, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField2)
+                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -293,9 +308,10 @@ public class home extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField2)
+                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -313,6 +329,11 @@ public class home extends javax.swing.JFrame {
         txtA_Reportes.setColumns(20);
         txtA_Reportes.setRows(5);
         txtA_Reportes.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        txtA_Reportes.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                txtA_ReportesCaretUpdate(evt);
+            }
+        });
         scroll_TxtA_Reportes.setViewportView(txtA_Reportes);
 
         jPanel8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -345,19 +366,20 @@ public class home extends javax.swing.JFrame {
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 5, Short.MAX_VALUE)
                 .addComponent(jLabel8)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jLabel5.setBackground(new java.awt.Color(229, 233, 239));
-        jLabel5.setText("  línea: 0    columna: 0");
-        jLabel5.setOpaque(true);
-
-        jLabel6.setText("Buscar: ");
+        lbl_ubicacion_Reportes.setBackground(new java.awt.Color(229, 233, 239));
+        lbl_ubicacion_Reportes.setText("  línea: 0    columna: 0");
+        lbl_ubicacion_Reportes.setOpaque(true);
 
         jTextField1.setText("jTextField1");
+
+        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/lupa-icon.png"))); // NOI18N
+        jLabel11.setText("Buscar: ");
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -371,11 +393,11 @@ public class home extends javax.swing.JFrame {
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 524, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextField1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lbl_ubicacion_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -384,12 +406,12 @@ public class home extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addComponent(scroll_TxtA_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 487, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lbl_ubicacion_Reportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -414,10 +436,20 @@ public class home extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Manjari", 0, 16)); // NOI18N
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guardar_icon_3.png"))); // NOI18N
         jLabel3.setText("  Guardar");
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel3MouseClicked(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Manjari", 0, 16)); // NOI18N
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/open_icon.png"))); // NOI18N
         jLabel1.setText("  Abrir");
+        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel1MouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -427,7 +459,7 @@ public class home extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addGap(23, 23, 23)
+                .addGap(30, 30, 30)
                 .addComponent(jLabel3)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -435,9 +467,9 @@ public class home extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTabbedPane1))
         );
@@ -493,21 +525,49 @@ public class home extends javax.swing.JFrame {
 
     private void btn_carga2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_carga2ActionPerformed
         this.manejadorArchivos_Proyecto2.setFiles();
-        this.manejadorInterfaz.addArchivosALista(lista_Carga2, this.manejadorArchivos_Proyecto2.getNombreArchivos());
+        this.manejadorInterfaz.addArchivosALista(lista_Carga2, this.manejadorArchivos_Proyecto2.getNombreArchivos(), txtA_proyecto2);
     }//GEN-LAST:event_btn_carga2ActionPerformed
 
     private void btn_carga1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_carga1ActionPerformed
         this.manejadorArchivos_Proyecto1.setFiles();
-        this.manejadorInterfaz.addArchivosALista(lista_Carga1, this.manejadorArchivos_Proyecto1.getNombreArchivos());
+        this.manejadorInterfaz.addArchivosALista(lista_Carga1, this.manejadorArchivos_Proyecto1.getNombreArchivos(), txtA_proyecto1);
     }//GEN-LAST:event_btn_carga1ActionPerformed
 
-    private void lista_Carga1ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lista_Carga1ValueChanged
-        this.txtA_proyecto1.setText(this.manejadorArchivos_Proyecto1.getFileAsString(this.lista_Carga1.getSelectedIndex()));//si no hay archivos, no habrá problema, 1 porque no se mostrará algo en la lista y dos porque pues se tiene un if, aunque en realidad no es necesario xD
-    }//GEN-LAST:event_lista_Carga1ValueChanged
+    private void txtA_proyecto1CaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_txtA_proyecto1CaretUpdate
+       this.manejadorInterfaz.addUbicacion(txtA_proyecto1, lbl_ubicacion_Proyecto1);
+    }//GEN-LAST:event_txtA_proyecto1CaretUpdate
 
-    private void lista_Carga2ValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_lista_Carga2ValueChanged
-        this.txtA_proyecto2.setText(this.manejadorArchivos_Proyecto2.getFileAsString(this.lista_Carga2.getSelectedIndex()));
-    }//GEN-LAST:event_lista_Carga2ValueChanged
+    private void txtA_proyecto2CaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_txtA_proyecto2CaretUpdate
+       this.manejadorInterfaz.addUbicacion(txtA_proyecto2, lbl_ubicacion_Proyecto2);
+    }//GEN-LAST:event_txtA_proyecto2CaretUpdate
+
+    private void txt_JSONCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_txt_JSONCaretUpdate
+        this.manejadorInterfaz.addUbicacion(txt_JSON, lbl_ubicacion_JSON);
+    }//GEN-LAST:event_txt_JSONCaretUpdate
+
+    private void txtA_ReportesCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_txtA_ReportesCaretUpdate
+        this.manejadorInterfaz.addUbicacion(txtA_Reportes, lbl_ubicacion_Reportes);
+    }//GEN-LAST:event_txtA_ReportesCaretUpdate
+
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jLabel1MouseClicked
+
+    private void lista_Carga1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lista_Carga1MouseClicked
+        if(this.lista_Carga1.getSelectedIndex()!= -1){
+            this.txtA_proyecto1.setText(this.manejadorArchivos_Proyecto1.getFileAsString(this.lista_Carga1.getSelectedIndex()));
+        }        
+    }//GEN-LAST:event_lista_Carga1MouseClicked
+
+    private void lista_Carga2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lista_Carga2MouseClicked
+        if(this.lista_Carga2.getSelectedIndex()!= -1){
+            this.txtA_proyecto2.setText(this.manejadorArchivos_Proyecto2.getFileAsString(this.lista_Carga2.getSelectedIndex()));
+        }        
+    }//GEN-LAST:event_lista_Carga2MouseClicked
 
     private void addManejadorLinea(){
     
@@ -555,14 +615,10 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -584,6 +640,10 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JTable jTable2;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
+    private javax.swing.JLabel lbl_ubicacion_JSON;
+    private javax.swing.JLabel lbl_ubicacion_Proyecto1;
+    private javax.swing.JLabel lbl_ubicacion_Proyecto2;
+    private javax.swing.JLabel lbl_ubicacion_Reportes;
     private javax.swing.JList<String> lista_Carga1;
     private javax.swing.JList<String> lista_Carga2;
     private javax.swing.JScrollPane scroll_TxtA_Reportes;

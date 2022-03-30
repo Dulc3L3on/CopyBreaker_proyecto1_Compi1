@@ -110,7 +110,7 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" alignment="0" pref="963" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" alignment="0" pref="987" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -167,7 +167,7 @@
                           <Editor/>
                           <Renderer/>
                         </Column>
-                        <Column maxWidth="105" minWidth="105" prefWidth="105" resizable="true">
+                        <Column maxWidth="115" minWidth="115" prefWidth="115" resizable="true">
                           <Title/>
                           <Editor/>
                           <Renderer/>

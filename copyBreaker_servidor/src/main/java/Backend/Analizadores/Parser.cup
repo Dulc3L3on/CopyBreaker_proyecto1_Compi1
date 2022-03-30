@@ -102,7 +102,7 @@ non terminal def_metodo, cuerpo_def_metodo, def_metodo_constructor, cuerpo_metod
 non terminal cuerpo_metodo_object, cuerpo_metodo_objeto, def_metodo_void, cuerpo_metodo_void, parametros, parametro;
 non terminal String tipo;
 non terminal bloque, sentencias;
-non terminal asignacion, tipos_asignacion;
+non terminal asignacion, tipos_asignacion/*, asignacion_multiple, contenido_asignacion_multiple*/;
 non terminal contenido_variable, contenido_numero, contenido_string, permitidos, cualquier_contenido, opciones_cualquier_contenido, strings, contenido_char, contenido_boolean, contenido_object, contenido_objeto;
 non terminal operacion_unaria, incremento, autoincremento, opciones_autoincremento, opciones_autoIncreMas;
 non terminal ciclo, ciclo_for, asignacion_for, asignacion_completa_for, condiciones_for, incremento_for;
@@ -195,7 +195,7 @@ def_tipo_variable ::= INT creacion_variable_numero                              
                     | BOOLEAN creacion_variable_boolean                             {:System.out.println("[S] estructura: def_tipoVar [BOOLEAN]");:}
                     | OBJECT creacion_variable_object                               {:System.out.println("[S] estructura: def_tipoVar [OBJECT]");:}
                     | OBJETO creacion_variable_objeto                               {:System.out.println("[S] estructura: def_tipoVar [OBJETO]");:}
-                    /*ya se reemplazó por objeto...*/
+                    | NOMBRE creacion_variable_objeto
                     | error:err                                                     {:System.out.println("[S] error: VARIABLE CREATION EXPECTED <tipo> <list-vars>");
                                                                                       addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_VARIABLE_CREATION);:}
                     ;                    
@@ -333,6 +333,7 @@ def_metodo_tipo ::= INT NOMBRE:nombre PARENTESIS_A parametros PARENTESIS_C cuerp
                                                                                                                                addInfoMetodo("Object", nombre);:}
                   | OBJETO NOMBRE:nombre PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_objeto                           {:System.out.println("[S] substruct: def_metodo_tipo: OBJETO");
                                                                                                                                addInfoMetodo("Objeto", nombre);:}
+                  | NOMBRE NOMBRE PARENTESIS_A parametros PARENTESIS_C cuerpo_metodo_objeto
           //        | error                                                                                             {:System.out.println("[S] error: METHOD CREATION EXPECTED <tipo> ( <param-list> ) { body|e }");:}
                   ;
 
@@ -340,6 +341,14 @@ cuerpo_metodo_numero ::= LLAVE_A bloque retorno_numero LLAVE_C                  
                        | LLAVE_A retorno_numero LLAVE_C                                      {:System.out.println("[S] substruct: cuerpo_metodo_# [SB, CR_#]");:}                                               
                        | LLAVE_A bloque retorno_char LLAVE_C                                 {:System.out.println("[S] substruct: cuerpo_metodo_# [CB, CR_C]");:}            
                        | LLAVE_A retorno_char LLAVE_C                                        {:System.out.println("[S] substruct: cuerpo_metodo_# [SB, CR_C]");:}                        
+                       | LLAVE_A bloque THIS PUNTO cuerpo_invocacion_var PUNTO_COMA LLAVE_C
+                       | LLAVE_A THIS PUNTO cuerpo_invocacion_var PUNTO_COMA LLAVE_C
+                       | LLAVE_A bloque NOMBRE PUNTO cuerpo_invocacion_var PUNTO_COMA LLAVE_C
+                       | LLAVE_A NOMBRE PUNTO cuerpo_invocacion_var PUNTO_COMA LLAVE_C
+                       | LLAVE_A bloque THIS PUNTO cuerpo_invocacion_metodo PUNTO_COMA LLAVE_C
+                       | LLAVE_A THIS PUNTO cuerpo_invocacion_metodo PUNTO_COMA LLAVE_C
+                       | LLAVE_A bloque cuerpo_invocacion_metodo PUNTO_COMA LLAVE_C
+                       | LLAVE_A cuerpo_invocacion_metodo PUNTO_COMA LLAVE_C
                        /*estos últimos dos puesto que ambos permiten devolver char... lo de double no permitido en int lo debería revisar sem sea que se coloque a éstos últimos o no xD*/
                        | error:err LLAVE_C                                                   {:System.out.println("[S] error: BAD DEFINITION OF NUMBER [INT|DOUBLE] METHOD BODY");
                                                                                                addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_NUMBER_BODY_DECLARATION);:}
@@ -385,7 +394,7 @@ cuerpo_metodo_object ::= LLAVE_A bloque retorno_variable LLAVE_C                
 cuerpo_metodo_objeto ::= LLAVE_A bloque retorno_variable LLAVE_C                  {:System.out.println("[S] substruct: cuerpo_metodo_objeto [CB, CR_var]");:}
                        | LLAVE_A retorno_variable LLAVE_C                         {:System.out.println("[S] substruct: cuerpo_metodo_objeto [SB, CR_var]");:}
                        | LLAVE_A bloque retorno_objeto LLAVE_C                    {:System.out.println("[S] substruct: cuerpo_metodo_objeto [CB, CR_O]");:}
-                       | LLAVE_A retorno_objeto LLAVE_C                           {:System.out.println("[S] substruct: cuerpo_metodo_objeto [SB, CR_O]");:}                       
+                       | LLAVE_A retorno_objeto LLAVE_C                           {:System.out.println("[S] substruct: cuerpo_metodo_objeto [SB, CR_O]");:}                                              
                        | error:err LLAVE_C                                        {:System.out.println("[S] error: BAD DEFINITION OF CUSTOM OBJECT METHOD BODY");
                                                                                     addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_OBJETO_BODY_DECLARATION);:}
                        ;
@@ -429,6 +438,7 @@ tipo ::= INT                            {:System.out.println("[S] tipo: INT");
                                           RESULT = "Object";:}
        | OBJETO:objeto                  {:System.out.println("[S] tipo: OBJETO");
                                           RESULT = Token.parseToken(objeto).getLexema();:}
+       | NOMBRE 
     //   | error                          {:System.out.println("[S] error: TYPE [int|doouble|String|char|boolean|Object|<CUSTOM OBJECT>] EXPECTED");:}
        ;/*ya reemplacé por lo de objeto xD xD*/
 
@@ -439,6 +449,7 @@ bloque ::= bloque sentencias                            {:System.out.println("[S
 
 sentencias ::= def_variable                                {:System.out.println("[S] sentencias bloque: def_var");:}//lo las vars, debes setearlo cuando se cree el obj de Método, porque aquí no hay forma que sepas el nombre del método... porque la axn del método se exe hasta el fina... [mira NetBeans..]
              | asignacion                                  {:System.out.println("[S] sentencias bloque: asignacion");:}
+          //   | asignacion_multiple
              | ciclo                                       {:System.out.println("[S] sentencias bloque: ciclo");:}
              | invocacion                                  {:System.out.println("[S] sentencias bloque: invocacion");:}
              | sentencia_control                           {:System.out.println("[S] sentencias bloque: sentencia_control");:}
@@ -460,7 +471,7 @@ tipos_asignacion ::= contenido_numero                               {:System.out
                    | contenido_boolean                              {:System.out.println("[S] substruct: tipo_asig: cont_B");:}  
                    | contenido_object                               {:System.out.println("[S] substruct: tipo_asig: cont_Oc");:}
                    | contenido_objeto                               {:System.out.println("[S] substruct: tipo_asig: cont_O");:}
-                   //| cuerpo_invocacion_var                          {:System.out.println("[S] substruct: tipo_asig: invoc_var");:}  //no por los conflictos que se generan con cont_#...
+                   | NOMBRE PUNTO cuerpo_invocacion_var                          {:System.out.println("[S] substruct: tipo_asig: invoc_var");:}  //no por los conflictos que se generan con cont_#...
                    | THIS PUNTO cuerpo_invocacion_var               {:System.out.println("[S] substruct: tipo_asig: THIS. invoc_var");:}
                    | cuerpo_invocacion_metodo                       {:System.out.println("[S] substruct: tipo_asig: invoc_met");:}
                    | THIS PUNTO cuerpo_invocacion_metodo            {:System.out.println("[S] substruct: tipo_asig: THIS. invoc_met");:}
@@ -469,8 +480,19 @@ tipos_asignacion ::= contenido_numero                               {:System.out
                                                                       addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ASSGINED_CONTENT);:}
                    ;
 
+/*asignacion_multiple ::= contenido_asignacion_multiple tipos_asignacion PUNTO_COMA
+                      ;
+
+contenido_asignacion_multiple ::= asignacion_multiple IGUAL 
+                                | cuerpo_invocacion_var
+                                | THIS PUNTO cuerpo_invocacion_var
+                                ;*///provcoca conflictos, por la repitencia de los cuerpos de invocación...
+
 contenido_variable ::= PARENTESIS_A contenido_variable PARENTESIS_C                          {:System.out.println("[S] substruct: cont_var: ( cont_var )");:}
-                     | NOMBRE                                                                {:System.out.println("[S] substruct: cont_var: NOMBRE");:}
+                     | THIS PUNTO cuerpo_invocacion_var                                            {:System.out.println("[S] substruct: cont_var: NOMBRE");:}
+                     | cuerpo_invocacion_var
+                     | cuerpo_invocacion_metodo
+                     | THIS PUNTO cuerpo_invocacion_metodo
        //              | error                                                                 {:System.out.println("[S] error: VARIABLE TYPE CONTENT STRUCT EXPECTED");:}
                      ;
 
@@ -482,7 +504,7 @@ contenido_numero ::= contenido_numero MAS contenido_numero                      
                   %prec MENOS                                        
                   | PARENTESIS_A contenido_numero PARENTESIS_C                        {:System.out.println("[S] substruct: cont_#: ( cont_# )");:}
                   | NUMERO                                                            {:System.out.println("[S] substruct: cont_#: NUMERO");:}
-                  | NOMBRE                                                            {:System.out.println("[S] substruct: cont_#: NOMBRE");:}
+                  | NOMBRE
            //       | error                                                             {:System.out.println("[S] error: NUMERICAL TYPE CONTENT STRUCT EXPECTED");:}
                   ;
 
@@ -527,6 +549,7 @@ contenido_object ::= PARENTESIS_A contenido_object PARENTESIS_C                 
 
 contenido_objeto ::= PARENTESIS_A contenido_objeto PARENTESIS_C                              {:System.out.println("[S] substruct: cont_O: ( cont_O )");:}
                    | NEW OBJETO PARENTESIS_A argumentacion PARENTESIS_C                      {:System.out.println("[S] substruct: cont_O: NEW O( argucion )");:}
+                   | NEW NOMBRE PARENTESIS_A argumentacion PARENTESIS_C
           //         | error                                                                   {:System.out.println("[S] error: CUSTOM OBJECT INSTANTATION EXPECTED");:}
                    ;
 
@@ -535,14 +558,24 @@ operacion_unaria ::= incremento                                 {:System.out.pri
            //        | error                                      {:System.out.println("[S] error: UNARY OPERATION [increment| autoincrement] MALF0RMED");:}
                    ;
 
-incremento ::= NOMBRE MAS MAS                               {:System.out.println("[S] substruct: incre: ++ [der]");:}
+incremento ::= NOMBRE MAS MAS                                               {:System.out.println("[S] substruct: incre: ++ [der]");:}
+             | THIS PUNTO cuerpo_invocacion_var MAS MAS                               {:System.out.println("[S] substruct: incre: ++ [der]");:}
+             | NOMBRE PUNTO cuerpo_invocacion_var MAS MAS                               {:System.out.println("[S] substruct: incre: ++ [der]");:}
              | NOMBRE RESTA RESTA                           {:System.out.println("[S] substruct: incre: -- [der]");:}
+             | THIS PUNTO cuerpo_invocacion_var RESTA RESTA                               {:System.out.println("[S] substruct: incre: ++ [der]");:}
+             | NOMBRE PUNTO cuerpo_invocacion_var RESTA RESTA                               {:System.out.println("[S] substruct: incre: ++ [der]");:}
              | MAS MAS NOMBRE                               {:System.out.println("[S] substruct: incre: ++ [izq]");:}
+             | MAS MAS THIS PUNTO cuerpo_invocacion_var                                {:System.out.println("[S] substruct: incre: ++ [der]");:}
+             | MAS MAS NOMBRE PUNTO cuerpo_invocacion_var                                {:System.out.println("[S] substruct: incre: ++ [der]");:}
              | RESTA RESTA NOMBRE                           {:System.out.println("[S] substruct: incre: -- [izq]");:}
+             | RESTA RESTA THIS PUNTO cuerpo_invocacion_var                                {:System.out.println("[S] substruct: incre: ++ [der]");:}
+             | RESTA RESTA NOMBRE PUNTO cuerpo_invocacion_var                                {:System.out.println("[S] substruct: incre: ++ [der]");:}
     //         | error                                        {:System.out.println("[S] error: EXPECTED A TYPE OF INCEMENT [<var> <++|-->; <++|--> <var>");:}
              ;
 
-autoincremento ::= NOMBRE opciones_autoincremento                                 {:System.out.println("[S] substruct: autoincre");:}
+autoincremento ::= THIS PUNTO cuerpo_invocacion_var opciones_autoincremento                                 {:System.out.println("[S] substruct: autoincre");:}
+                 | NOMBRE PUNTO cuerpo_invocacion_var opciones_autoincremento
+                 | NOMBRE opciones_autoincremento                 
     //             | error                                                          {:System.out.println("[S] error: AUTOINCREMENT EXPECTD");:}
                  ;
 
@@ -557,6 +590,10 @@ opciones_autoIncreMas ::= MAS IGUAL contenido_numero/*_X_*/                     
                         /*si da conflicto, entonces giual que en asignación, dejarásn ContS, eli cont#, add numeros y contenido variable, NO porque así evitaría las operaciones...*/
                         /* entonces en todo caso solo deja contenido_numero y cadena aunque en realidad se puede usar concat...*/
                         | MAS IGUAL contenido_string                                    {:System.out.println("[S] substruct: autoincre: += [cont_S]");:}
+                        | MAS IGUAL THIS PUNTO cuerpo_invocacion_var
+                        | MAS IGUAL NOMBRE PUNTO cuerpo_invocacion_var
+                        | MAS IGUAL THIS PUNTO cuerpo_invocacion_metodo
+                        | MAS IGUAL cuerpo_invocacion_metodo
                         | error:err                                                     {:System.out.println("[S] error: += ONLY IS APLICABE TO STRINGs AND NUMBERs");
                                                                                           addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_AUTINCREMENT_CONTENT);:}
                         ;
@@ -606,6 +643,8 @@ asignacion_completa_for ::= INT NOMBRE:nombre IGUAL contenido_numero PUNTO_COMA 
                                                                                                 addInfoVariables("Objeto", nombre);:}
                           | OBJETO NOMBRE:nombre IGUAL contenido_variable PUNTO_COMA                 {:System.out.println("[S] substruct: ciclo_for: asignacion_C [OBJETO-CV]");
                                                                                                 addInfoVariables("Objeto", nombre);:}
+                          | NOMBRE NOMBRE IGUAL contenido_objeto PUNTO_COMA
+                          | NOMBRE NOMBRE IGUAL contenido_variable PUNTO_COMA
                 //          | error                                                             {:System.out.println("[S] error: FULL ASSIGNMENT EXPECTED");:}
                           ;/*solo donde hay cont# no porque ese por sí solo permite el cont_var xD*/
 
@@ -627,11 +666,11 @@ invocacion ::= cuerpo_invocacion_metodo PUNTO_COMA                         {:Sys
        //      | error                                                       {:System.out.println("[S] error: INVOCATION MALFORMED");:}
              ;
 
-cuerpo_invocacion_var ::= NOMBRE PUNTO cuerpo_invocacion_var                                                                         {:System.out.println("[S] estructura: cuerpo_invocacion_V [recursi var]");:}             
-                        | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C PUNTO cuerpo_invocacion_var                                 {:System.out.println("[S] estructura: cuerpo_invocacion_V [recursi met]");:}             
+cuerpo_invocacion_var ::= NOMBRE PUNTO cuerpo_invocacion_var                                                                        {:System.out.println("[S] estructura: cuerpo_invocacion_V [recursi var]");:}             
+                        | NOMBRE PARENTESIS_A argumentacion PARENTESIS_C PUNTO cuerpo_invocacion_var                                {:System.out.println("[S] estructura: cuerpo_invocacion_V [recursi met]");:}             
                         | NOMBRE                                                                                                     {:System.out.println("[S] estructura: cuerpo_invocacion_V [only var]");:}             
-                        | error:err                                                                                                  {:System.out.println("[S] error: INVOCATION OF VAR MALFORMED");
-                                                                                                                                       addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_VAR_INVOCATION);:}
+                  //      | error:err                                                                                                  {:System.out.println("[S] error: INVOCATION OF VAR MALFORMED");
+                  //                                                                                                                     addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_VAR_INVOCATION);:}
                         ;
 
 cuerpo_invocacion_metodo ::= NOMBRE PUNTO cuerpo_invocacion_metodo                                                                   {:System.out.println("[S] estructura: cuerpo_invocacion_M [recursi var]");:}                
@@ -657,6 +696,10 @@ argumento ::= contenido_numero                           {:System.out.println("[
             | contenido_boolean                          {:System.out.println("[S] substruct: argumento [cont_B]");:}
             | contenido_object                           {:System.out.println("[S] substruct: argumento [cont_Oc]");:}
             | contenido_objeto                           {:System.out.println("[S] substruct: argumento [cont_O]");:}
+            | THIS PUNTO cuerpo_invocacion_metodo
+            | cuerpo_invocacion_metodo
+            | THIS cuerpo_invocacion_var
+            | NOMBRE PUNTO cuerpo_invocacion_var
        //     | error                                      {:System.out.println("[S] error: ARGUMENT MUST BE ONE OF EXISTING TYPES");:}
             ;/*no add contenido_var porque los contenidos se llaman directamente sin nada que especifique que s debe agarrar alguno en una sit específica, por lo tanto cont# se encarga de ello xD*/
             /*aquí si hay conflictos deplano lo que haré es dejar contS [a diferencia de condi y autoincre y dejaré solo a los #...]*/
@@ -705,12 +748,16 @@ contenido_condicion ::= contenido_numero                                {:System
                       /*para evitar conflictos con nombre [generado por cont#] y booleans*/
                       | contenido_object                                {:System.out.println("[S] substruct: contenido_condi [cont_Oc]");:}
                       | contenido_objeto                                {:System.out.println("[S] substruct: contenido_condi [cont_O]");:}
+                      | NOMBRE PUNTO cuerpo_invocacion_var
+                      | THIS cuerpo_invocacion_var
+                      | cuerpo_invocacion_metodo
+                      | THIS cuerpo_invocacion_metodo
         //              | error                                           {:System.out.println("[S] error: CONDITION CONTENT MUST BE ONE OF ALLOWED TYPES");:}
                       ;
 
 contenido_bool ::= PARENTESIS_A contenido_bool PARENTESIS_C                             {:System.out.println("[S] substruct: cont_bool [ ( cont_bool ) ]");:}
                  | negaciones contenido_bool                                            {:System.out.println("[S] substruct: cont_bool [ ! cont_bool ]");:}
-                 | negaciones contenido_variable                                        {:System.out.println("[S] substruct: cont_bool [ ! cont_var ]");:}                                                         
+                 | negaciones contenido_variable
                  | BOOLEANO                                                             {:System.out.println("[S] substruct: cont_bool [ BOOLEANO ]");:}
         //         | error                                                                {:System.out.println("[S] error: EXPECTED A TYPE OF BOOLEAN");:}
                  ;
@@ -781,7 +828,9 @@ retorno_compuesto ::= retorno_numero                           {:System.out.prin
                     | retorno_boolean                          {:System.out.println("[S] substruct: retorno_compuesto: retorno_B");:}
                     | retorno_object                           {:System.out.println("[S] substruct: retorno_compuesto: retorno_Oc");:}
                     | retorno_objeto                           {:System.out.println("[S] substruct: retorno_compuesto: retorno_O");:}
-                    //retorno_variable //lo comento, puesto que número se encarga de permitir el contenido variable
+                    | RETURN invocacion                    
+                    | RETURN NOMBRE PUNTO cuerpo_invocacion_var PUNTO_COMA
+                    | RETURN THIS PUNTO cuerpo_invocacion_var PUNTO_COMA
          //           | error                                    {:System.out.println("[S] error: A COMPOUND RETURN MUST BE ONE OF ALLOWED TYPES");:}
                     ;
 
