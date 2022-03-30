@@ -1444,24 +1444,10 @@ class CUP$Parser$actions {
         numeroVarCreadas = 0;
     }//este se invoca en las def_var de los bloques: clase y método, puesto que ahí se completa la info...
 
-    private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error        
-        if(token == null){//quiere decir que no existe el T que se esperaba
-            manejadorErrores.setError(new Error(resultParcial.getClase(0).getNombre(), "", linea, columna, SintaxError.PARSER_EXPECTED, "concatExpected()"));
-        }else{                
-            manejadorErrores.setError(new Error(resultParcial.getClase(0).getNombre(), Token.parseToken(token).getLexema(), linea, columna, error));
-        }                    
+    private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error                
+        manejadorErrores.setError(new Error(resultParcial.getClase(0).getNombre(), ((token != null)?token.getLexema():""), linea, columna, error));
+        
     }
-
-    private String concatExpected(){
-        List<Integer> expected = expected_token_ids();
-        int tokensAMostrar = ((expected.size()>3)?3:expected.size());
-        String lista = "";
-
-        for(int idActual = 0; idActual < tokensAMostrar; idActual++){
-            lista += symbl_name_from_id(expected.get(idActual)) + " ";//De alguna manera, esta línea da ArrayIndexOutBoundsEx...
-        }
-        return lista;
-    }  
 
   private final Parser parser;
 

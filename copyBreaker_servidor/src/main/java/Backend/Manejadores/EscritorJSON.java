@@ -5,19 +5,14 @@
  */
 package Backend.Manejadores;
 
-import Backend.Objetos.Resultado.Clase;
-import Backend.Objetos.Resultado.Comentario;
-import Backend.Objetos.Resultado.Metodo;
 import Backend.Objetos.Resultado.RESULT;
-import Backend.Objetos.Resultado.Variable;
-import java.util.ArrayList;
 
 /**
  *
  * @author phily
  */
 public class EscritorJSON {//Esta clase no será útil en el cliente, puesto que se va a escribir a partir de la gramática
-    private String JSON ="";//Aquí la estructura que engloba todo [bueno al menos es inicio xD... así como hicsite en la práctica de EDD del año pasado...    
+    private String JSON = "";//Aquí la estructura que engloba todo [bueno al menos es inicio xD... así como hicsite en la práctica de EDD del año pasado...    
         
     public void escribirJSON(RESULT result){
         
@@ -61,7 +56,7 @@ public class EscritorJSON {//Esta clase no será útil en el cliente, puesto que
     }
     
     public String getJSON(){
-        return this.JSON;
+        return this.JSON;//puesto que no se puede enviar algo nulo por medio de los streams obtenidos en este caso por los sockets... entonces al condición es que se exe los proc del cliente si !JSON.isEmpty()
     }
     
 }

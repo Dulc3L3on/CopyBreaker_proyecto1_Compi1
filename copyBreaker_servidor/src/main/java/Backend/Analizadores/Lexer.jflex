@@ -58,7 +58,7 @@ contenidoComentario = ( [^*] | \*+ [^/*] )*
     String proyecto = "";//este será útil para rellenar la info que req Error
     //no se req un campo para el nombre de la clase, puesto que esta info ya la posee el RESULT
     String[] nombreClases = {"clasePrueba"};//quizá se reeemplzace con una lista... ahí te acuerdas de poner el seter...
-    ManejadorErrores ManejadorErrores;
+    ManejadorErrores manejadorErrores;
 
     boolean requeriaCompania = false;
     Token tokenAnterior = null;
@@ -159,7 +159,7 @@ contenidoComentario = ( [^*] | \*+ [^/*] )*
 
     private void accionParadaParaError(){//aquí es donde se imprime todo lo concatenado que se clasificó como error...          
         System.out.println("[L] error: "+ contenido.toString() + ((contenido.length() != 0)?" INVALID WORD":"Las cadenas solo pueden ocupar una línea")+"\n");
-        ManejadorErrores.setError(result.getClase(0).getNombre(), new Token(yyline+1, yycolumn+1, contenido.toString(), null));//aquí no se requiere de un token previo... y esta vez nisiqueira en las operaciones xD
+        manejadorErrores.setError(result.getClase(0).getNombre(), new Token(yyline+1, yycolumn+1, contenido.toString(), null), ((contenido.length() != 0)?false:true));//aquí no se requiere de un token previo... y esta vez nisiqueira en las operaciones xD
 
         yybegin(YYINITIAL);//ese operador ternario lo puse para que se justifique el hecho de que después de error no se muestre el contenido errado, puesto que contenido va a tener length = 0 si el error surgió en STRING [puesto que se llegará a error cuando haya salto de línea o retorno de carro no explícito] entonces puedo utilizar eso para personalizar el msje [cabe reslatar que si el error surge en el YYINI, siempre tendrá maś de algo contenido, puesto que desde ese estado se puede llegar a error si se encuentra con algo que no es aceptado y ahí el \n y \r son ignorados, es decir técnicamente aceptados xD]
     }//si la justificación por la cual uso el operador ternario no funciona, entonces guarda el stado y si ese es == SSTRING entonces pones ese msje xD, ahí si el msje estaría correcto siempre xD
@@ -170,7 +170,7 @@ contenidoComentario = ( [^*] | \*+ [^/*] )*
         result = elResult;
         proyecto = elProyecto;        
         nombreClases = listaClases;
-        ManejadorErrores = elManejadorErrores;
+        manejadorErrores = elManejadorErrores;
     }//el RESULT ya tendrá seteada la clase respectiva sin problemas xD
 %}
 

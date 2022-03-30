@@ -24,15 +24,18 @@ public class ManejadorAnalisis {//para mientras que estos métodos son del servi
     private final Herramienta herramienta;
     private ComplexComparator complexComparator;
     private ManejadorErrores[] manejadoresError;
-    private final ManejadorInterfaz manejadorInterfaz;
+    private ManejadorInterfaz manejadorInterfaz;
     private final EscritorJSON escritorJSON;
     private ArrayList<ArrayList<RESULT>> listadoRESULTS;
     private final int NUMERO_PROYECTOS_ANALIZAR = 2;
     
     public ManejadorAnalisis(){
-        this.herramienta = new Herramienta();   
-        this.manejadorInterfaz = new ManejadorInterfaz();
+        this.herramienta = new Herramienta();           
         this.escritorJSON = new EscritorJSON();
+    }
+    
+    public void setManejadorInterfaz(ManejadorInterfaz manejadorInterfaz){
+        this.manejadorInterfaz = manejadorInterfaz;
     }
  
     public void analizarProyectos(ArrayList<ArrayList<File>> archivosProyectos){       
@@ -47,8 +50,7 @@ public class ManejadorAnalisis {//para mientras que estos métodos son del servi
         
         if(!this.hubieronErrores()){
             complexComparator = new ComplexComparator(listadoRESULTS.get(0), listadoRESULTS.get(1));           
-            this.escritorJSON.escribirJSON(this.complexComparator.getRESULT());
-            this.complexComparator.getRESULT().setJSON(this.escritorJSON.getJSON());
+            this.escritorJSON.escribirJSON(this.complexComparator.getRESULT());            
         }else{            
             this.manejadorInterfaz.setErrores(manejadoresError[0].getListaErrores());//los errores por defecto...    
         }        
@@ -117,11 +119,8 @@ public class ManejadorAnalisis {//para mientras que estos métodos son del servi
      * no existen
      * @return
      */
-    public RESULT getRESULT(){        
-        if(!hubieronErrores()){
-            return this.complexComparator.getRESULT();        
-        }
-        return null;
+    public String getJSON(){        
+        return this.escritorJSON.getJSON();                
     }       
 }
 

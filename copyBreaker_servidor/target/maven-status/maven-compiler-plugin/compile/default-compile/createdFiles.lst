@@ -18,7 +18,6 @@ Backend/Analizadores/Lexer.class
 Backend/Objetos/Enums/LexerError.class
 com/mycompany/servidor_copybreaker/PruebasSintaxis.class
 Backend/Analizadores/Parser.class
-Backend/Sockets/ServerProcess$1.class
 Backend/Objetos/Resultado/Metodo.class
 Frontend/Log.class
 Frontend/Log$3.class

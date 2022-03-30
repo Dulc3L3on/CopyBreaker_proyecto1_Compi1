@@ -12,5 +12,6 @@ package Backend.Objetos.Enums;
 
 public enum LexerError{
     INVALID_WORD,
-    MAYBE_YOU_MEANT;    
+    MAYBE_YOU_MEANT,
+    UNCLOSE_STRING;    
 }

@@ -29,17 +29,16 @@ public class Log extends javax.swing.JFrame {
     /**
      * Creates new form Log
      */
-    public Log(){                
-        this.serverProcess = new ServerProcess();
-        this.manejadorAnalisis = this.serverProcess.getManejadorAnalisis();
-        this.manejadorInterfaz = this.serverProcess.getManejadorAnalisis().getManejadorInterfaz();//para este punto, la apariencia ya habrá sido cambiada xD
-        this.serverProcess.getManejadorAnalisis().getManejadorInterfaz().setComponentes(tbl_log, cbBox_proyecto);//a mi pensar debería funcionar tb si se lo seteo al manejador de interfaz de aquí        
-        System.out.println("el seteo se corre a todos los que le apuntan?? "+ this.manejadorInterfaz.getTable());
+    public Log(){                                
+        this.manejadorInterfaz = new ManejadorInterfaz();//aquí se cb de una sola vez la apariencia                
         
         initComponents();        
         
-      //  this.manejadorAnalisis.analizarClase(new File(pathTxt_2));
-      
+        this.manejadorInterfaz.setComponentes(tbl_log, cbBox_proyecto);        
+        this.serverProcess = new ServerProcess();        
+        this.manejadorAnalisis = this.serverProcess.getManejadorAnalisis();
+        this.serverProcess.getManejadorAnalisis().setManejadorInterfaz(manejadorInterfaz);        
+      //  this.manejadorAnalisis.analizarClase(new File(pathTxt_2));//con este probé de forma simple las clases, y comprobé que el parser funciona xD xD      
     }
 
     /**
@@ -64,6 +63,9 @@ public class Log extends javax.swing.JFrame {
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
+            }
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
             }
         });
 
@@ -126,7 +128,7 @@ public class Log extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 902, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 963, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -189,13 +191,19 @@ public class Log extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        this.serverProcess.stopServerProcess();
-    }//GEN-LAST:event_formWindowClosing
-
     private void cbBox_proyectoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbBox_proyectoItemStateChanged
         this.manejadorInterfaz.setErrores(this.manejadorAnalisis.getErrores(this.cbBox_proyecto.getSelectedIndex()));
     }//GEN-LAST:event_cbBox_proyectoItemStateChanged
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        this.serverProcess.stopServerProcess();        
+        System.exit(0);
+    }//GEN-LAST:event_formWindowClosing
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        this.serverProcess.start();
+        //this.serverProcess.startServer();
+    }//GEN-LAST:event_formWindowOpened
 
     /**
      * @param args the command line arguments

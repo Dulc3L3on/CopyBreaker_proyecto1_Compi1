@@ -18,7 +18,8 @@ public class Herramienta {
         String[] listaNombres = new String[listaArchivos.size()];
         
         for (int actual = 0; actual < listaArchivos.size(); actual++) {
-            listaNombres[actual] = listaArchivos.get(actual).getName();
+            listaNombres[actual] = listaArchivos.get(actual).getName().replace(".java", "");//para eliminar así la extensión xD
+            System.out.println("nombre clase: "+listaNombres[actual]);             
         }        
         return listaNombres;
     }

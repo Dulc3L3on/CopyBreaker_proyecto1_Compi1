@@ -6,54 +6,36 @@
 package Backend.Sockets;
 
 import Backend.Manejadores.ManejadorInterfaz;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.Timer;
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  *
  * @author phily
  */
 public class ClientProcess {
-    private final Cliente cliente;
-    private final ManejadorInterfaz manejadorInterfaz;
-    private final Timer timer;
+    private Cliente cliente;
+    private final ManejadorInterfaz manejadorInterfaz;    
     
-    public ClientProcess(ManejadorInterfaz manejadorInterfaz){        
+    public ClientProcess(ManejadorInterfaz manejadorInterfaz){                
+        this.manejadorInterfaz = manejadorInterfaz;        
+    }
+    
+    public void request(ArrayList<ArrayList<File>> archivos){
+        System.out.println("-------Request iniciado---------");        
         this.cliente = new Cliente();
-        this.manejadorInterfaz = manejadorInterfaz;
-        timer = new Timer(0, new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                startClient();                
-            }
-        });
+        System.out.println("Request enviado");        
+        this.cliente.sendDataObject(archivos);
+        System.out.println("En espera de resultados");        
+        //en realidad aquí debería invocarse al manejador de resultados, puesto que hay que hacer varias cosas, todo esto si lo recibido no es null...
+        this.manejadorInterfaz.addResultados_JSON(this.cliente.getData());
+        System.out.println("Resultados recibidos");                        
         
-        timer.start();
-    }
-    
-    private void startClient(){
-        while(this.timer.isRunning()){
-            System.out.println("Cliente a la espera");        
-        
-            System.out.println("Posteo resultados a la espera");        
-            this.manejadorInterfaz.addResultados_JSON(this.cliente.getDataObject().getJSON());
-            System.out.println("Posteo finalizado");                        
-            
-            System.out.println("Servidor a completado solicitud");
-        }        
-    }
-    
-    public void stopServerProcess(){//Se invocará al cerra el programa
-        this.cliente.finalizeClient();
-        this.timer.stop();
-    }
+        this.cliente.finalizeClient();        
+        System.out.println("-------Request finalizado-------");
+    }    
     
     public ManejadorInterfaz getManejadorInterfaz(){
         return this.manejadorInterfaz;
-    }
-    
-    public Cliente getCliente(){
-        return this.cliente;
-    }
+    }    
 }

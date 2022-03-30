@@ -1,0 +1,176 @@
+/*package e imports*/
+package Backend.Analizadores;
+
+import java_cup.runtime.*;
+import java.util.ArrayList;
+import Backend.Objetos.Resultados.RESULT;
+import Backend.Objetos.Resultados.Metodo;
+import Backend.Objetos.Resultados.Variable;
+import Backend.Objetos.Token;
+import Backend.Manejadores.ManejadorErrores;
+import Backend.Objetos.Error;
+import Backend.Objetos.Enums.SintaxError;
+import Backend.Analizadores.JSON_ParserSym;
+
+/*1. user code*/
+class JSON_Parser;
+
+action code{://código no puede ser accedido desde el exterior
+
+
+    private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error        
+        if(token == null){//quiere decir que no existe el T que se esperaba
+            manejadorErrores.setError(new Error("", linea, columna, SintaxError.PARSER_EXPECTED, "concatExpected()"));
+        }else{
+            manejadorErrores.setError(new Error(Token.parseToken(token).getLexema(), linea, columna, error));
+        }                    
+    }
+:}
+
+parser code {://puede ser accedido desde el exterior
+    private ManejadorErrores manejadorErrores;
+    private RESULT result = new RESULT();
+
+    public JSON_Parser(Lexer lexer, RESULT resultadoLexer, ManejadorErrores lexerManejadorErrores){/*nuevo constructor*/
+        super(lexer);        
+
+        manejadorErrores = lexerManejadorErrores;
+        result = resultadoLexer;//ya tiene el listado de comentarios y clase [que tiene 1 sola clase xD], agregados... aunque quizá halla un poco de riesgo, al establecer la clase en el lexer, nec que sea allá para que así se seteen sin tantas vueltas el campo función de las clases globales... de todos modos en un caso en el que todo está bien, el searlo en el lexer está bien, lo raro sucedería al haber errores xD
+    }   
+    
+    public void report_fatal_error(String message, Object info){
+        manejadorErrores.setError(new Error(((info != null)?info.toString():""), -1, 
+        -1, SintaxError.FATAL_ERROR));
+    }
+
+    protected int error_sync_size(){
+        return 1;
+    }
+:}
+
+//Terminales
+terminal SCORE, CLASES, VARIABLES, METODOS, COMENTARIOS, NOMBRE, TIPO, FUNCION, PARAMETROS, TEXTO;
+terminal NUMERO, CADENA;
+terminal DOS_PUNTOS, COMA, LLAVE_A, LLAVE_C, CORCHETE_A, CORCHETE_C;
+
+//No terminales
+non terminal estructura, bloques, seccion;
+non terminal seccion_score, cuerpo_seccion_score;
+non terminal seccion_clases, cuerpo_seccion_clases, objetos_clase, objeto_clase;
+non terminal seccion_variables, cuerpo_seccion_variables, objetos_variable, objeto_variable, atributos_variable, tipo_atributo_variable;
+non terminal seccion_metodos, cuerpo_seccion_metodos, objetos_metodo, objeto_metodo, atributos_metodo, atributo_string_metodo;
+non terminal seccion_comentarios, cuerpo_seccion_comentarios, objetos_comentario, objeto_comentario;
+
+//Precedencia y asociatividad
+/*no necesarias en esta gramática*/
+
+//Reglas léxicas
+start with estructura;
+
+estructura ::= LLAVE_A bloques LLAVE_C
+             | error:err                                                     {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_GENERAL_STRUCT);:}
+             ;
+
+bloques ::= seccion COMA seccion COMA seccion COMA seccion COMA seccion                                     
+          | error:err                                                                                         {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_SECTION_LIST_DEFINITION);:}
+          ;
+
+seccion ::= seccion_score   
+          | seccion_clases
+          | seccion_variables
+          | seccion_metodos
+          | seccion_comentarios
+          | error:err                                                {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_EXPECTED_SECTION_NAME);:}
+          ;
+
+seccion_score ::= SCORE cuerpo_seccion_score                                        
+                ;
+
+cuerpo_seccion_score ::= DOS_PUNTOS CADENA
+                       | error:err                                                  {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_SCORE_SECTION_CONTENT_STRUCT);:}
+                       ;
+
+seccion_clases ::= CLASES cuerpo_seccion_clases
+            //     | error
+                 ;
+
+cuerpo_seccion_clases ::= DOS_PUNTOS CORCHETE_A objetos_clase CORCHETE_C
+                        | error:err                                                                                 {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_CLASS_SECTION_CONTENT_STRUCT);:}
+                        ;
+
+objetos_clase ::= objetos_clase COMA objeto_clase
+                | objeto_clase
+                | error:err objeto_clase                                            {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_CLASS_LIST);:}
+                ;
+
+objeto_clase ::= LLAVE_A NOMBRE DOS_PUNTOS CADENA LLAVE_C
+             //  | error
+               ;
+
+seccion_variables ::= VARIABLES cuerpo_seccion_variables
+                    ;
+
+cuerpo_seccion_variables ::= DOS_PUNTOS CORCHETE_A objetos_variable CORCHETE_C
+                           | error:err                                                                                  {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_VARIABLE_SECTION_CONTENT_STRUCT);:}
+                           ;
+
+objetos_variable ::= objetos_variable COMA objeto_variable
+                   | objeto_variable
+                   | error:err objeto_variable                                     {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_VARIABLE_LIST);:}
+                   ;
+
+objeto_variable ::= LLAVE_A atributos_variable COMA atributos_variable COMA atributos_variable LLAVE_C
+                  //| error
+                  ;
+
+atributos_variable ::= tipo_atributo_variable DOS_PUNTOS CADENA                     
+                     | error:err                                                                    {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_VARIABLE_ATRIBUTE_CONTENT_DECLARATION_STRUCT);:}//o sería bad_atributte_declaration? bueno, tal vez no, porque si hay error en el tipo, al llegar aquí, ya no se exe la prod de error porque ya se habrá catcheado, al menos cuando el tipo del atributo sea incorrecto, entonces sí, deberá ser bad_content...
+                     ;
+
+tipo_atributo_variable ::= NOMBRE
+                         | TIPO
+                         | FUNCION
+                         | error:err                                                    {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_VARIABLE_ATRIBUTTE_TYPE);:}
+                         ;
+
+seccion_metodos ::= METODOS cuerpo_seccion_metodos
+                  ;
+
+cuerpo_seccion_metodos ::= DOS_PUNTOS CORCHETE_A objetos_metodo CORCHETE_C
+                        | error:err                                                                                 {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_METHOD_SECTION_CONTENT_STRUCT);:}
+                        ;
+
+objetos_metodo ::= objetos_metodo COMA objeto_metodo
+                 | objeto_metodo
+                 | error:err                                                                {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_METHOD_LIST);:}
+                 ;
+
+objeto_metodo ::= LLAVE_A atributos_metodo COMA atributos_metodo COMA atributos_metodo LLAVE_C
+              //  | error
+                ;
+
+atributos_metodo ::= atributo_string_metodo DOS_PUNTOS CADENA
+                   | PARAMETROS DOS_PUNTOS NUMERO
+                   | error:err                                                                  {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_METHOD_ATRIBUTE_CONTENT_DECLARATION_STRUCT);:}
+                   ;
+
+atributo_string_metodo ::= NOMBRE
+                         | TIPO                       
+                         | error:err                                    {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_STRING_METHOD_ATRIBUTTE_TYPE);:}
+                         ;
+
+seccion_comentarios ::= COMENTARIOS cuerpo_seccion_comentarios                                          
+                      ;
+
+cuerpo_seccion_comentarios ::= DOS_PUNTOS CORCHETE_A objetos_comentario CORCHETE_C
+                             |  error:err                                                                              {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_COMMENT_SECTION_CONTENT_STRUCT);:}
+                             ;
+
+objetos_comentario ::= objetos_comentario COMA objeto_comentario
+                     | objeto_comentario
+                     | error:err objeto_comentario                                                     {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_COMMENTS_LIST);:}      
+                     ;
+
+objeto_comentario ::= LLAVE_A TEXTO DOS_PUNTOS CADENA LLAVE_C
+              //      | error
+                    ;           

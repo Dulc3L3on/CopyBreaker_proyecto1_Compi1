@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Backend.Objetos;
+package Backend.Objetos.Resultados;
 
 import java.util.ArrayList;
 
@@ -11,9 +11,8 @@ import java.util.ArrayList;
  *
  * @author phily
  */
-public class RESULT {    
-    private String JSON;//para que así no haya problemas al momento de enviar la respuesta hacia el cliente...
-    private double score = 0;
+public class RESULT {        
+    private String score = "";
     private ArrayList<Clase> clases;
     private ArrayList<Comentario> comentarios;
     private ArrayList<Variable> variables;
@@ -24,11 +23,7 @@ public class RESULT {
         this.comentarios = new ArrayList<>();
         this.variables = new ArrayList<>();
         this.metodos = new ArrayList<>();
-    }
-    
-    public void setJSON(String JSON){
-        this.JSON = JSON;
-    }
+    }    
     
     public void addClase(Clase clase){
         this.clases.add(clase);
@@ -50,12 +45,8 @@ public class RESULT {
         if(total > 0){
             this.score += ((repetidos/total)*0.25);
         }        
-    }
-    
-    public String getJSON(){
-        return this.JSON;
-    }
-    
+    }   
+   
     public Clase getClase(int posicion){
         return this.clases.get(posicion);
     }
@@ -88,47 +79,47 @@ public class RESULT {
         return this.metodos;
     }    
 
-    public double getScore() {
+    public String getScore() {
         return this.score;
     }        
     
-    public String getClassObjects(boolean esParaReporte){
+    public String getClassObjects(){
         String clasesRepetidas = "";
         
         for (Clase clase : clases) {
-            clasesRepetidas += clase.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
+            clasesRepetidas += clase.asString() + "\n";//puesto que ya tienen incluidos las {} xD
         }        
         return clasesRepetidas;
     }
     
-    public String getCommentsObjects(boolean esParaReporte){
+    public String getCommentsObjects(){
         String cometariosRepetidos = "";
         
         for (Comentario comentario : comentarios) {
-            cometariosRepetidos += comentario.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
+            cometariosRepetidos += comentario.asString() + "\n";//puesto que ya tienen incluidos las {} xD
         }        
         return cometariosRepetidos;
     }
     
-    public String getVariablesObjects(boolean esParaReporte){
+    public String getVariablesObjects(){
         String variablesRepetidas = "";
         
         for (Variable variable : variables) {
-            variablesRepetidas += variable.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
+            variablesRepetidas += variable.asString() + "\n";//puesto que ya tienen incluidos las {} xD
         }        
         return variablesRepetidas;
     }
     
-    public String getMethodObjects(boolean esParaReporte){
+    public String getMethodObjects(){
         String metodosRepetidos = "";
         
         for (Metodo metodo : metodos) {
-            metodosRepetidos += metodo.asString() + ((esParaReporte)?"\n":"");//puesto que ya tienen incluidos las {} xD
+            metodosRepetidos += metodo.asString() + "\n";//puesto que ya tienen incluidos las {} xD
         }        
         return metodosRepetidos;
     }
     
     public boolean isEpmty(){
-        return (this.score==0);
-    }
+        return (this.score.isBlank());
+    }//ya no tiene mucho sentido xD xD
 }

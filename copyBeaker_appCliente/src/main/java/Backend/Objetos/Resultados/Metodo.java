@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Backend.Objetos;
+package Backend.Objetos.Resultados;
 
+import Backend.Objetos.Resultados.Variable;
 import java.io.Serializable;
 import java.util.ArrayList;
 

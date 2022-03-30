@@ -5,8 +5,11 @@
  */
 package Backend.Manejadores;
 
+import java.io.File;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -16,12 +19,29 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author phily
  */
 public class ManejadorInterfaz {
-    private JTextArea txtA_JSON;
-    private JTextArea txtA_Reportes;
+    private ManejadorDeLinea manejadorDeLinea_JSON, manejadorDeLinea_reportes,
+            manejadorLinea_Proyecto1, manejadorLinea_Proyecto2;
+    private JTextArea txtA_Proyecto1, txtA_proyecto2, txtA_JSON, txtA_Reportes;
     
-    public void setComponents(JTextArea txtA_JSON, JTextArea txtA_Reportes){//no lo hago en el cnstrct, porque al igual que en la appServidor, esta clase se ini en el cuerpo de la clase process, y para no tener que estar enviando parámetros que no tiene nada que ver con esa clase process, entonces mejor hago este set xD
+    
+    public void setComponents(JScrollPane scroll_proyecto1, JTextArea txtA_proyecto1,
+            JScrollPane scroll_proyecto2, JTextArea txtA_proyecto2,
+            JScrollPane scroll_txtA_JSON, JTextArea txtA_JSON,
+            JScrollPane scroll_txtA_Reportes, JTextArea txtA_Reportes){//no lo hago en el cnstrct, porque al igual que en la appServidor, esta clase se ini en el cuerpo de la clase process, y para no tener que estar enviando parámetros que no tiene nada que ver con esa clase process, entonces mejor hago este set xD
         this.txtA_JSON = txtA_JSON;
         this.txtA_Reportes = txtA_Reportes;
+        this.txtA_Proyecto1 = txtA_proyecto1;
+        this.txtA_proyecto2 = txtA_proyecto2;
+        
+        this.manejadorDeLinea_JSON = new ManejadorDeLinea(this.txtA_JSON);
+        this.manejadorDeLinea_reportes = new ManejadorDeLinea(this.txtA_Reportes);
+        this.manejadorLinea_Proyecto1 = new ManejadorDeLinea(txtA_proyecto1);
+        this.manejadorLinea_Proyecto2 = new ManejadorDeLinea(txtA_proyecto2);
+        
+        scroll_txtA_JSON.setRowHeaderView(this.manejadorDeLinea_JSON);        
+        scroll_txtA_Reportes.setRowHeaderView(this.manejadorDeLinea_reportes);        
+        scroll_proyecto1.setRowHeaderView(this.manejadorLinea_Proyecto1);        
+        scroll_proyecto2.setRowHeaderView(this.manejadorLinea_Proyecto2);
     }    
     
     public void cambiarApariencia(){
@@ -38,9 +58,13 @@ public class ManejadorInterfaz {
         }         
     }          
     
-    public void addArchivosALista(JList<String> lista, String[] archivosCargados){
-        lista = new JList<>(archivosCargados);
-        lista.updateUI();
+    public void addArchivosALista(JList<String> lista, String[] archivosCargados){                 
+        DefaultListModel<String> modeloLista = new DefaultListModel<>();
+        lista.setModel(modeloLista);
+                
+        for (String archivoCargado : archivosCargados) {
+            modeloLista.addElement(archivoCargado);
+        }        
     }  
       
     public void addResultados_JSON(String JSON){
@@ -48,6 +72,15 @@ public class ManejadorInterfaz {
         this.txtA_JSON.updateUI();
     }
     
+    public int getRow(){
+        return 0;
+    }
+    
+    public int getColumn(){
+        return 0;
+    }
+    
+    //ahora que lo pienso creo que para los reportes no hace falta tener un método a menos que te DIERA TIEMPO y decidieras hacer que se remarcaran los lugares con errores    
     
     public String abrirProyecto(){
        JFileChooser fileChooser = new JFileChooser();        

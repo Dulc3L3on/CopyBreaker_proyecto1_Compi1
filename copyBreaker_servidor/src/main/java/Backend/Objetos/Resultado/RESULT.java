@@ -13,7 +13,7 @@ import java.util.ArrayList;
  * @author phily
  */
 public class RESULT implements Serializable{    
-    private String JSON;//para que así no haya problemas al momento de enviar la respuesta hacia el cliente...
+    //private String JSON;//ya no será nec, puesto que se enviará el JSON, no el RESULT, para evitar tener clases exactas...
     private double score = 0;
     private ArrayList<Clase> clases;
     private ArrayList<Comentario> comentarios;
@@ -25,12 +25,8 @@ public class RESULT implements Serializable{
         this.comentarios = new ArrayList<>();
         this.variables = new ArrayList<>();
         this.metodos = new ArrayList<>();
-    }
-    
-    public void setJSON(String JSON){
-        this.JSON = JSON;
-    }
-    
+    }    
+
     public void addClase(Clase clase){
         this.clases.add(clase);
     }
@@ -51,10 +47,6 @@ public class RESULT implements Serializable{
         if(total > 0){
             this.score += ((repetidos/total)*0.25);
         }        
-    }
-    
-    public String getJSON(){
-        return this.JSON;
     }
     
     public Clase getClase(int posicion){

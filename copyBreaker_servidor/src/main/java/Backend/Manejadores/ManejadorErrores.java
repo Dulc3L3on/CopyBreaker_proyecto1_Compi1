@@ -28,16 +28,21 @@ public class ManejadorErrores {
      * en el lexer
      * @param error
      */
-    public void setError(String clase, Token error){
-        String coincidencia = this.manejadorErroresExtra.esReservadaMalFormada(error);
+    public void setError(String clase, Token error, boolean esPorCadena){
+        if(!esPorCadena){
+            String coincidencia = this.manejadorErroresExtra.esReservadaMalFormada(error);
         
-        if(coincidencia != null){
-            this.listaErrores.add(new Error(clase, error.getLexema(), error.getLinea(),
-              error.getColumna(), LexerError.MAYBE_YOU_MEANT, coincidencia));
+            if(coincidencia != null){
+                this.listaErrores.add(new Error(clase, error.getLexema(), error.getLinea(),
+                  error.getColumna(), LexerError.MAYBE_YOU_MEANT, coincidencia));
+            }else{
+               this.listaErrores.add(new Error(clase, error.getLexema(), error.getLinea(),
+                  error.getColumna(), LexerError.INVALID_WORD, ""));
+            }
         }else{
-           this.listaErrores.add(new Error(clase, error.getLexema(), error.getLinea(),
-              error.getColumna(), LexerError.INVALID_WORD, ""));
-        }
+            this.listaErrores.add(new Error(clase, error.getLexema(), error.getLinea(),
+                  error.getColumna(), LexerError.UNCLOSE_STRING, ""));
+        }        
     }
 
     /**
