@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class RESULT implements Serializable{    
     //private String JSON;//ya no será nec, puesto que se enviará el JSON, no el RESULT, para evitar tener clases exactas...
-    private double score = 0;
+    private double score = 0.000;
     private ArrayList<Clase> clases;
     private ArrayList<Comentario> comentarios;
     private ArrayList<Variable> variables;
@@ -43,9 +43,12 @@ public class RESULT implements Serializable{
         this.metodos.add(metodo);
     }
 
-    public void addSubScore(int repetidos, int total){
+    public void addSubScore(double repetidos, double total){
         if(total > 0){
-            this.score += ((repetidos/total)*0.25);
+            double scoreParcial = ((repetidos/total)*0.25);
+            this.score += Math.round(scoreParcial*1000d)/1000d;
+            //this.score += (repetidos/total)*0.25d;//con esta daba 0, por no tener a todos los números en double, entonces los decimales se truncaban xD
+            System.out.println("score: "+score);
         }        
     }
     
@@ -85,44 +88,56 @@ public class RESULT implements Serializable{
         return this.score;
     }    
     
-    public String getClassObjects(boolean esParaReporte){
+    public String getClassObjects(){
         String clasesRepetidas = "";
         
-        for (int actual = 0; actual < (clases.size()-1); actual++) {
-            clasesRepetidas += ((esParaReporte)?"\t\t\t":"")+clases.get(actual).asString()
-                    + ((esParaReporte)?"\n":",\n");//puesto que ya tienen incluidos las {} xD
-        }                       
-        return (clasesRepetidas+= ((esParaReporte)?"\t\t\t":"") + clases.get((clases.size()-1)));
+        if(!clases.isEmpty()){
+            for (int actual = 0; actual < (clases.size()-1); actual++) {
+                clasesRepetidas += "\t"+clases.get(actual).asString()
+                        + ",\n";//puesto que ya tienen incluidos las {} xD
+            }                       
+            return (clasesRepetidas+= "\t" + (clases.get((clases.size()-1)).asString()));
+        }
+        return clasesRepetidas;
     }
     
-    public String getCommentsObjects(boolean esParaReporte){
-        String cometariosRepetidos = "";
+    public String getCommentsObjects(){
+        String comentariosRepetidos = "";
         
-        for (int actual = 0; actual < (comentarios.size()-1); actual++) {
-            cometariosRepetidos += ((esParaReporte)?"\t\t\t":"") + comentarios.get(actual).asString()
-                    + ((esParaReporte)?"\n":",\n");//puesto que ya tienen incluidos las {} xD
-        }        
-        return (cometariosRepetidos+= ((esParaReporte)?"\t\t\t":"") + comentarios.get((comentarios.size()-1)));
+        if(!comentarios.isEmpty()){
+            for (int actual = 0; actual < (comentarios.size()-1); actual++) {
+                comentariosRepetidos += "\t" + comentarios.get(actual).asString()
+                        + ",\n";//puesto que ya tienen incluidos las {} xD
+            }        
+            return (comentariosRepetidos+= "\t" + (comentarios.get((comentarios.size()-1)).asString()));
+        }
+        return comentariosRepetidos;
     }
     
-    public String getVariablesObjects(boolean esParaReporte){
+    public String getVariablesObjects(){
         String variablesRepetidas = "";
         
-        for (int actual = 0; actual < (variables.size()-1); actual++) {
-            variablesRepetidas += ((esParaReporte)?"\t\t\t":"") + variables.get(actual).asString()
-                    + ((esParaReporte)?"\n":",\n");//puesto que ya tienen incluidos las {} xD
-        }        
-        return (variablesRepetidas += ((esParaReporte)?"\t\t\t":"") + (variables.get((variables.size()-1))));
+        if(!variables.isEmpty()){
+            for (int actual = 0; actual < (variables.size()-1); actual++) {
+                variablesRepetidas += "\t" + variables.get(actual).asString()
+                        + ",\n";//puesto que ya tienen incluidos las {} xD
+            }        
+            return (variablesRepetidas += "\t" + (variables.get((variables.size()-1))).asString());
+        }
+        return variablesRepetidas;
     }
     
-    public String getMethodObjects(boolean esParaReporte){
+    public String getMethodObjects(){
         String metodosRepetidos = "";
         
-        for (int actual = 0; actual < (metodos.size()-1); actual++) {
-            metodosRepetidos += ((esParaReporte)?"\t\t\t":"") + metodos.get(actual).asString()
-                    + ((esParaReporte)?"\n":",\n");//puesto que ya tienen incluidos las {} xD
-        }        
-        return (metodosRepetidos += ((esParaReporte)?"\t\t\t":"") + (metodos.get((metodos.size()-1))));
+        if(!metodos.isEmpty()){
+            for (int actual = 0; actual < (metodos.size()-1); actual++) {
+                metodosRepetidos += "\t" + metodos.get(actual).asString()
+                        + ",\n";//puesto que ya tienen incluidos las {} xD
+            }        
+            return (metodosRepetidos += "\t" + (metodos.get((metodos.size()-1)).asString()));
+        }
+        return metodosRepetidos;
     }
     
     public boolean isEpmty(){

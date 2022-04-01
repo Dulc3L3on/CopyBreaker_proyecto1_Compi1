@@ -19,7 +19,7 @@ import javax.swing.text.*;
  */
 public class ManejadorDeLinea extends JPanel implements CaretListener, DocumentListener, PropertyChangeListener {
     public final float LEFT = 0.0f, CENTER = 0.5f, RIGHT = 1.0f;
-    private Color color1 = new Color(143, 23, 112);
+    private Color color1 = new Color(158, 65, 134);
     private final Border OUTER = new MatteBorder(0, 0, 0, 1,new Color(180, 193, 205));
 
     private final int HEIGHT = Integer.MAX_VALUE - 1000000;
@@ -38,7 +38,7 @@ public class ManejadorDeLinea extends JPanel implements CaretListener, DocumentL
     
     public ManejadorDeLinea(JTextComponent component, int minimumDisplayDigits) {
         this.component = component;
-        this.setBackground(new Color(219,227,241));//lila: 210, 193, 214
+        this.setBackground(new Color(236, 241, 249));//lila: 210, 193, 214
         setFont(component.getFont());
         setBorderGap(5);
         setCurrentLineForeground(color1);

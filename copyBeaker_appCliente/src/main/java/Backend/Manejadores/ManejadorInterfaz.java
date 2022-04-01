@@ -19,25 +19,25 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  *
  * @author phily
  */
-public class ManejadorInterfaz {
+public class ManejadorInterfaz {   
     private ManejadorDeLinea manejadorDeLinea_JSON, manejadorDeLinea_reportes,
-            manejadorLinea_Proyecto1, manejadorLinea_Proyecto2;
-    private JTextArea txtA_Proyecto1, txtA_proyecto2, txtA_JSON, txtA_Reportes;
+            manejadorLinea_Proyecto1, manejadorLinea_Proyecto2;    
+    private JTextArea txtA_Proyecto1, txtA_Proyecto2, txtA_JSON, txtA_Reportes;
     
     
     public void setComponents(JScrollPane scroll_proyecto1, JTextArea txtA_proyecto1,
             JScrollPane scroll_proyecto2, JTextArea txtA_proyecto2,
             JScrollPane scroll_txtA_JSON, JTextArea txtA_JSON,
-            JScrollPane scroll_txtA_Reportes, JTextArea txtA_Reportes){//no lo hago en el cnstrct, porque al igual que en la appServidor, esta clase se ini en el cuerpo de la clase process, y para no tener que estar enviando parámetros que no tiene nada que ver con esa clase process, entonces mejor hago este set xD
+            JScrollPane scroll_txtA_Reportes, JTextArea txtA_Reportes){//no lo hago en el cnstrct, porque al igual que en la appServidor, esta clase se ini en el cuerpo de la clase process, y para no tener que estar enviando parámetros que no tiene nada que ver con esa clase process, entonces mejor hago este set xD               
         this.txtA_JSON = txtA_JSON;
         this.txtA_Reportes = txtA_Reportes;
         this.txtA_Proyecto1 = txtA_proyecto1;
-        this.txtA_proyecto2 = txtA_proyecto2;
+        this.txtA_Proyecto2 = txtA_proyecto2;
         
         this.manejadorDeLinea_JSON = new ManejadorDeLinea(this.txtA_JSON);
         this.manejadorDeLinea_reportes = new ManejadorDeLinea(this.txtA_Reportes);
-        this.manejadorLinea_Proyecto1 = new ManejadorDeLinea(txtA_proyecto1);
-        this.manejadorLinea_Proyecto2 = new ManejadorDeLinea(txtA_proyecto2);
+        this.manejadorLinea_Proyecto1 = new ManejadorDeLinea(txtA_Proyecto1);
+        this.manejadorLinea_Proyecto2 = new ManejadorDeLinea(txtA_Proyecto2);
         
         scroll_txtA_JSON.setRowHeaderView(this.manejadorDeLinea_JSON);        
         scroll_txtA_Reportes.setRowHeaderView(this.manejadorDeLinea_reportes);        
@@ -68,7 +68,7 @@ public class ManejadorInterfaz {
         }      
         
         areaTexto.setText("");
-    }  
+    }      
       
     public void addResultados_JSON(String JSON){
         this.txtA_JSON.setText(JSON);
@@ -79,12 +79,9 @@ public class ManejadorInterfaz {
         try {
            int posicionCareta = areaTexto.getCaretPosition();
            int linea= areaTexto.getLineOfOffset(posicionCareta);
-           int columna = posicionCareta - areaTexto.getLineStartOffset(linea);
-       
-            // Ya que las líneas las cuenta desde la 0
-            linea += 1;
+           int columna = posicionCareta - areaTexto.getLineStartOffset(linea);       
             
-            etiquetaPosicion.setText("  línea: "+ linea +"    columna: "+columna);
+           etiquetaPosicion.setText("línea: "+ (linea+1) +"    columna: "+ (columna+1)+" ");
         } catch(Exception ex) { }
     }
     

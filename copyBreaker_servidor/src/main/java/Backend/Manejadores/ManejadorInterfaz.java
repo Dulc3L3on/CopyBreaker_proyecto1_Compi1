@@ -38,8 +38,7 @@ public class ManejadorInterfaz {
     }
     
     public void setErrores(ArrayList<Error> errores){
-        DefaultTableModel modelo=(DefaultTableModel) log.getModel();
-        eliminarTodosLosRegistros(modelo, log);
+        DefaultTableModel modelo=(DefaultTableModel) log.getModel();        
         
         for (int elementoActual = 0; elementoActual < errores.size(); elementoActual++) {
              modelo.addRow(new Object[]{elementoActual+1, 
@@ -50,9 +49,16 @@ public class ManejadorInterfaz {
                 errores.get(elementoActual).getLexema(),
                 errores.get(elementoActual).getDescripcion()});
         }
+        
+        //log.updateUI();//ya no resulta necesario, luego de haver hecho la actualización con la limpieza, es decir los datos se muestran correctamente... si en dado caso no se llegaran a mostrar los rep, entonces envuelve esto en un try-cathc por el null, que no entiendo la razón por la que surge, pero no creo que vaya a haber problema si al debuggear, te diste cta que la tabla ya mostraba los datos aunque no se había exe este llemado... quizá es porque no se puede llamar más de una vez si estos llamdos están seguidos...
     }
     
-    private void eliminarTodosLosRegistros(DefaultTableModel modelo, JTable tabla){
+    public void resetLog(){
+        this.eliminarTodosLosRegistros(((DefaultTableModel)log.getModel()), log);
+        this.comboBox.setSelectedIndex(0);//puesto que el proyecto 1 es siempre el valor por defecto...
+    }
+    
+    private void eliminarTodosLosRegistros(DefaultTableModel modelo, JTable tabla){//dejo así los parámetros para ser más general
         try {            
             while(tabla.getRowCount()>0){
                 modelo.removeRow(0);                

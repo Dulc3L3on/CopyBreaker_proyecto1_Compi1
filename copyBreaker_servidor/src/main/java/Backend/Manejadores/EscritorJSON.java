@@ -19,40 +19,40 @@ public class EscritorJSON {//Esta clase no será útil en el cliente, puesto que
         JSON = "{\n";
         
         this.addScore(result.getScore());
-        this.addClases(result.getClassObjects(false));        
-        this.addVariables(result.getVariablesObjects(false));
-        this.addMetodos(result.getMethodObjects(false));
-        this.addComentarios(result.getCommentsObjects(false));
+        this.addClases(result.getClassObjects());        
+        this.addVariables(result.getVariablesObjects());
+        this.addMetodos(result.getMethodObjects());
+        this.addComentarios(result.getCommentsObjects());
         
         JSON += "}";
     }
     
     private void addScore(double score){
-        JSON += "\tScore: \""+score+"\",\n";
+        JSON += "   Score: \""+ score + "\",\n";//no es neceario usar string.format para establecer el #decimales a mostrar puesto que el redondeo, se encargará de ello xD
     }
     
     private void addClases(String clases){
-        JSON += "\tClases: [\n";                
+        JSON += "   Clases: [\n";                
         JSON += clases;                
-        JSON += "\t\t\n],\n";
+        JSON += "\n     ],\n";
     }
     
     private void addVariables(String variables){
-        JSON += "Variables: [\n";        
+        JSON += "   Variables: [\n";        
         JSON += variables;
-        JSON += "\t\t\n],\n";
+        JSON += "\n     ],\n";
     }
     
     private void addMetodos(String metodos){
-        JSON += "Metodos: [\n";
+        JSON += "   Metodos: [\n";
         JSON += metodos;
-        JSON += "\t\t\n],\n";
+        JSON += "\n     ],\n";
     }
     
     private void addComentarios(String comentarios){
-        JSON += "Comentarios: [\n";
+        JSON += "   Comentarios: [\n";
         JSON += comentarios;
-        JSON += "\t\t\n],\n";
+        JSON += "\n     ],\n";
     }
     
     public String getJSON(){

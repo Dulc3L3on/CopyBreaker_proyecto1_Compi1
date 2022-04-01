@@ -29,7 +29,7 @@ operadoresCondicionales = "&"|"|"|"!"|">"|"<"|"="
 //macros fundamentales
 digito = [0-9]
 numero = {digito}+("."{digito}+)?  
-letra = [a-zA-Z]
+letra = [a-zA-Z\u00f1\u00d1]
 
 //macro para char, a ver si no da error por la ' encerrada en "", si si, entonces colocas \'
 caracter = "'"[{letra} ]"'"

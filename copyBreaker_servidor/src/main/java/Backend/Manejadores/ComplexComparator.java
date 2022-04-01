@@ -17,8 +17,8 @@ import java.util.ArrayList;
  * @author phily
  */
 public class ComplexComparator {
-    private SingleComparator singleComparator;
-    private RESULT result = null;
+    private final SingleComparator singleComparator;
+    private RESULT result;
     
     public ComplexComparator(ArrayList<RESULT> resultadosProyecto1, ArrayList<RESULT> resultadosProyecto2){
         this.singleComparator = new SingleComparator();
@@ -36,7 +36,7 @@ public class ComplexComparator {
     }
         
     private void hallarClasesRepetidas(ArrayList<RESULT> resultados1, ArrayList<RESULT> resultados2){
-        ArrayList<RESULT> auxiliarRESULT2 = resultados2;
+        ArrayList<RESULT> auxiliarRESULT2 = (ArrayList<RESULT>) resultados2.clone();//para que así no se modifique el arr original
         
         for(RESULT result1 : resultados1) {                       
             RESULT result2 = this.singleComparator.fueCopiada(result1, auxiliarRESULT2);            
@@ -52,12 +52,12 @@ public class ComplexComparator {
     
     private void hallarComentariosRepetidos(ArrayList<RESULT> resultados1, ArrayList<RESULT> resultados2){
         ArrayList<ArrayList<Match>> comentariosMatch = new ArrayList<>();
-        int comentariosTotales = 0;
-        int aparicionesRepetidas = 0, aparicionesRepetidasParciales = 0;
+        int comentariosTotales = 0, aparicionesRepetidas = 0, aparicionesRepetidasParciales = 0;
+        boolean seRepitio = false;
         
         for (RESULT result2 : resultados2) {
-             comentariosMatch.add(this.singleComparator.getCommentsMatch(result2.getComentarios()));
-             comentariosTotales += result2.getComentarios().size();
+            comentariosTotales += result2.getComentarios().size();//pongo arriba este conteo, puesto que como se hace un remove en el singleComparator, y la lista que se envía no es un clone, ni se clona allá en el método, entonces esa eli, afecta a la lista que está aquí, por el hecho de ser un obj y de haber pasado el valor por ref, por lo cual o hacías o enviabas un clone para que el método del singleComparator empleara eso, o ponías antes el autoincre, puesto que esa lista, no te va a ser útil después, entonces se eligió el movimiento xD
+            comentariosMatch.add(this.singleComparator.getCommentsMatch(result2.getComentarios()));             
         }//se recoge la lista que contiene los comentarios sin repeticiones y el #apariciones de cada comentario involucrado en un ele de la lista...
         
         for (RESULT result1 : resultados1) {
@@ -71,9 +71,12 @@ public class ComplexComparator {
                     if(comentario != null){
                         this.result.addComentario(comentario);   
                         aparicionesRepetidasParciales += this.singleComparator.getComentariosInvolucrados();
+                        seRepitio = true;
                     }
                 }
-                aparicionesRepetidas += ((aparicionesRepetidasParciales > 0)?(aparicionesRepetidasParciales+1):0);//el +1 por el comentario previamente revisado de la clase1, debido al hecho que sus apariciones repetidas, solo deben contarse 1 vez...
+                aparicionesRepetidas += ((aparicionesRepetidasParciales == 0 && !seRepitio)?0:(aparicionesRepetidasParciales+1));//el +1 por el comentario previamente revisado de la clase1, debido al hecho que sus apariciones repetidas, solo deben contarse 1 vez...
+                aparicionesRepetidasParciales = 0;//para limpiar el conteo para el otro comment de la lista de la clase del proy1...
+                seRepitio = false;//para así limpiar todo para el siguiente comentario
             }
         }   
         
@@ -82,12 +85,13 @@ public class ComplexComparator {
     
     private void hallarVariablesRepetidas(ArrayList<RESULT> resultados1, ArrayList<RESULT> resultados2){
         ArrayList<ArrayList<Match>> variablesMatch = new ArrayList<>();
-        int variablesTotales = 0;
-        int aparicionesRepetidas = 0, aparicionesRepetidasParciales = 0;
+        int variablesTotales = 0, aparicionesRepetidas = 0, aparicionesRepetidasParciales = 0;
+        boolean seRepitio = false;
         
         for (RESULT result2 : resultados2) {
-             variablesMatch.add(this.singleComparator.getVariablesMatch(result2.getVariables()));
-             variablesTotales += result2.getVariables().size();
+            variablesTotales += result2.getVariables().size();//pongo arriba este conteo, puesto que como se hace un remove en el singleComparator, y la lista que se envía no es un clone, ni se clona allá en el método, entonces esa eli, afecta a la lista que está aquí, por el hecho de ser un obj y de haber pasado el valor por ref, por lo cual o hacías o enviabas un clone para que el método del singleComparator empleara eso, o ponías antes el autoincre, puesto que esa lista, no te va a ser útil después, entonces se eligió el movimiento xD
+            variablesMatch.add(this.singleComparator.getVariablesMatch(result2.getVariables()));
+             
         }
         
         for (RESULT result1 : resultados1) {
@@ -101,9 +105,12 @@ public class ComplexComparator {
                     if(variable != null){
                         this.result.addVariable(variable);
                         aparicionesRepetidasParciales += this.singleComparator.getVariablesInvolucradas();                       
+                        seRepitio = true;
                     }
                 }
-                aparicionesRepetidas += ((aparicionesRepetidasParciales > 0)?(aparicionesRepetidasParciales+1):0);//el +1 por la variable previamente revisada de la clase1
+                aparicionesRepetidas += ((aparicionesRepetidasParciales == 0 && !seRepitio)?0:(aparicionesRepetidasParciales+1));//el +1 por la variable previamente revisada de la clase1
+                aparicionesRepetidasParciales = 0;//para limpiar el conteo para la otra var de la clase del proy 1...
+                seRepitio = false;
             }
         }    
         
@@ -112,12 +119,12 @@ public class ComplexComparator {
     
     private void hallarMetodosRepetidos(ArrayList<RESULT> resultados1, ArrayList<RESULT> resultados2){   
         ArrayList<ArrayList<Match>> metodosMatch = new ArrayList<>();
-        int metodosTotales = 0;        
-        int aparicionesRepetidasParciales = 0, aparicionesRepetidas = 0;
+        int metodosTotales = 0, aparicionesRepetidasParciales = 0, aparicionesRepetidas = 0;
+        boolean seRepitio = false;
         
         for (RESULT result2 : resultados2) {
-             metodosMatch.add(this.singleComparator.getMetodossMatch(result2.getMetodos()));
-             metodosTotales += result2.getMetodos().size();
+            metodosTotales += result2.getMetodos().size();//pongo arriba este conteo, puesto que como se hace un remove en el singleComparator, y la lista que se envía no es un clone, ni se clona allá en el método, entonces esa eli, afecta a la lista que está aquí, por el hecho de ser un obj y de haber pasado el valor por ref, por lo cual o hacías o enviabas un clone para que el método del singleComparator empleara eso, o ponías antes el autoincre, puesto que esa lista, no te va a ser útil después, entonces se eligió el movimiento xD
+            metodosMatch.add(this.singleComparator.getMetodossMatch(result2.getMetodos()));             
         }
         
         for (RESULT result1 : resultados1) {
@@ -131,9 +138,12 @@ public class ComplexComparator {
                     if(metodo != null){
                         this.result.addMetodo(metodo);
                         aparicionesRepetidasParciales += this.singleComparator.getMetodosInvolucrados();
+                        seRepitio = true;
                     }
                 }               
-                aparicionesRepetidas += ((aparicionesRepetidasParciales > 0)?(aparicionesRepetidasParciales+1):0);//el +1, por el método revisado previamente de la clase1
+                aparicionesRepetidas += ((aparicionesRepetidasParciales == 0 && !seRepitio)?0:(aparicionesRepetidasParciales+1));//el +1, por el método revisado previamente de la clase1
+                aparicionesRepetidasParciales = 0;//para limpiar el conteo para el otro método de la clase, del proy1...
+                seRepitio = false;
             }
         }    
         

@@ -59,7 +59,7 @@ public class Variable implements Serializable{
     public String asString(){
         return "{ Nombre: \"" + this.nombre + "\","
              + " Tipo: \"" +this.tipo + "\","
-             + " Funcion: \"" + "\""+ this.funcion+"\" }";        
+             + " Funcion: \"" + this.funcion+"\" }";        
     }
 
 }

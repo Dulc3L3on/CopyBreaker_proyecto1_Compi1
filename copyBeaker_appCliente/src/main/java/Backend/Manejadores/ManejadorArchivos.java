@@ -9,8 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 
 /**
@@ -19,17 +17,21 @@ import javax.swing.JFileChooser;
  */
 public class ManejadorArchivos {
     private final String ACCEPTED_EXTENSION = ".java";
-    private ArrayList<File> listaArchivos = null;//lo pongo null, porque la carpeta bien podría estar vacía, entonces que eso suceda no tiene por qué evitarse el proceso de análisis, porque en realidad ya cargo la carpeta, solo que esa estaba vacía... xD
-    private String[] nombreArchivos;
-    
-    public void setFiles(){
-        this.listaArchivos = new ArrayList<>();
-        File archivo = new File(this.getPath());
+    private ArrayList<File> listaArchivos = new ArrayList<>();//quité el null, porque indep de que tenga o no archivos, se devolverá una lista, ya sea llena o vacía segun corresp, y además hago la ini, para la revisión que permitirá habilitar/desabilitar el botón de análisis
+    private String[] nombreArchivos;    
+
+    public void setFiles(){        
+        String path = this.getPath();
         
-        if(archivo.isDirectory()){            
-            File[] archivos = archivo.listFiles();
-            this.getAllFiles(archivos);
-            this.setNombreArchivos(listaArchivos);
+        if(path != null){
+            this.listaArchivos = new ArrayList<>();
+            File archivo = new File(path);
+        
+            if(archivo.isDirectory()){            
+                File[] archivos = archivo.listFiles();
+                this.getAllFiles(archivos);
+                this.setNombreArchivos(listaArchivos);
+            }
         }
     }
     

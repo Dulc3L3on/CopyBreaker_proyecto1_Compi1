@@ -537,7 +537,7 @@ public void pruebaOpcionesSwitch(){
     int entero = 5;
     double doble = 7.7;    
     String string = "";
-    char caracter = 'c';
+    char caracter = '~';
     boolean bool = entero==5+3;
     PruebasSintaxis pruebas = new PruebasSintaxis();
     Object objeto = new Object();

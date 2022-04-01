@@ -141,6 +141,7 @@ public class home extends javax.swing.JFrame {
 
         btn_analizar.setFont(new java.awt.Font("Sawasdee", 0, 15)); // NOI18N
         btn_analizar.setText("Analizar");
+        btn_analizar.setEnabled(false);
         btn_analizar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_analizarActionPerformed(evt);
@@ -150,6 +151,7 @@ public class home extends javax.swing.JFrame {
         txtA_proyecto1.setEditable(false);
         txtA_proyecto1.setColumns(20);
         txtA_proyecto1.setRows(5);
+        txtA_proyecto1.setTabSize(5);
         txtA_proyecto1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         txtA_proyecto1.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
@@ -161,6 +163,7 @@ public class home extends javax.swing.JFrame {
         txtA_proyecto2.setEditable(false);
         txtA_proyecto2.setColumns(20);
         txtA_proyecto2.setRows(5);
+        txtA_proyecto2.setTabSize(5);
         txtA_proyecto2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         txtA_proyecto2.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
@@ -169,7 +172,7 @@ public class home extends javax.swing.JFrame {
         });
         scroll_proyecto2.setViewportView(txtA_proyecto2);
 
-        lbl_ubicacion_Proyecto1.setBackground(new java.awt.Color(219, 227, 241));
+        lbl_ubicacion_Proyecto1.setBackground(new java.awt.Color(206, 214, 228));
         lbl_ubicacion_Proyecto1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lbl_ubicacion_Proyecto1.setText("linea: 0    columna: 0  ");
         lbl_ubicacion_Proyecto1.setOpaque(true);
@@ -245,7 +248,8 @@ public class home extends javax.swing.JFrame {
         jButton2.setText("if(edit == 0)?Ed:Analiz");
 
         lbl_ubicacion_JSON.setBackground(new java.awt.Color(229, 233, 239));
-        lbl_ubicacion_JSON.setText("  línea: 0    columna: 0");
+        lbl_ubicacion_JSON.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbl_ubicacion_JSON.setText("línea: 0    columna: 0");
         lbl_ubicacion_JSON.setOpaque(true);
 
         jPanel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -276,8 +280,6 @@ public class home extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jTextField2.setText("jTextField1");
-
         jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/lupa-icon.png"))); // NOI18N
         jLabel10.setText("Buscar: ");
 
@@ -291,13 +293,13 @@ public class home extends javax.swing.JFrame {
                     .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(scroll_txtA_JSON)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 524, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 464, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(4, 4, 4)
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -307,11 +309,11 @@ public class home extends javax.swing.JFrame {
                 .addComponent(scroll_txtA_JSON, javax.swing.GroupLayout.PREFERRED_SIZE, 487, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField2)
-                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
@@ -366,17 +368,22 @@ public class home extends javax.swing.JFrame {
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addGap(0, 5, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         lbl_ubicacion_Reportes.setBackground(new java.awt.Color(229, 233, 239));
-        lbl_ubicacion_Reportes.setText("  línea: 0    columna: 0");
+        lbl_ubicacion_Reportes.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lbl_ubicacion_Reportes.setText("línea: 0    columna: 0");
         lbl_ubicacion_Reportes.setOpaque(true);
 
-        jTextField1.setText("jTextField1");
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
 
         jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/lupa-icon.png"))); // NOI18N
         jLabel11.setText("Buscar: ");
@@ -391,13 +398,13 @@ public class home extends javax.swing.JFrame {
                     .addComponent(scroll_TxtA_Reportes)
                     .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 524, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 467, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(4, 4, 4)
                         .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_ubicacion_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lbl_ubicacion_Reportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -407,12 +414,13 @@ public class home extends javax.swing.JFrame {
                 .addComponent(scroll_TxtA_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 487, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jTextField1))
                     .addComponent(lbl_ubicacion_Reportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -526,11 +534,13 @@ public class home extends javax.swing.JFrame {
     private void btn_carga2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_carga2ActionPerformed
         this.manejadorArchivos_Proyecto2.setFiles();
         this.manejadorInterfaz.addArchivosALista(lista_Carga2, this.manejadorArchivos_Proyecto2.getNombreArchivos(), txtA_proyecto2);
+        this.enabledMainButton(this.manejadorArchivos_Proyecto1.getFiles(), this.manejadorArchivos_Proyecto2.getFiles());
     }//GEN-LAST:event_btn_carga2ActionPerformed
 
     private void btn_carga1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_carga1ActionPerformed
         this.manejadorArchivos_Proyecto1.setFiles();
         this.manejadorInterfaz.addArchivosALista(lista_Carga1, this.manejadorArchivos_Proyecto1.getNombreArchivos(), txtA_proyecto1);
+        this.enabledMainButton(this.manejadorArchivos_Proyecto1.getFiles(), this.manejadorArchivos_Proyecto2.getFiles());
     }//GEN-LAST:event_btn_carga1ActionPerformed
 
     private void txtA_proyecto1CaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_txtA_proyecto1CaretUpdate
@@ -569,8 +579,12 @@ public class home extends javax.swing.JFrame {
         }        
     }//GEN-LAST:event_lista_Carga2MouseClicked
 
-    private void addManejadorLinea(){
-    
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void enabledMainButton(ArrayList<File> archivosProyecto1, ArrayList<File> archivosProyecto2){        
+        this.btn_analizar.setEnabled((!archivosProyecto1.isEmpty() && !archivosProyecto2.isEmpty()));        
     }
     
     /**

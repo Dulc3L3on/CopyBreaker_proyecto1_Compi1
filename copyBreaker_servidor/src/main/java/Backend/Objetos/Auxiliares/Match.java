@@ -18,7 +18,7 @@ public class Match {
     private Variable variable;
     private Comentario comentario;
     private int involucrados = 0;
-    private boolean utilizado;
+    private boolean utilizado = false;
     
     public Match(Variable laVariable){
         this.variable = laVariable;

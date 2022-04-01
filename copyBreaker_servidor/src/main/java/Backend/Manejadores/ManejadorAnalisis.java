@@ -48,6 +48,7 @@ public class ManejadorAnalisis {//para mientras que estos métodos son del servi
                 manejadoresError[actual], (actual+1)));            
         }
         
+        this.manejadorInterfaz.resetLog();//puesto que media vez se hayan cargado archivos, sin importar el resultado, debe limpiarse
         if(!this.hubieronErrores()){
             complexComparator = new ComplexComparator(listadoRESULTS.get(0), listadoRESULTS.get(1));           
             this.escritorJSON.escribirJSON(this.complexComparator.getRESULT());            

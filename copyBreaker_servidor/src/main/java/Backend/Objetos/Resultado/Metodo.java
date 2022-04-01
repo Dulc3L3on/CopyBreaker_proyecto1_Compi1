@@ -43,7 +43,7 @@ public class Metodo implements Serializable{
 
     public ArrayList<Variable> getParametros() {
         return parametros;
-    }
+    }//devolverá null cuando se use el 2do cnstrct, pensaba no crear una nueva lista, porque sería en vano y porque eso podría ser posible al usar el 1er cnstrct, pero quizá sea mejor así...
     
     public int getNumeroParametros(){
         return this.numeroParametros;
@@ -52,7 +52,7 @@ public class Metodo implements Serializable{
     public String asString(){
         return "{ Nombre: \""+ this.nombre + "\", "
               + "Tipo: \"" + this.tipo + "\","
-              + "Parametros: " + this.parametros.size() + " }";
+              + "Parametros: " + numeroParametros + " }";//puesto que cuando el objeto sea creado con el cnstruct 2, el listado será nulo
     }
     
 }

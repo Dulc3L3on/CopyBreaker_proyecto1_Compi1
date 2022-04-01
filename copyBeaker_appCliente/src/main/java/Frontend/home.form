@@ -276,6 +276,7 @@
                       <Font name="Sawasdee" size="15" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Analizar"/>
+                    <Property name="enabled" type="boolean" value="false"/>
                   </Properties>
                   <Events>
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_analizarActionPerformed"/>
@@ -293,6 +294,7 @@
                         <Property name="editable" type="boolean" value="false"/>
                         <Property name="columns" type="int" value="20"/>
                         <Property name="rows" type="int" value="5"/>
+                        <Property name="tabSize" type="int" value="5"/>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                             <EtchetBorder/>
@@ -317,6 +319,7 @@
                         <Property name="editable" type="boolean" value="false"/>
                         <Property name="columns" type="int" value="20"/>
                         <Property name="rows" type="int" value="5"/>
+                        <Property name="tabSize" type="int" value="5"/>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                             <EtchetBorder/>
@@ -332,7 +335,7 @@
                 <Component class="javax.swing.JLabel" name="lbl_ubicacion_Proyecto1">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-                      <Color blue="f1" green="e3" red="db" type="rgb"/>
+                      <Color blue="e4" green="d6" red="ce" type="rgb"/>
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="4"/>
                     <Property name="text" type="java.lang.String" value="linea: 0    columna: 0  "/>
@@ -398,13 +401,13 @@
                                       <Component id="jPanel7" max="32767" attributes="0"/>
                                       <Component id="scroll_txtA_JSON" max="32767" attributes="0"/>
                                       <Group type="102" alignment="0" attributes="0">
-                                          <Component id="jButton2" min="-2" pref="524" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jButton2" min="-2" pref="464" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                                           <Component id="jLabel10" min="-2" pref="75" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                                          <Component id="jTextField2" min="-2" pref="198" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jTextField2" pref="143" max="32767" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="lbl_ubicacion_JSON" min="-2" pref="148" max="-2" attributes="0"/>
+                                          <Component id="lbl_ubicacion_JSON" pref="172" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -418,12 +421,12 @@
                                   <Component id="scroll_txtA_JSON" min="-2" pref="487" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                      <Component id="jButton2" max="32767" attributes="0"/>
-                                      <Component id="lbl_ubicacion_JSON" max="32767" attributes="0"/>
-                                      <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                                          <Component id="jTextField2" alignment="3" max="32767" attributes="0"/>
+                                      <Group type="103" groupAlignment="3" attributes="0">
+                                          <Component id="jButton2" alignment="3" max="32767" attributes="0"/>
                                           <Component id="jLabel10" alignment="3" max="32767" attributes="0"/>
+                                          <Component id="jTextField2" alignment="3" min="-2" max="-2" attributes="0"/>
                                       </Group>
+                                      <Component id="lbl_ubicacion_JSON" max="32767" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Component id="jPanel7" max="32767" attributes="0"/>
@@ -466,7 +469,8 @@
                             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                               <Color blue="ef" green="e9" red="e5" type="rgb"/>
                             </Property>
-                            <Property name="text" type="java.lang.String" value="  l&#xed;nea: 0    columna: 0"/>
+                            <Property name="horizontalAlignment" type="int" value="0"/>
+                            <Property name="text" type="java.lang.String" value="l&#xed;nea: 0    columna: 0"/>
                             <Property name="opaque" type="boolean" value="true"/>
                           </Properties>
                         </Component>
@@ -519,9 +523,6 @@
                           </SubComponents>
                         </Container>
                         <Component class="javax.swing.JTextField" name="jTextField2">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="jTextField1"/>
-                          </Properties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="jLabel10">
                           <Properties>
@@ -551,13 +552,13 @@
                                       <Component id="scroll_TxtA_Reportes" max="32767" attributes="0"/>
                                       <Component id="jPanel8" alignment="1" max="32767" attributes="0"/>
                                       <Group type="102" alignment="0" attributes="0">
-                                          <Component id="jButton1" min="-2" pref="524" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
+                                          <Component id="jButton1" min="-2" pref="467" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                                           <Component id="jLabel11" min="-2" pref="75" max="-2" attributes="0"/>
+                                          <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                                          <Component id="jTextField1" min="-2" pref="197" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="jTextField1" max="32767" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="lbl_ubicacion_Reportes" min="-2" pref="148" max="-2" attributes="0"/>
+                                          <Component id="lbl_ubicacion_Reportes" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -571,13 +572,15 @@
                                   <Component id="scroll_TxtA_Reportes" min="-2" pref="487" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                      <Component id="jTextField1" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="jLabel11" alignment="0" max="32767" attributes="0"/>
-                                      <Component id="jButton1" alignment="0" max="32767" attributes="0"/>
+                                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                                          <Component id="jButton1" alignment="3" max="32767" attributes="0"/>
+                                          <Component id="jLabel11" alignment="3" max="32767" attributes="0"/>
+                                          <Component id="jTextField1" alignment="3" max="32767" attributes="0"/>
+                                      </Group>
                                       <Component id="lbl_ubicacion_Reportes" max="32767" attributes="0"/>
                                   </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="jPanel8" max="32767" attributes="0"/>
+                                  <EmptySpace pref="11" max="32767" attributes="0"/>
+                                  <Component id="jPanel8" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -638,10 +641,10 @@
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
-                                      <EmptySpace min="0" pref="5" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                       <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="jScrollPane2" min="-2" pref="231" max="-2" attributes="0"/>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Component id="jScrollPane2" min="-2" pref="225" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -680,14 +683,15 @@
                             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                               <Color blue="ef" green="e9" red="e5" type="rgb"/>
                             </Property>
-                            <Property name="text" type="java.lang.String" value="  l&#xed;nea: 0    columna: 0"/>
+                            <Property name="horizontalAlignment" type="int" value="0"/>
+                            <Property name="text" type="java.lang.String" value="l&#xed;nea: 0    columna: 0"/>
                             <Property name="opaque" type="boolean" value="true"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JTextField" name="jTextField1">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="jTextField1"/>
-                          </Properties>
+                          <Events>
+                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jTextField1ActionPerformed"/>
+                          </Events>
                         </Component>
                         <Component class="javax.swing.JLabel" name="jLabel11">
                           <Properties>

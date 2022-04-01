@@ -40,7 +40,7 @@ public class SingleComparator {
             return false;
         }        
         
-        ArrayList<Metodo> auxiliarMetodos2 = listaMetodos2;//puesto que se eliminarán elementos para así no detectar falsas repeticiones        
+        ArrayList<Metodo> auxiliarMetodos2 = (ArrayList<Metodo>) listaMetodos2.clone();//puedo eliminarlos ya que si existiera otro en lista2 con nombre igual a uno eli, si las clases son iguales, debería existir otro método en l1, después por el cual se hizo el remove en el l2, por lo tanto el remove no provocaría problema alguno xD. debe ser clone, si no arruinarías el listado de métodos en RESULT2 xD
         for (int actualRevisada = 0; actualRevisada < listaMetodos1.size(); actualRevisada++) {
             if(!existeMetodoIgual(listaMetodos1.get(actualRevisada).getNombre(), auxiliarMetodos2)){
                 return false;
@@ -65,7 +65,7 @@ public class SingleComparator {
         for (Match agrupacion : agrupacionComentarios2) {
             if(comentario1.getTexto().equals(agrupacion.getComentario().getTexto())){                   
                 this.comentariosInvolucrados = ((agrupacion.fueUtilizado())?0:agrupacion.getInvolucrados());
-                agrupacion.setUtilizado();
+                agrupacion.setUtilizado();//puesto que sin importar con qué o cuantas clases del proy1, media vez se halló igual que uno de los otros, ya no se vuelve a contar, porque es es mismo obj al que se ref...
                 return new Comentario(comentario1.getTexto());
             }
        }
@@ -78,11 +78,12 @@ public class SingleComparator {
         
         for (int anterior = 0; anterior < listaAuxiliar.size(); anterior++) {//debe llegar hasta la última posición, puesto que el listado de agrupaciones tiene un nodo por cada var != a cualquiera de los nodos que ya se encuentren en la lista xD
             agrupaciones.add(new Match(new Comentario(listaAuxiliar.get(anterior).getTexto())));
+            agrupaciones.get(anterior).addInvolucrado();
             
             for (int actual = (anterior+1); actual < listaAuxiliar.size(); actual++) {
                 if(listaAuxiliar.get(anterior).getTexto().equals(listaAuxiliar.get(actual).getTexto())){
                     
-                    agrupaciones.get(agrupaciones.size()-1).addInvolucrado();//y así tener el #vars iguales[tipo y nombre] del proy2                    
+                    agrupaciones.get(anterior).addInvolucrado();//y así tener el #vars iguales[tipo y nombre] del proy2                    
                     listaAuxiliar.remove(actual);
                     actual--;//para que así pueda estudiar el que ahora ocupa el lugar
                 }
@@ -117,13 +118,14 @@ public class SingleComparator {
         for (int anterior = 0; anterior < listaAuxiliar.size(); anterior++) {//debe llegar hasta la última posición, puesto que el listado de agrupaciones tiene un nodo por cada var != a cualquiera de los nodos que ya se encuentren en la lista xD
             agrupaciones.add(new Match(new Variable(listaAuxiliar.get(anterior).getTipo(),
             listaAuxiliar.get(anterior).getNombre(), listaAuxiliar.get(anterior).getFuncion())));
+            agrupaciones.get(anterior).addInvolucrado();
             
             for (int actual = (anterior+1); actual < listaAuxiliar.size(); actual++) {
                 if(listaAuxiliar.get(anterior).getTipo().equals(listaAuxiliar.get(actual).getTipo()) &&
                    listaAuxiliar.get(anterior).getNombre().equals(listaAuxiliar.get(actual).getNombre())){
                     
-                    agrupaciones.get(agrupaciones.size()-1).addInvolucrado();//y así tener el #vars iguales[tipo y nombre] del proy2
-                    agrupaciones.get(agrupaciones.size()-1).getVariable().setFuncion("", listaAuxiliar.get(actual).getFuncion());
+                    agrupaciones.get(anterior).addInvolucrado();//y así tener el #vars iguales[tipo y nombre] del proy2
+                    agrupaciones.get(anterior).getVariable().setFuncion("", listaAuxiliar.get(actual).getFuncion());
                     listaAuxiliar.remove(actual);
                     actual--;//para que así pueda estudiar el que ahora ocupa el lugar
                 }
@@ -159,13 +161,14 @@ public class SingleComparator {
         for (int anterior = 0; anterior < listaAuxiliar.size(); anterior++) {//debe llegar hasta la última posición, puesto que el listado de agrupaciones tiene un nodo por cada var != a cualquiera de los nodos que ya se encuentren en la lista xD
             agrupaciones.add(new Match(new Metodo(listaAuxiliar.get(anterior).getTipo(),
             listaAuxiliar.get(anterior).getNombre(), listaAuxiliar.get(anterior).getParametros())));
+            agrupaciones.get(anterior).addInvolucrado();
             
             for (int actual = (anterior+1); actual < listaAuxiliar.size(); actual++) {
                 if(listaAuxiliar.get(anterior).getTipo().equals(listaAuxiliar.get(actual).getTipo()) &&
                    listaAuxiliar.get(anterior).getNombre().equals(listaAuxiliar.get(actual).getNombre()) &&
                    compararParametros(listaAuxiliar.get(anterior).getParametros(), listaAuxiliar.get(actual).getParametros())){
                     
-                    agrupaciones.get(agrupaciones.size()-1).addInvolucrado();//y así tener el #vars iguales[tipo y nombre] del proy2                    
+                    agrupaciones.get(anterior).addInvolucrado();//y así tener el #vars iguales[tipo y nombre] del proy2                    
                     listaAuxiliar.remove(actual);
                     actual--;//para que así pueda estudiar el que ahora ocupa el lugar
                 }
@@ -179,8 +182,9 @@ public class SingleComparator {
             return false;
         }
         
+        ArrayList<Variable> auxiliarParametros = (ArrayList<Variable>) parametros2.clone();
         for (Variable parametro1 : parametros1) {
-            if(!this.existeParametroIgual(parametro1, parametros2)){
+            if(!this.existeParametroIgual(parametro1, auxiliarParametros)){
                 return false;
             }
         }        
@@ -188,9 +192,10 @@ public class SingleComparator {
     }//no dijo que debían estar en orden, solo que fueran los mismos...
     
     private boolean existeParametroIgual(Variable parametro1, ArrayList<Variable> parametros2){
-        for (Variable parametro2 : parametros2) {
-            if(parametro1.getTipo().equals(parametro2.getTipo()) &&
-                parametro1.getNombre().equals(parametro2.getNombre())){
+        for (int actual = 0; actual < parametros2.size(); actual++) {
+            if(parametro1.getTipo().equals(parametros2.get(actual).getTipo()) &&
+                parametro1.getNombre().equals(parametros2.get(actual).getNombre())){
+                parametros2.remove(parametros2.get(actual));
                  return true;//puesto que con 1 basta
             }
        }
