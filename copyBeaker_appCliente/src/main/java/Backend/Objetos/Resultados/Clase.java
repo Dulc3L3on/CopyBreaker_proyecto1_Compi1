@@ -20,11 +20,9 @@ public class Clase implements Serializable{
     
     public String getNombre(){
         return this.nombre;
-    }
+    }    
     
-    //esto es para crea el JSON, porque los reportes, req el valor en sí, sin formatos xD
     public String asString(){
         return "{ Nombre: \""+nombre+"\" }";
-    }//puesto que cunado piden RESULT.Clase, piden el obj, entonces soy libre de mostrarlo así xD
-    
+    }//será útil cuando en los rep, solicite un objeto o para armar la lista solicitada
 }

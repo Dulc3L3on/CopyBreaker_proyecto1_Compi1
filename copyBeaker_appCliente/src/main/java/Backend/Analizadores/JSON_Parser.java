@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import Backend.Objetos.Resultados.RESULT;
 import Backend.Objetos.Resultados.Metodo;
 import Backend.Objetos.Resultados.Variable;
+import Backend.Objetos.Resultados.Clase;
+import Backend.Objetos.Resultados.Comentario;
 import Backend.Objetos.Token;
 import Backend.Manejadores.ManejadorErrores;
 import Backend.Objetos.Error;
@@ -40,23 +42,23 @@ public class JSON_Parser extends java_cup.runtime.lr_parser {
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
-    "\000\066\000\002\002\004\000\002\002\005\000\002\002" +
-    "\003\000\002\003\013\000\002\003\003\000\002\004\003" +
+    "\000\065\000\002\002\004\000\002\002\005\000\002\002" +
+    "\003\000\002\003\013\000\002\004\003\000\002\004\003" +
     "\000\002\004\003\000\002\004\003\000\002\004\003\000" +
-    "\002\004\003\000\002\004\003\000\002\005\004\000\002" +
-    "\006\004\000\002\006\003\000\002\007\004\000\002\010" +
-    "\006\000\002\010\003\000\002\011\005\000\002\011\003" +
+    "\002\004\003\000\002\005\004\000\002\006\004\000\002" +
+    "\006\003\000\002\007\004\000\002\010\006\000\002\010" +
+    "\005\000\002\010\003\000\002\011\005\000\002\011\003" +
     "\000\002\011\004\000\002\012\007\000\002\013\004\000" +
-    "\002\014\006\000\002\014\003\000\002\015\005\000\002" +
-    "\015\003\000\002\015\004\000\002\016\011\000\002\017" +
-    "\005\000\002\017\003\000\002\020\003\000\002\020\003" +
-    "\000\002\020\003\000\002\020\003\000\002\021\004\000" +
-    "\002\022\006\000\002\022\003\000\002\023\005\000\002" +
-    "\023\003\000\002\023\003\000\002\024\011\000\002\025" +
-    "\005\000\002\025\005\000\002\025\003\000\002\026\003" +
-    "\000\002\026\003\000\002\026\003\000\002\027\004\000" +
-    "\002\030\006\000\002\030\003\000\002\031\005\000\002" +
-    "\031\003\000\002\031\004\000\002\032\007" });
+    "\002\014\006\000\002\014\005\000\002\014\003\000\002" +
+    "\015\005\000\002\015\003\000\002\015\004\000\002\016" +
+    "\011\000\002\017\005\000\002\017\005\000\002\017\005" +
+    "\000\002\017\003\000\002\020\004\000\002\021\006\000" +
+    "\002\021\005\000\002\021\003\000\002\022\005\000\002" +
+    "\022\003\000\002\022\003\000\002\023\011\000\002\024" +
+    "\005\000\002\024\005\000\002\024\005\000\002\024\003" +
+    "\000\002\025\004\000\002\026\006\000\002\026\005\000" +
+    "\002\026\003\000\002\027\005\000\002\027\003\000\002" +
+    "\027\004\000\002\030\007" });
 
   /** Access to production table. */
   public short[][] production_table() {return _production_table;}
@@ -64,75 +66,80 @@ public class JSON_Parser extends java_cup.runtime.lr_parser {
   /** Parse-action table. */
   protected static final short[][] _action_table = 
     unpackFromStrings(new String[] {
-    "\000\163\000\006\003\004\022\006\001\002\000\004\002" +
-    "\uffff\001\002\000\004\002\165\001\002\000\016\003\020" +
-    "\004\023\005\011\006\013\007\015\010\017\001\002\000" +
-    "\004\021\154\001\002\000\006\021\ufff9\023\ufff9\001\002" +
-    "\000\006\003\134\020\136\001\002\000\004\023\133\001" +
-    "\002\000\006\003\102\020\103\001\002\000\006\021\ufffc" +
-    "\023\ufffc\001\002\000\006\003\051\020\052\001\002\000" +
-    "\006\021\ufffa\023\ufffa\001\002\000\006\003\031\020\032" +
-    "\001\002\000\006\021\ufff7\023\ufffd\001\002\000\006\021" +
-    "\ufffb\023\ufffb\001\002\000\006\021\ufff8\023\ufff8\001\002" +
-    "\000\006\003\024\020\026\001\002\000\006\021\ufff4\023" +
-    "\ufff4\001\002\000\006\021\ufff6\023\ufff6\001\002\000\004" +
-    "\017\027\001\002\000\006\021\ufff5\023\ufff5\001\002\000" +
-    "\006\021\uffd2\023\uffd2\001\002\000\006\021\uffd0\023\uffd0" +
-    "\001\002\000\004\024\033\001\002\000\006\003\035\022" +
-    "\037\001\002\000\006\021\045\025\046\001\002\000\004" +
-    "\022\037\001\002\000\006\021\uffce\025\uffce\001\002\000" +
-    "\004\015\040\001\002\000\004\020\041\001\002\000\004" +
-    "\017\042\001\002\000\004\023\043\001\002\000\006\021" +
-    "\uffcc\025\uffcc\001\002\000\006\021\uffcd\025\uffcd\001\002" +
-    "\000\004\022\037\001\002\000\006\021\uffd1\023\uffd1\001" +
-    "\002\000\006\021\uffcf\025\uffcf\001\002\000\006\021\uffdf" +
-    "\023\uffdf\001\002\000\006\021\uffdd\023\uffdd\001\002\000" +
-    "\004\024\053\001\002\000\006\003\055\022\057\001\002" +
-    "\000\006\021\077\025\100\001\002\000\006\021\uffda\025" +
-    "\uffda\001\002\000\006\021\uffdb\025\uffdb\001\002\000\012" +
-    "\003\061\011\064\012\065\014\063\001\002\000\004\021" +
-    "\072\001\002\000\010\020\uffd3\021\uffd6\023\uffd6\001\002" +
-    "\000\004\020\070\001\002\000\004\020\066\001\002\000" +
-    "\004\020\uffd5\001\002\000\004\020\uffd4\001\002\000\004" +
-    "\016\067\001\002\000\006\021\uffd7\023\uffd7\001\002\000" +
-    "\004\017\071\001\002\000\006\021\uffd8\023\uffd8\001\002" +
-    "\000\012\003\061\011\064\012\065\014\063\001\002\000" +
-    "\004\021\074\001\002\000\012\003\061\011\064\012\065" +
-    "\014\063\001\002\000\004\023\076\001\002\000\006\021" +
-    "\uffd9\025\uffd9\001\002\000\004\022\057\001\002\000\006" +
-    "\021\uffde\023\uffde\001\002\000\006\021\uffdc\025\uffdc\001" +
-    "\002\000\006\021\uffea\023\uffea\001\002\000\004\024\105" +
-    "\001\002\000\006\021\uffec\023\uffec\001\002\000\006\003" +
-    "\107\022\111\001\002\000\006\021\130\025\131\001\002" +
-    "\000\004\022\111\001\002\000\006\021\uffe8\025\uffe8\001" +
-    "\002\000\012\003\112\011\115\012\116\013\113\001\002" +
-    "\000\010\020\uffe0\021\uffe4\023\uffe4\001\002\000\004\020" +
-    "\uffe1\001\002\000\004\021\122\001\002\000\004\020\uffe3" +
-    "\001\002\000\004\020\uffe2\001\002\000\004\020\120\001" +
-    "\002\000\004\017\121\001\002\000\006\021\uffe5\023\uffe5" +
-    "\001\002\000\012\003\112\011\115\012\116\013\113\001" +
-    "\002\000\004\021\124\001\002\000\012\003\112\011\115" +
-    "\012\116\013\113\001\002\000\004\023\126\001\002\000" +
-    "\006\021\uffe6\025\uffe6\001\002\000\006\021\uffe7\025\uffe7" +
-    "\001\002\000\004\022\111\001\002\000\006\021\uffeb\023" +
-    "\uffeb\001\002\000\006\021\uffe9\025\uffe9\001\002\000\004" +
-    "\002\000\001\002\000\006\021\ufff1\023\ufff1\001\002\000" +
-    "\006\021\ufff3\023\ufff3\001\002\000\004\024\137\001\002" +
-    "\000\006\003\141\022\143\001\002\000\006\021\151\025" +
-    "\152\001\002\000\004\022\143\001\002\000\006\021\uffef" +
-    "\025\uffef\001\002\000\004\011\144\001\002\000\004\020" +
-    "\145\001\002\000\004\017\146\001\002\000\004\023\147" +
-    "\001\002\000\006\021\uffed\025\uffed\001\002\000\006\021" +
-    "\uffee\025\uffee\001\002\000\004\022\143\001\002\000\006" +
-    "\021\ufff2\023\ufff2\001\002\000\006\021\ufff0\025\ufff0\001" +
-    "\002\000\016\003\156\004\023\005\011\006\013\007\015" +
-    "\010\017\001\002\000\004\021\157\001\002\000\006\021" +
-    "\ufff7\023\ufff7\001\002\000\016\003\156\004\023\005\011" +
-    "\006\013\007\015\010\017\001\002\000\004\021\161\001" +
-    "\002\000\016\003\156\004\023\005\011\006\013\007\015" +
-    "\010\017\001\002\000\004\021\163\001\002\000\016\003" +
-    "\156\004\023\005\011\006\013\007\015\010\017\001\002" +
-    "\000\004\023\ufffe\001\002\000\004\002\001\001\002" });
+    "\000\172\000\006\003\004\022\006\001\002\000\004\002" +
+    "\uffff\001\002\000\004\002\174\001\002\000\016\003\017" +
+    "\004\021\005\011\006\013\007\015\010\020\001\002\000" +
+    "\004\021\164\001\002\000\006\021\ufffa\023\ufffa\001\002" +
+    "\000\006\003\143\020\145\001\002\000\004\023\142\001" +
+    "\002\000\006\003\105\020\106\001\002\000\006\021\ufffd" +
+    "\023\ufffd\001\002\000\006\003\052\020\053\001\002\000" +
+    "\006\021\ufffb\023\ufffb\001\002\000\006\021\ufff8\023\ufff8" +
+    "\001\002\000\006\003\031\020\032\001\002\000\006\003" +
+    "\024\020\025\001\002\000\006\021\ufff9\023\ufff9\001\002" +
+    "\000\006\021\ufffc\023\ufffc\001\002\000\006\021\ufff5\023" +
+    "\ufff5\001\002\000\004\017\027\001\002\000\006\021\ufff7" +
+    "\023\ufff7\001\002\000\006\021\ufff6\023\ufff6\001\002\000" +
+    "\006\021\uffd4\023\uffd4\001\002\000\006\021\uffd1\023\uffd1" +
+    "\001\002\000\004\024\033\001\002\000\010\003\035\022" +
+    "\040\025\037\001\002\000\006\021\046\025\047\001\002" +
+    "\000\004\022\040\001\002\000\006\021\uffcf\025\uffcf\001" +
+    "\002\000\006\021\uffd2\023\uffd2\001\002\000\004\015\041" +
+    "\001\002\000\004\020\042\001\002\000\004\017\043\001" +
+    "\002\000\004\023\044\001\002\000\006\021\uffcd\025\uffcd" +
+    "\001\002\000\006\021\uffce\025\uffce\001\002\000\004\022" +
+    "\040\001\002\000\006\021\uffd3\023\uffd3\001\002\000\006" +
+    "\021\uffd0\025\uffd0\001\002\000\006\021\uffe0\023\uffe0\001" +
+    "\002\000\006\021\uffdd\023\uffdd\001\002\000\004\024\054" +
+    "\001\002\000\010\003\056\022\061\025\057\001\002\000" +
+    "\006\021\102\025\103\001\002\000\006\021\uffda\025\uffda" +
+    "\001\002\000\006\021\uffde\023\uffde\001\002\000\006\021" +
+    "\uffdb\025\uffdb\001\002\000\012\003\063\011\065\012\066" +
+    "\014\064\001\002\000\004\021\075\001\002\000\006\021" +
+    "\uffd5\023\uffd5\001\002\000\004\020\073\001\002\000\004" +
+    "\020\071\001\002\000\004\020\067\001\002\000\004\017" +
+    "\070\001\002\000\006\021\uffd8\023\uffd8\001\002\000\004" +
+    "\017\072\001\002\000\006\021\uffd7\023\uffd7\001\002\000" +
+    "\004\016\074\001\002\000\006\021\uffd6\023\uffd6\001\002" +
+    "\000\012\003\063\011\065\012\066\014\064\001\002\000" +
+    "\004\021\077\001\002\000\012\003\063\011\065\012\066" +
+    "\014\064\001\002\000\004\023\101\001\002\000\006\021" +
+    "\uffd9\025\uffd9\001\002\000\004\022\061\001\002\000\006" +
+    "\021\uffdf\023\uffdf\001\002\000\006\021\uffdc\025\uffdc\001" +
+    "\002\000\006\021\uffe9\023\uffe9\001\002\000\004\024\110" +
+    "\001\002\000\006\021\uffec\023\uffec\001\002\000\010\003" +
+    "\112\022\115\025\113\001\002\000\006\021\137\025\140" +
+    "\001\002\000\004\022\115\001\002\000\006\021\uffea\023" +
+    "\uffea\001\002\000\006\021\uffe7\025\uffe7\001\002\000\012" +
+    "\003\116\011\121\012\122\013\117\001\002\000\006\021" +
+    "\uffe1\023\uffe1\001\002\000\004\020\134\001\002\000\004" +
+    "\021\127\001\002\000\004\020\125\001\002\000\004\020" +
+    "\123\001\002\000\004\017\124\001\002\000\006\021\uffe4" +
+    "\023\uffe4\001\002\000\004\017\126\001\002\000\006\021" +
+    "\uffe3\023\uffe3\001\002\000\012\003\116\011\121\012\122" +
+    "\013\117\001\002\000\004\021\131\001\002\000\012\003" +
+    "\116\011\121\012\122\013\117\001\002\000\004\023\133" +
+    "\001\002\000\006\021\uffe5\025\uffe5\001\002\000\004\017" +
+    "\135\001\002\000\006\021\uffe2\023\uffe2\001\002\000\006" +
+    "\021\uffe6\025\uffe6\001\002\000\004\022\115\001\002\000" +
+    "\006\021\uffeb\023\uffeb\001\002\000\006\021\uffe8\025\uffe8" +
+    "\001\002\000\004\002\000\001\002\000\006\021\ufff1\023" +
+    "\ufff1\001\002\000\006\021\ufff4\023\ufff4\001\002\000\004" +
+    "\024\146\001\002\000\010\003\150\022\153\025\151\001" +
+    "\002\000\006\021\161\025\162\001\002\000\004\022\153" +
+    "\001\002\000\006\021\ufff2\023\ufff2\001\002\000\006\021" +
+    "\uffef\025\uffef\001\002\000\004\011\154\001\002\000\004" +
+    "\020\155\001\002\000\004\017\156\001\002\000\004\023" +
+    "\157\001\002\000\006\021\uffed\025\uffed\001\002\000\006" +
+    "\021\uffee\025\uffee\001\002\000\004\022\153\001\002\000" +
+    "\006\021\ufff3\023\ufff3\001\002\000\006\021\ufff0\025\ufff0" +
+    "\001\002\000\016\003\017\004\021\005\011\006\013\007" +
+    "\015\010\020\001\002\000\004\021\166\001\002\000\016" +
+    "\003\017\004\021\005\011\006\013\007\015\010\020\001" +
+    "\002\000\004\021\170\001\002\000\016\003\017\004\021" +
+    "\005\011\006\013\007\015\010\020\001\002\000\004\021" +
+    "\172\001\002\000\016\003\017\004\021\005\011\006\013" +
+    "\007\015\010\020\001\002\000\004\023\ufffe\001\002\000" +
+    "\004\002\001\001\002" });
 
   /** Access to parse-action table. */
   public short[][] action_table() {return _action_table;}
@@ -140,52 +147,53 @@ public class JSON_Parser extends java_cup.runtime.lr_parser {
   /** <code>reduce_goto</code> table. */
   protected static final short[][] _reduce_table = 
     unpackFromStrings(new String[] {
-    "\000\163\000\004\002\004\001\001\000\002\001\001\000" +
-    "\002\001\001\000\020\003\011\004\006\005\013\007\020" +
-    "\013\015\021\007\027\021\001\001\000\002\001\001\000" +
-    "\002\001\001\000\004\010\134\001\001\000\002\001\001" +
-    "\000\004\014\103\001\001\000\002\001\001\000\004\022" +
-    "\047\001\001\000\002\001\001\000\004\030\027\001\001" +
+    "\000\172\000\004\002\004\001\001\000\002\001\001\000" +
+    "\002\001\001\000\020\003\011\004\006\005\013\007\022" +
+    "\013\015\020\007\025\021\001\001\000\002\001\001\000" +
+    "\002\001\001\000\004\010\143\001\001\000\002\001\001" +
+    "\000\004\014\106\001\001\000\002\001\001\000\004\021" +
+    "\050\001\001\000\002\001\001\000\002\001\001\000\004" +
+    "\026\027\001\001\000\004\006\025\001\001\000\002\001" +
+    "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
     "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
-    "\004\006\024\001\001\000\002\001\001\000\002\001\001" +
-    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
-    "\002\001\001\000\002\001\001\000\006\031\033\032\035" +
-    "\001\001\000\002\001\001\000\004\032\043\001\001\000" +
+    "\002\001\001\000\002\001\001\000\006\027\033\030\035" +
+    "\001\001\000\002\001\001\000\004\030\044\001\001\000" +
     "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
     "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
-    "\001\000\004\032\046\001\001\000\002\001\001\000\002" +
+    "\001\000\002\001\001\000\004\030\047\001\001\000\002" +
     "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
-    "\001\000\006\023\053\024\055\001\001\000\002\001\001" +
-    "\000\002\001\001\000\002\001\001\000\006\025\057\026" +
-    "\061\001\001\000\002\001\001\000\002\001\001\000\002" +
-    "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
-    "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
-    "\000\002\001\001\000\006\025\072\026\061\001\001\000" +
-    "\002\001\001\000\006\025\074\026\061\001\001\000\002" +
-    "\001\001\000\002\001\001\000\004\024\100\001\001\000" +
+    "\001\000\002\001\001\000\006\022\054\023\057\001\001" +
+    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
+    "\002\001\001\000\004\024\061\001\001\000\002\001\001" +
+    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
     "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
-    "\001\001\000\002\001\001\000\006\015\105\016\107\001" +
-    "\001\000\002\001\001\000\004\016\126\001\001\000\002" +
-    "\001\001\000\006\017\113\020\116\001\001\000\002\001" +
-    "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
-    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
-    "\002\001\001\000\006\017\122\020\116\001\001\000\002" +
-    "\001\001\000\006\017\124\020\116\001\001\000\002\001" +
-    "\001\000\002\001\001\000\002\001\001\000\004\016\131" +
     "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
-    "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
-    "\000\006\011\137\012\141\001\001\000\002\001\001\000" +
-    "\004\012\147\001\001\000\002\001\001\000\002\001\001" +
+    "\001\000\004\024\075\001\001\000\002\001\001\000\004" +
+    "\024\077\001\001\000\002\001\001\000\002\001\001\000" +
+    "\004\023\103\001\001\000\002\001\001\000\002\001\001" +
     "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
-    "\002\001\001\000\002\001\001\000\004\012\152\001\001" +
-    "\000\002\001\001\000\002\001\001\000\016\004\154\005" +
-    "\013\007\020\013\015\021\007\027\021\001\001\000\002" +
-    "\001\001\000\002\001\001\000\016\004\157\005\013\007" +
-    "\020\013\015\021\007\027\021\001\001\000\002\001\001" +
-    "\000\016\004\161\005\013\007\020\013\015\021\007\027" +
-    "\021\001\001\000\002\001\001\000\016\004\163\005\013" +
-    "\007\020\013\015\021\007\027\021\001\001\000\002\001" +
-    "\001\000\002\001\001" });
+    "\006\015\110\016\113\001\001\000\002\001\001\000\004" +
+    "\016\135\001\001\000\002\001\001\000\002\001\001\000" +
+    "\004\017\117\001\001\000\002\001\001\000\002\001\001" +
+    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
+    "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
+    "\001\001\000\004\017\127\001\001\000\002\001\001\000" +
+    "\004\017\131\001\001\000\002\001\001\000\002\001\001" +
+    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
+    "\004\016\140\001\001\000\002\001\001\000\002\001\001" +
+    "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
+    "\002\001\001\000\006\011\146\012\151\001\001\000\002" +
+    "\001\001\000\004\012\157\001\001\000\002\001\001\000" +
+    "\002\001\001\000\002\001\001\000\002\001\001\000\002" +
+    "\001\001\000\002\001\001\000\002\001\001\000\002\001" +
+    "\001\000\004\012\162\001\001\000\002\001\001\000\002" +
+    "\001\001\000\016\004\164\005\013\007\022\013\015\020" +
+    "\007\025\021\001\001\000\002\001\001\000\016\004\166" +
+    "\005\013\007\022\013\015\020\007\025\021\001\001\000" +
+    "\002\001\001\000\016\004\170\005\013\007\022\013\015" +
+    "\020\007\025\021\001\001\000\002\001\001\000\016\004" +
+    "\172\005\013\007\022\013\015\020\007\025\021\001\001" +
+    "\000\002\001\001\000\002\001\001" });
 
   /** Access to <code>reduce_goto</code> table. */
   public short[][] reduce_table() {return _reduce_table;}
@@ -225,18 +233,22 @@ public class JSON_Parser extends java_cup.runtime.lr_parser {
 
 //puede ser accedido desde el exterior
     private ManejadorErrores manejadorErrores;
-    private RESULT result = new RESULT();
+    private RESULT result;
 
-    public JSON_Parser(Lexer lexer, RESULT resultadoLexer, ManejadorErrores lexerManejadorErrores){/*nuevo constructor*/
+    public JSON_Parser(Lexer_JSON lexer, ManejadorErrores lexerManejadorErrores){/*nuevo constructor*/
         super(lexer);        
 
         manejadorErrores = lexerManejadorErrores;
-        result = resultadoLexer;//ya tiene el listado de comentarios y clase [que tiene 1 sola clase xD], agregados... aunque quizá halla un poco de riesgo, al establecer la clase en el lexer, nec que sea allá para que así se seteen sin tantas vueltas el campo función de las clases globales... de todos modos en un caso en el que todo está bien, el searlo en el lexer está bien, lo raro sucedería al haber errores xD
+        result = new RESULT();//ya tiene el listado de comentarios y clase [que tiene 1 sola clase xD], agregados... aunque quizá halla un poco de riesgo, al establecer la clase en el lexer, nec que sea allá para que así se seteen sin tantas vueltas el campo función de las clases globales... de todos modos en un caso en el que todo está bien, el searlo en el lexer está bien, lo raro sucedería al haber errores xD
     }   
     
     public void report_fatal_error(String message, Object info){
-        manejadorErrores.setError(new Error(((info != null)?info.toString():""), -1, 
-        -1, SintaxError.FATAL_ERROR));
+        manejadorErrores.setError(new Error(((info != null)?info.toString():""), "", 
+        "", SintaxError.FATAL_ERROR));
+    }
+
+    public RESULT getRESULT(){
+        return result;        
     }
 
     protected int error_sync_size(){
@@ -249,14 +261,68 @@ public class JSON_Parser extends java_cup.runtime.lr_parser {
 class CUP$JSON_Parser$actions {
 
 //código no puede ser accedido desde el exterior
+    private String nombre = null, tipo = null, funcion = null;
+    private int numeroParametros = -1;
 
+    //esto es para verificar/completar errores, en el caso de los últimos dos es para verificar si hay una o más secciones definidas... lo primero es por si acaso los atributos esperados para los objetos var/método no se recibieron como se esperaba...
+    private int lineaObjeto = 0, columnaObjeto = 0;//esto es para los errores de atrib de variable y método
+    private int[] lineaSeccionAnterior = new int[] {0,0,0,0,0};//esto es para especificar en el msje de error la línea de la sección que ya se había definido para que se de cta más rápido de su error...
+    private int[] numeroSeccionesDefinidas = new int[]{0,0,0,0,0};
+    private String[] secciones = new String[]{"score", "clases", "variables", "metodos", "comentarios"};
+    private int lineaDeSeccion = 0, columnaDeSeccion = 0;
 
-    private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error        
-        if(token == null){//quiere decir que no existe el T que se esperaba
-            manejadorErrores.setError(new Error("", linea, columna, SintaxError.PARSER_EXPECTED, "concatExpected()"));
+    private void setInfoSeccionActual(int linea, int columna, int tipoSeccion){//0-> score, 1-> clase, 2-> variable, 3-> método, 4-> comentario
+        lineaDeSeccion = linea;
+        columnaDeSeccion = columna;
+
+        if(numeroSeccionesDefinidas[tipoSeccion] > 0){
+            manejadorErrores.setError(new Error(secciones[tipoSeccion]+" #"+ numeroSeccionesDefinidas[tipoSeccion], String.valueOf(lineaDeSeccion), 
+                String.valueOf(columnaDeSeccion), SintaxError.JSON_SECTION_DEFINED_PREVIOUSLY, String.valueOf(lineaSeccionAnterior[tipoSeccion])));//ya se había  definido una sección previa en la línea + laLinea xD            
+        }
+        
+        lineaSeccionAnterior[tipoSeccion] = lineaDeSeccion;
+        numeroSeccionesDefinidas[tipoSeccion]++;
+    }
+
+    private void setScore(String score){        
+        result.setScore(score);            
+    }
+
+    //estos métodos pueden setear de una vez el objeto, puesto que las RP tiene deri por la izq, el primer objeto que se reduce es el primero, puesto que es la última deri en hacer xD, no como en el caso contrario de la deri por la derecha...
+    private void crearObjetoClase(String nombre){        
+        result.addClase(new Clase(nombre));        
+    }
+
+    private void crearObjetoComentario(String texto){        
+        result.addComentario(new Comentario(texto));        
+    }
+
+    //Estos no requieren tener parámetros, puesto que se va a revisar lo que se almacenó en las var, lo cual además de reunir info, tb será útil para desplegar error, en caso lo que se esperaba nunca se recibió...
+    private void crearObjetoVariable(){        
+        if(nombre != null && tipo != null && funcion != null){//pongo el != null, puesto que podrían repetir atribs por error, por lo tanto alguno de estos podrían tener aún el valor de "esperando asignación (null)"
+            result.addVariable(new Variable(tipo, nombre, funcion));
         }else{
-            manejadorErrores.setError(new Error(Token.parseToken(token).getLexema(), linea, columna, error));
-        }                    
+            manejadorErrores.setError(new Error(("Variable #" + (result.getNumeroVariables()+1)), String.valueOf(lineaObjeto),
+                String.valueOf(columnaObjeto), SintaxError.JSON_BAD_LIST_OF_VARIABLE_ATRIBS));
+        }       
+        
+        nombre = tipo = funcion = null;     
+    }
+
+    private void crearObjetoMetodo(){
+        if(nombre != null && tipo != null && (numeroParametros != -1)){
+            result.addMetodo(new Metodo(tipo, nombre, numeroParametros));
+        }else{
+            manejadorErrores.setError(new Error("Método #" + (result.getNumeroMetodos()+1), String.valueOf(lineaObjeto), 
+                String.valueOf(columnaObjeto), SintaxError.JSON_BAD_LIST_OF_METHOD_ATRIBS));//puesto que este objeto tuvo que haber sido el obj #tamAnt +1 en el listado, pero como tenía errores...
+        }
+
+        nombre = tipo = null;
+        numeroParametros = -1;
+    }
+
+    private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error                
+        manejadorErrores.setError(new Error(((token != null)?token.getLexema():""), String.valueOf(linea), String.valueOf(columna), error));        
     }
 
   private final JSON_Parser parser;
@@ -325,19 +391,7 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 4: // bloques ::= error 
-            {
-              Object RESULT =null;
-		int errleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
-		int errright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
-		Object err = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
-		addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_SECTION_LIST_DEFINITION);
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("bloques",1, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
-            }
-          return CUP$JSON_Parser$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 5: // seccion ::= seccion_score 
+          case 4: // seccion ::= seccion_score 
             {
               Object RESULT =null;
 
@@ -346,7 +400,7 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 6: // seccion ::= seccion_clases 
+          case 5: // seccion ::= seccion_clases 
             {
               Object RESULT =null;
 
@@ -355,7 +409,7 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 7: // seccion ::= seccion_variables 
+          case 6: // seccion ::= seccion_variables 
             {
               Object RESULT =null;
 
@@ -364,7 +418,7 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 8: // seccion ::= seccion_metodos 
+          case 7: // seccion ::= seccion_metodos 
             {
               Object RESULT =null;
 
@@ -373,7 +427,7 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 9: // seccion ::= seccion_comentarios 
+          case 8: // seccion ::= seccion_comentarios 
             {
               Object RESULT =null;
 
@@ -382,7 +436,7 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 10: // seccion ::= error 
+          case 9: // seccion ::= error 
             {
               Object RESULT =null;
 		int errleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
@@ -394,25 +448,31 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 11: // seccion_score ::= SCORE cuerpo_seccion_score 
+          case 10: // seccion_score ::= SCORE cuerpo_seccion_score 
             {
               Object RESULT =null;
-
+		int scoreleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).left;
+		int scoreright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).right;
+		Object score = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).value;
+		setInfoSeccionActual(scoreleft, scoreright, 0);
               CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("seccion_score",3, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 12: // cuerpo_seccion_score ::= DOS_PUNTOS CADENA 
+          case 11: // cuerpo_seccion_score ::= DOS_PUNTOS CADENA 
             {
               Object RESULT =null;
-
+		int scoreleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
+		int scoreright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
+		Object score = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
+		setScore(Token.parseToken(score).getLexema());
               CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_score",4, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 13: // cuerpo_seccion_score ::= error 
+          case 12: // cuerpo_seccion_score ::= error 
             {
               Object RESULT =null;
 		int errleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
@@ -424,20 +484,32 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 14: // seccion_clases ::= CLASES cuerpo_seccion_clases 
+          case 13: // seccion_clases ::= CLASES cuerpo_seccion_clases 
             {
               Object RESULT =null;
-
+		int claseleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).left;
+		int claseright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).right;
+		Object clase = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).value;
+		setInfoSeccionActual(claseleft, claseright, 1);
               CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("seccion_clases",5, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 15: // cuerpo_seccion_clases ::= DOS_PUNTOS CORCHETE_A objetos_clase CORCHETE_C 
+          case 14: // cuerpo_seccion_clases ::= DOS_PUNTOS CORCHETE_A objetos_clase CORCHETE_C 
             {
               Object RESULT =null;
 
               CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_clases",6, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-3)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+            }
+          return CUP$JSON_Parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 15: // cuerpo_seccion_clases ::= DOS_PUNTOS CORCHETE_A CORCHETE_C 
+            {
+              Object RESULT =null;
+
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_clases",6, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
@@ -487,7 +559,10 @@ class CUP$JSON_Parser$actions {
           case 20: // objeto_clase ::= LLAVE_A NOMBRE DOS_PUNTOS CADENA LLAVE_C 
             {
               Object RESULT =null;
-
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).value;
+		crearObjetoClase(Token.parseToken(nombre).getLexema());
               CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objeto_clase",8, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-4)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
@@ -496,7 +571,10 @@ class CUP$JSON_Parser$actions {
           case 21: // seccion_variables ::= VARIABLES cuerpo_seccion_variables 
             {
               Object RESULT =null;
-
+		int variableleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).left;
+		int variableright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).right;
+		Object variable = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).value;
+		setInfoSeccionActual(variableleft, variableright, 2);
               CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("seccion_variables",9, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
@@ -505,13 +583,25 @@ class CUP$JSON_Parser$actions {
           case 22: // cuerpo_seccion_variables ::= DOS_PUNTOS CORCHETE_A objetos_variable CORCHETE_C 
             {
               Object RESULT =null;
+		int aperturaleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)).left;
+		int aperturaright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)).right;
+		Object apertura = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)).value;
 
               CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_variables",10, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-3)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 23: // cuerpo_seccion_variables ::= error 
+          case 23: // cuerpo_seccion_variables ::= DOS_PUNTOS CORCHETE_A CORCHETE_C 
+            {
+              Object RESULT =null;
+
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_variables",10, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+            }
+          return CUP$JSON_Parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 24: // cuerpo_seccion_variables ::= error 
             {
               Object RESULT =null;
 		int errleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
@@ -523,7 +613,7 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 24: // objetos_variable ::= objetos_variable COMA objeto_variable 
+          case 25: // objetos_variable ::= objetos_variable COMA objeto_variable 
             {
               Object RESULT =null;
 
@@ -532,7 +622,7 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 25: // objetos_variable ::= objeto_variable 
+          case 26: // objetos_variable ::= objeto_variable 
             {
               Object RESULT =null;
 
@@ -541,7 +631,7 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 26: // objetos_variable ::= error objeto_variable 
+          case 27: // objetos_variable ::= error objeto_variable 
             {
               Object RESULT =null;
 		int errleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).left;
@@ -553,25 +643,56 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 27: // objeto_variable ::= LLAVE_A atributos_variable COMA atributos_variable COMA atributos_variable LLAVE_C 
+          case 28: // objeto_variable ::= LLAVE_A atributos_variable COMA atributos_variable COMA atributos_variable LLAVE_C 
             {
               Object RESULT =null;
-
+		int aperturaleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-6)).left;
+		int aperturaright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-6)).right;
+		Object apertura = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-6)).value;
+		lineaObjeto = aperturaleft; columnaObjeto = aperturaright;
+                                                                                                                                          crearObjetoVariable();
               CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objeto_variable",12, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-6)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 28: // atributos_variable ::= tipo_atributo_variable DOS_PUNTOS CADENA 
+          case 29: // atributos_variable ::= TIPO DOS_PUNTOS CADENA 
             {
               Object RESULT =null;
-
+		int tipoleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
+		int tiporight = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
+		Object tipo = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
+		tipo = Token.parseToken(tipo).getLexema();
               CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributos_variable",13, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 29: // atributos_variable ::= error 
+          case 30: // atributos_variable ::= NOMBRE DOS_PUNTOS CADENA 
+            {
+              Object RESULT =null;
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
+		nombre = Token.parseToken(nombre).getLexema();
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributos_variable",13, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+            }
+          return CUP$JSON_Parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 31: // atributos_variable ::= FUNCION DOS_PUNTOS CADENA 
+            {
+              Object RESULT =null;
+		int funcionleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
+		int funcionright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
+		Object funcion = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
+		funcion = Token.parseToken(funcion).getLexema();
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributos_variable",13, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+            }
+          return CUP$JSON_Parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 32: // atributos_variable ::= error 
             {
               Object RESULT =null;
 		int errleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
@@ -583,59 +704,35 @@ class CUP$JSON_Parser$actions {
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 30: // tipo_atributo_variable ::= NOMBRE 
+          case 33: // seccion_metodos ::= METODOS cuerpo_seccion_metodos 
             {
               Object RESULT =null;
-
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("tipo_atributo_variable",14, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+		int metodoleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).left;
+		int metodoright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).right;
+		Object metodo = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).value;
+		setInfoSeccionActual(metodoleft, metodoright, 3);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("seccion_metodos",14, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 31: // tipo_atributo_variable ::= TIPO 
+          case 34: // cuerpo_seccion_metodos ::= DOS_PUNTOS CORCHETE_A objetos_metodo CORCHETE_C 
             {
               Object RESULT =null;
+		int aperturaleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)).left;
+		int aperturaright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)).right;
+		Object apertura = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)).value;
 
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("tipo_atributo_variable",14, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_metodos",15, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-3)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 32: // tipo_atributo_variable ::= FUNCION 
+          case 35: // cuerpo_seccion_metodos ::= DOS_PUNTOS CORCHETE_A CORCHETE_C 
             {
               Object RESULT =null;
 
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("tipo_atributo_variable",14, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
-            }
-          return CUP$JSON_Parser$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 33: // tipo_atributo_variable ::= error 
-            {
-              Object RESULT =null;
-		int errleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
-		int errright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
-		Object err = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
-		addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_VARIABLE_ATRIBUTTE_TYPE);
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("tipo_atributo_variable",14, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
-            }
-          return CUP$JSON_Parser$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 34: // seccion_metodos ::= METODOS cuerpo_seccion_metodos 
-            {
-              Object RESULT =null;
-
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("seccion_metodos",15, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
-            }
-          return CUP$JSON_Parser$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 35: // cuerpo_seccion_metodos ::= DOS_PUNTOS CORCHETE_A objetos_metodo CORCHETE_C 
-            {
-              Object RESULT =null;
-
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_metodos",16, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-3)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_metodos",15, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
@@ -647,7 +744,7 @@ class CUP$JSON_Parser$actions {
 		int errright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
 		Object err = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
 		addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_METHOD_SECTION_CONTENT_STRUCT);
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_metodos",16, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_metodos",15, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
@@ -656,7 +753,7 @@ class CUP$JSON_Parser$actions {
             {
               Object RESULT =null;
 
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_metodo",17, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_metodo",16, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
@@ -665,7 +762,7 @@ class CUP$JSON_Parser$actions {
             {
               Object RESULT =null;
 
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_metodo",17, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_metodo",16, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
@@ -677,7 +774,7 @@ class CUP$JSON_Parser$actions {
 		int errright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
 		Object err = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
 		addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_METHOD_LIST);
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_metodo",17, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_metodo",16, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
@@ -685,137 +782,147 @@ class CUP$JSON_Parser$actions {
           case 40: // objeto_metodo ::= LLAVE_A atributos_metodo COMA atributos_metodo COMA atributos_metodo LLAVE_C 
             {
               Object RESULT =null;
-
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objeto_metodo",18, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-6)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+		int aperturaleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-6)).left;
+		int aperturaright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-6)).right;
+		Object apertura = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-6)).value;
+		lineaObjeto = aperturaleft; columnaObjeto = aperturaright;
+                                                                                                                                    crearObjetoMetodo();
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objeto_metodo",17, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-6)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 41: // atributos_metodo ::= atributo_string_metodo DOS_PUNTOS CADENA 
+          case 41: // atributos_metodo ::= TIPO DOS_PUNTOS CADENA 
             {
               Object RESULT =null;
-
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributos_metodo",19, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+		int tipoleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
+		int tiporight = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
+		Object tipo = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
+		tipo = Token.parseToken(tipo).getLexema();
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributos_metodo",18, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 42: // atributos_metodo ::= PARAMETROS DOS_PUNTOS NUMERO 
+          case 42: // atributos_metodo ::= NOMBRE DOS_PUNTOS CADENA 
             {
               Object RESULT =null;
-
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributos_metodo",19, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+		int nombreleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
+		int nombreright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
+		Object nombre = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
+		nombre = Token.parseToken(nombre).getLexema();
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributos_metodo",18, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 43: // atributos_metodo ::= error 
+          case 43: // atributos_metodo ::= PARAMETROS DOS_PUNTOS NUMERO 
+            {
+              Object RESULT =null;
+		int numeroleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
+		int numeroright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
+		Object numero = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
+		numeroParametros = Integer.parseInt(Token.parseToken(numero).getLexema());
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributos_metodo",18, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+            }
+          return CUP$JSON_Parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 44: // atributos_metodo ::= error 
             {
               Object RESULT =null;
 		int errleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
 		int errright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
 		Object err = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
 		addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_METHOD_ATRIBUTE_CONTENT_DECLARATION_STRUCT);
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributos_metodo",19, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributos_metodo",18, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 44: // atributo_string_metodo ::= NOMBRE 
+          case 45: // seccion_comentarios ::= COMENTARIOS cuerpo_seccion_comentarios 
+            {
+              Object RESULT =null;
+		int comentarioleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).left;
+		int comentarioright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).right;
+		Object comentario = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).value;
+		setInfoSeccionActual(comentarioleft, comentarioright, 4);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("seccion_comentarios",19, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+            }
+          return CUP$JSON_Parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 46: // cuerpo_seccion_comentarios ::= DOS_PUNTOS CORCHETE_A objetos_comentario CORCHETE_C 
             {
               Object RESULT =null;
 
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributo_string_metodo",20, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_comentarios",20, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-3)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 45: // atributo_string_metodo ::= TIPO 
+          case 47: // cuerpo_seccion_comentarios ::= DOS_PUNTOS CORCHETE_A CORCHETE_C 
             {
               Object RESULT =null;
 
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributo_string_metodo",20, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_comentarios",20, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 46: // atributo_string_metodo ::= error 
-            {
-              Object RESULT =null;
-		int errleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
-		int errright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
-		Object err = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
-		addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_STRING_METHOD_ATRIBUTTE_TYPE);
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("atributo_string_metodo",20, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
-            }
-          return CUP$JSON_Parser$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 47: // seccion_comentarios ::= COMENTARIOS cuerpo_seccion_comentarios 
-            {
-              Object RESULT =null;
-
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("seccion_comentarios",21, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
-            }
-          return CUP$JSON_Parser$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 48: // cuerpo_seccion_comentarios ::= DOS_PUNTOS CORCHETE_A objetos_comentario CORCHETE_C 
-            {
-              Object RESULT =null;
-
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_comentarios",22, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-3)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
-            }
-          return CUP$JSON_Parser$result;
-
-          /*. . . . . . . . . . . . . . . . . . . .*/
-          case 49: // cuerpo_seccion_comentarios ::= error 
+          case 48: // cuerpo_seccion_comentarios ::= error 
             {
               Object RESULT =null;
 		int errleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
 		int errright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
 		Object err = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
 		addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_COMMENT_SECTION_CONTENT_STRUCT);
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_comentarios",22, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_seccion_comentarios",20, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 50: // objetos_comentario ::= objetos_comentario COMA objeto_comentario 
+          case 49: // objetos_comentario ::= objetos_comentario COMA objeto_comentario 
             {
               Object RESULT =null;
 
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_comentario",23, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_comentario",21, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-2)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 51: // objetos_comentario ::= objeto_comentario 
+          case 50: // objetos_comentario ::= objeto_comentario 
             {
               Object RESULT =null;
 
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_comentario",23, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_comentario",21, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 52: // objetos_comentario ::= error objeto_comentario 
+          case 51: // objetos_comentario ::= error objeto_comentario 
             {
               Object RESULT =null;
 		int errleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).left;
 		int errright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).right;
 		Object err = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).value;
 		addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_COMMENTS_LIST);
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_comentario",23, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objetos_comentario",21, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 53: // objeto_comentario ::= LLAVE_A TEXTO DOS_PUNTOS CADENA LLAVE_C 
+          case 52: // objeto_comentario ::= LLAVE_A TEXTO DOS_PUNTOS CADENA LLAVE_C 
             {
               Object RESULT =null;
-
-              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objeto_comentario",24, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-4)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
+		int textoleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).left;
+		int textoright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).right;
+		Object texto = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-1)).value;
+		int cierreleft = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).left;
+		int cierreright = ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()).right;
+		Object cierre = (Object)((java_cup.runtime.Symbol) CUP$JSON_Parser$stack.peek()).value;
+		crearObjetoComentario(Token.parseToken(texto).getLexema());
+              CUP$JSON_Parser$result = parser.getSymbolFactory().newSymbol("objeto_comentario",22, ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.elementAt(CUP$JSON_Parser$top-4)), ((java_cup.runtime.Symbol)CUP$JSON_Parser$stack.peek()), RESULT);
             }
           return CUP$JSON_Parser$result;
 

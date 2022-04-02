@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import Backend.Objetos.Resultados.RESULT;
 import Backend.Objetos.Resultados.Metodo;
 import Backend.Objetos.Resultados.Variable;
+import Backend.Objetos.Resultados.Clase;
+import Backend.Objetos.Resultados.Comentario;
 import Backend.Objetos.Token;
 import Backend.Manejadores.ManejadorErrores;
 import Backend.Objetos.Error;
@@ -16,31 +18,89 @@ import Backend.Analizadores.JSON_ParserSym;
 class JSON_Parser;
 
 action code{://código no puede ser accedido desde el exterior
+    private String nombre = null, tipo = null, funcion = null;
+    private int numeroParametros = -1;
 
+    //esto es para verificar/completar errores, en el caso de los últimos dos es para verificar si hay una o más secciones definidas... lo primero es por si acaso los atributos esperados para los objetos var/método no se recibieron como se esperaba...
+    private int lineaObjeto = 0, columnaObjeto = 0;//esto es para los errores de atrib de variable y método
+    private int[] lineaSeccionAnterior = new int[] {0,0,0,0,0};//esto es para especificar en el msje de error la línea de la sección que ya se había definido para que se de cta más rápido de su error...
+    private int[] numeroSeccionesDefinidas = new int[]{0,0,0,0,0};
+    private String[] secciones = new String[]{"score", "clases", "variables", "metodos", "comentarios"};
+    private int lineaDeSeccion = 0, columnaDeSeccion = 0;
 
-    private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error        
-        if(token == null){//quiere decir que no existe el T que se esperaba
-            manejadorErrores.setError(new Error("", linea, columna, SintaxError.PARSER_EXPECTED, "concatExpected()"));
+    private void setInfoSeccionActual(int linea, int columna, int tipoSeccion){//0-> score, 1-> clase, 2-> variable, 3-> método, 4-> comentario
+        lineaDeSeccion = linea;
+        columnaDeSeccion = columna;
+
+        if(numeroSeccionesDefinidas[tipoSeccion] > 0){
+            manejadorErrores.setError(new Error(secciones[tipoSeccion]+" #"+ numeroSeccionesDefinidas[tipoSeccion], String.valueOf(lineaDeSeccion), 
+                String.valueOf(columnaDeSeccion), SintaxError.JSON_SECTION_DEFINED_PREVIOUSLY, String.valueOf(lineaSeccionAnterior[tipoSeccion])));//ya se había  definido una sección previa en la línea + laLinea xD            
+        }
+        
+        lineaSeccionAnterior[tipoSeccion] = lineaDeSeccion;
+        numeroSeccionesDefinidas[tipoSeccion]++;
+    }
+
+    private void setScore(String score){        
+        result.setScore(score);            
+    }
+
+    //estos métodos pueden setear de una vez el objeto, puesto que las RP tiene deri por la izq, el primer objeto que se reduce es el primero, puesto que es la última deri en hacer xD, no como en el caso contrario de la deri por la derecha...
+    private void crearObjetoClase(String nombre){        
+        result.addClase(new Clase(nombre));        
+    }
+
+    private void crearObjetoComentario(String texto){        
+        result.addComentario(new Comentario(texto));        
+    }
+
+    //Estos no requieren tener parámetros, puesto que se va a revisar lo que se almacenó en las var, lo cual además de reunir info, tb será útil para desplegar error, en caso lo que se esperaba nunca se recibió...
+    private void crearObjetoVariable(){        
+        if(nombre != null && tipo != null && funcion != null){//pongo el != null, puesto que podrían repetir atribs por error, por lo tanto alguno de estos podrían tener aún el valor de "esperando asignación (null)"
+            result.addVariable(new Variable(tipo, nombre, funcion));
         }else{
-            manejadorErrores.setError(new Error(Token.parseToken(token).getLexema(), linea, columna, error));
-        }                    
+            manejadorErrores.setError(new Error(("Variable #" + (result.getNumeroVariables()+1)), String.valueOf(lineaObjeto),
+                String.valueOf(columnaObjeto), SintaxError.JSON_BAD_LIST_OF_VARIABLE_ATRIBS));
+        }       
+        
+        nombre = tipo = funcion = null;     
+    }
+
+    private void crearObjetoMetodo(){
+        if(nombre != null && tipo != null && (numeroParametros != -1)){
+            result.addMetodo(new Metodo(tipo, nombre, numeroParametros));
+        }else{
+            manejadorErrores.setError(new Error("Método #" + (result.getNumeroMetodos()+1), String.valueOf(lineaObjeto), 
+                String.valueOf(columnaObjeto), SintaxError.JSON_BAD_LIST_OF_METHOD_ATRIBS));//puesto que este objeto tuvo que haber sido el obj #tamAnt +1 en el listado, pero como tenía errores...
+        }
+
+        nombre = tipo = null;
+        numeroParametros = -1;
+    }
+
+    private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error                
+        manejadorErrores.setError(new Error(((token != null)?token.getLexema():""), String.valueOf(linea), String.valueOf(columna), error));        
     }
 :}
 
 parser code {://puede ser accedido desde el exterior
     private ManejadorErrores manejadorErrores;
-    private RESULT result = new RESULT();
+    private RESULT result;
 
-    public JSON_Parser(Lexer lexer, RESULT resultadoLexer, ManejadorErrores lexerManejadorErrores){/*nuevo constructor*/
+    public JSON_Parser(Lexer_JSON lexer, ManejadorErrores lexerManejadorErrores){/*nuevo constructor*/
         super(lexer);        
 
         manejadorErrores = lexerManejadorErrores;
-        result = resultadoLexer;//ya tiene el listado de comentarios y clase [que tiene 1 sola clase xD], agregados... aunque quizá halla un poco de riesgo, al establecer la clase en el lexer, nec que sea allá para que así se seteen sin tantas vueltas el campo función de las clases globales... de todos modos en un caso en el que todo está bien, el searlo en el lexer está bien, lo raro sucedería al haber errores xD
+        result = new RESULT();//ya tiene el listado de comentarios y clase [que tiene 1 sola clase xD], agregados... aunque quizá halla un poco de riesgo, al establecer la clase en el lexer, nec que sea allá para que así se seteen sin tantas vueltas el campo función de las clases globales... de todos modos en un caso en el que todo está bien, el searlo en el lexer está bien, lo raro sucedería al haber errores xD
     }   
     
     public void report_fatal_error(String message, Object info){
-        manejadorErrores.setError(new Error(((info != null)?info.toString():""), -1, 
-        -1, SintaxError.FATAL_ERROR));
+        manejadorErrores.setError(new Error(((info != null)?info.toString():""), "", 
+        "", SintaxError.FATAL_ERROR));
+    }
+
+    public RESULT getRESULT(){
+        return result;        
     }
 
     protected int error_sync_size(){
@@ -57,8 +117,8 @@ terminal DOS_PUNTOS, COMA, LLAVE_A, LLAVE_C, CORCHETE_A, CORCHETE_C;
 non terminal estructura, bloques, seccion;
 non terminal seccion_score, cuerpo_seccion_score;
 non terminal seccion_clases, cuerpo_seccion_clases, objetos_clase, objeto_clase;
-non terminal seccion_variables, cuerpo_seccion_variables, objetos_variable, objeto_variable, atributos_variable, tipo_atributo_variable;
-non terminal seccion_metodos, cuerpo_seccion_metodos, objetos_metodo, objeto_metodo, atributos_metodo, atributo_string_metodo;
+non terminal seccion_variables, cuerpo_seccion_variables, objetos_variable, objeto_variable, atributos_variable;
+non terminal seccion_metodos, cuerpo_seccion_metodos, objetos_metodo, objeto_metodo, atributos_metodo;
 non terminal seccion_comentarios, cuerpo_seccion_comentarios, objetos_comentario, objeto_comentario;
 
 //Precedencia y asociatividad
@@ -71,8 +131,9 @@ estructura ::= LLAVE_A bloques LLAVE_C
              | error:err                                                     {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_GENERAL_STRUCT);:}
              ;
 
-bloques ::= seccion COMA seccion COMA seccion COMA seccion COMA seccion                                     
-          | error:err                                                                                         {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_SECTION_LIST_DEFINITION);:}
+bloques ::= seccion COMA seccion COMA seccion COMA seccion COMA seccion                              
+        //  | error:err                                                                                      {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_SECTION_LIST_DEFINITION);:}
+        /*mejor comenté esta parte puesto que por las palabras reservadas de cada sección, es mejor que ese NT tenga el error, ya que aquí solo sería por las comas, y eso lo puedo decir en el msje de error de estructura: El JSON debe tener 1 o más secciones separadas por comas (,) encerradas todas entre llaves {}*/
           ;
 
 seccion ::= seccion_score   
@@ -83,19 +144,20 @@ seccion ::= seccion_score
           | error:err                                                {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_EXPECTED_SECTION_NAME);:}
           ;
 
-seccion_score ::= SCORE cuerpo_seccion_score                                        
+seccion_score ::= SCORE:score cuerpo_seccion_score                                {:setInfoSeccionActual(scoreleft, scoreright, 0);:}             
                 ;
 
-cuerpo_seccion_score ::= DOS_PUNTOS CADENA
-                       | error:err                                                  {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_SCORE_SECTION_CONTENT_STRUCT);:}
+cuerpo_seccion_score ::= DOS_PUNTOS CADENA:score                                  {:setScore(Token.parseToken(score).getLexema());:}                
+                       | error:err                                                {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_SCORE_SECTION_CONTENT_STRUCT);:}
                        ;
 
-seccion_clases ::= CLASES cuerpo_seccion_clases
+seccion_clases ::= CLASES:clase cuerpo_seccion_clases                                 {:setInfoSeccionActual(claseleft, claseright, 1);:}
             //     | error
                  ;
 
-cuerpo_seccion_clases ::= DOS_PUNTOS CORCHETE_A objetos_clase CORCHETE_C
-                        | error:err                                                                                 {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_CLASS_SECTION_CONTENT_STRUCT);:}
+cuerpo_seccion_clases ::= DOS_PUNTOS CORCHETE_A objetos_clase CORCHETE_C         
+                        | DOS_PUNTOS CORCHETE_A CORCHETE_C                  
+                        | error:err                                                                        {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_CLASS_SECTION_CONTENT_STRUCT);:}
                         ;
 
 objetos_clase ::= objetos_clase COMA objeto_clase
@@ -103,15 +165,16 @@ objetos_clase ::= objetos_clase COMA objeto_clase
                 | error:err objeto_clase                                            {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_CLASS_LIST);:}
                 ;
 
-objeto_clase ::= LLAVE_A NOMBRE DOS_PUNTOS CADENA LLAVE_C
+objeto_clase ::= LLAVE_A NOMBRE DOS_PUNTOS CADENA:nombre LLAVE_C                                    {:crearObjetoClase(Token.parseToken(nombre).getLexema());:}
              //  | error
                ;
 
-seccion_variables ::= VARIABLES cuerpo_seccion_variables
+seccion_variables ::= VARIABLES:variable cuerpo_seccion_variables                                    {:setInfoSeccionActual(variableleft, variableright, 2);:}
                     ;
 
-cuerpo_seccion_variables ::= DOS_PUNTOS CORCHETE_A objetos_variable CORCHETE_C
-                           | error:err                                                                                  {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_VARIABLE_SECTION_CONTENT_STRUCT);:}
+cuerpo_seccion_variables ::= DOS_PUNTOS CORCHETE_A:apertura objetos_variable CORCHETE_C   
+                           | DOS_PUNTOS CORCHETE_A CORCHETE_C                      
+                           | error:err                                                                          {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_VARIABLE_SECTION_CONTENT_STRUCT);:}
                            ;
 
 objetos_variable ::= objetos_variable COMA objeto_variable
@@ -119,50 +182,46 @@ objetos_variable ::= objetos_variable COMA objeto_variable
                    | error:err objeto_variable                                     {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_VARIABLE_LIST);:}
                    ;
 
-objeto_variable ::= LLAVE_A atributos_variable COMA atributos_variable COMA atributos_variable LLAVE_C
+objeto_variable ::= LLAVE_A:apertura atributos_variable COMA atributos_variable COMA atributos_variable LLAVE_C                         {:lineaObjeto = aperturaleft; columnaObjeto = aperturaright;
+                                                                                                                                          crearObjetoVariable();:}
                   //| error
                   ;
 
-atributos_variable ::= tipo_atributo_variable DOS_PUNTOS CADENA                     
-                     | error:err                                                                    {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_VARIABLE_ATRIBUTE_CONTENT_DECLARATION_STRUCT);:}//o sería bad_atributte_declaration? bueno, tal vez no, porque si hay error en el tipo, al llegar aquí, ya no se exe la prod de error porque ya se habrá catcheado, al menos cuando el tipo del atributo sea incorrecto, entonces sí, deberá ser bad_content...
+atributos_variable ::= TIPO DOS_PUNTOS CADENA:tipo                                     {:tipo = Token.parseToken(tipo).getLexema();:}
+                     | NOMBRE DOS_PUNTOS CADENA:nombre                                 {:nombre = Token.parseToken(nombre).getLexema();:}
+                     | FUNCION DOS_PUNTOS CADENA:funcion                               {:funcion = Token.parseToken(funcion).getLexema();:}
+                     | error:err                                                       {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_VARIABLE_ATRIBUTE_CONTENT_DECLARATION_STRUCT);:}//o sería bad_atributte_declaration? bueno, tal vez no, porque si hay error en el tipo, al llegar aquí, ya no se exe la prod de error porque ya se habrá catcheado, al menos cuando el tipo del atributo sea incorrecto, entonces sí, deberá ser bad_content...
                      ;
 
-tipo_atributo_variable ::= NOMBRE
-                         | TIPO
-                         | FUNCION
-                         | error:err                                                    {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_VARIABLE_ATRIBUTTE_TYPE);:}
-                         ;
-
-seccion_metodos ::= METODOS cuerpo_seccion_metodos
+seccion_metodos ::= METODOS:metodo cuerpo_seccion_metodos                                      {:setInfoSeccionActual(metodoleft, metodoright, 3);:}
                   ;
 
-cuerpo_seccion_metodos ::= DOS_PUNTOS CORCHETE_A objetos_metodo CORCHETE_C
-                        | error:err                                                                                 {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_METHOD_SECTION_CONTENT_STRUCT);:}
-                        ;
+cuerpo_seccion_metodos ::= DOS_PUNTOS CORCHETE_A:apertura objetos_metodo CORCHETE_C      
+                         | DOS_PUNTOS CORCHETE_A CORCHETE_C
+                         | error:err                                                                                     {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_METHOD_SECTION_CONTENT_STRUCT);:}
+                         ;
 
 objetos_metodo ::= objetos_metodo COMA objeto_metodo
                  | objeto_metodo
                  | error:err                                                                {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_METHOD_LIST);:}
                  ;
 
-objeto_metodo ::= LLAVE_A atributos_metodo COMA atributos_metodo COMA atributos_metodo LLAVE_C
+objeto_metodo ::= LLAVE_A:apertura atributos_metodo COMA atributos_metodo COMA atributos_metodo LLAVE_C                           {:lineaObjeto = aperturaleft; columnaObjeto = aperturaright;
+                                                                                                                                    crearObjetoMetodo();:}                   
               //  | error
                 ;
 
-atributos_metodo ::= atributo_string_metodo DOS_PUNTOS CADENA
-                   | PARAMETROS DOS_PUNTOS NUMERO
-                   | error:err                                                                  {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_METHOD_ATRIBUTE_CONTENT_DECLARATION_STRUCT);:}
+atributos_metodo ::= TIPO DOS_PUNTOS CADENA:tipo                                     {:tipo = Token.parseToken(tipo).getLexema();:}
+                   | NOMBRE DOS_PUNTOS CADENA:nombre                                 {:nombre = Token.parseToken(nombre).getLexema();:}
+                   | PARAMETROS DOS_PUNTOS NUMERO:numero                             {:numeroParametros = Integer.parseInt(Token.parseToken(numero).getLexema());:}/*puesto que ya se indicó que este T es un Integer...*/
+                   | error:err                                                       {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_METHOD_ATRIBUTE_CONTENT_DECLARATION_STRUCT);:}
                    ;
 
-atributo_string_metodo ::= NOMBRE
-                         | TIPO                       
-                         | error:err                                    {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_STRING_METHOD_ATRIBUTTE_TYPE);:}
-                         ;
-
-seccion_comentarios ::= COMENTARIOS cuerpo_seccion_comentarios                                          
+seccion_comentarios ::= COMENTARIOS:comentario cuerpo_seccion_comentarios                                  {:setInfoSeccionActual(comentarioleft, comentarioright, 4);:}                              
                       ;
 
-cuerpo_seccion_comentarios ::= DOS_PUNTOS CORCHETE_A objetos_comentario CORCHETE_C
+cuerpo_seccion_comentarios ::= DOS_PUNTOS CORCHETE_A objetos_comentario CORCHETE_C    
+                             | DOS_PUNTOS CORCHETE_A CORCHETE_C                          
                              |  error:err                                                                              {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_COMMENT_SECTION_CONTENT_STRUCT);:}
                              ;
 
@@ -171,6 +230,25 @@ objetos_comentario ::= objetos_comentario COMA objeto_comentario
                      | error:err objeto_comentario                                                     {:addError(Token.parseToken(err), errleft, errright, SintaxError.JSON_BAD_COMMENTS_LIST);:}      
                      ;
 
-objeto_comentario ::= LLAVE_A TEXTO DOS_PUNTOS CADENA LLAVE_C
+objeto_comentario ::= LLAVE_A TEXTO DOS_PUNTOS CADENA:texto LLAVE_C:cierre                             {:crearObjetoComentario(Token.parseToken(texto).getLexema());:}/*se add el objeto comentario a la lista del result...*/
               //      | error
                     ;           
+
+/*resumen de las axn a realizar
+    > creación de un objeto, en la línea del objeto corresp, donde se coloca la struct esperada para crear el mismo
+        > si el objeto tiene más de un atrib, éstos se subirán por medio de un RESULT, para así obtener la info en la 
+          línea anteriormente mencionada, y trabajar de forma eqq con cada objeto
+    > en el listado, se setearán los obj al listado del RESULT corresp, puesto que es posible setearlo directamente
+      no hay nec de crear un arrayList temporal para almacenar los datos xD xD
+        > aunque si quisieras tb podrías hacer que se setear al result, indicando que éste será un arrayList xD, y 
+          haciéndolo así ya no habría nec de reiniciar el listado, pero mejor la forma estándar xD        
+    > en el cuerpo de sección del obj corresp, se setará el listado de objs corresp al RESULT
+    >LISTO! xD
+*/
+
+/*NICE xD: forma 2, setear directamente a las listas del RESULT, esto evita que se tengan que crear listados aux, para 
+  setear la info previo a set en el RESULT, y a reducir las líneas donde se colocarán las lineas de axn, puesto
+  que al hacer eso solo se nec colocar la axn donde están todos los datos, es decir en la RP de la estructura del
+  objeto en cuestió, para así crear el objeto en base a la info rec y set en el listado.
+    Para el caso de método y variable, esto cb un poquito por tener más de un parám y de no importar el orden de
+    aparición de estos*/

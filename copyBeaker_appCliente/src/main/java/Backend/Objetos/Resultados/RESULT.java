@@ -41,48 +41,48 @@ public class RESULT {
         this.metodos.add(metodo);
     }
 
-    public void addSubScore(int repetidos, int total){
-        if(total > 0){
-            this.score += ((repetidos/total)*0.25);
-        }        
+    public void setScore(String score){
+        this.score = score;
     }   
-   
+    
+    //estos getter individuales, serán útiles para cuando soliciten ya sea UN objeto o alguno de los atrib de dicho objeto
     public Clase getClase(int posicion){
         return this.clases.get(posicion);
-    }
-    
-    public ArrayList<Clase> getClases() {
-        return clases;
-    }
+    }    
 
     public Comentario getComentario(int posicion){
         return this.comentarios.get(posicion);
-    }
-    
-    public ArrayList<Comentario> getComentarios() {
-        return comentarios;
-    }
+    }    
 
     public Variable getVariable(int posicion) {
         return this.variables.get(posicion);
-    }
-    
-    public ArrayList<Variable> getVariables(){
-        return this.variables;
-    }
+    }    
 
     public Metodo getMetodo(int posicion){
         return this.metodos.get(posicion);
-    }
-    
-    public ArrayList<Metodo> getMetodos(){
-        return this.metodos;
-    }    
+    }        
 
     public String getScore() {
         return this.score;
-    }        
+    }    
+
+    public int getNumeroClases(){
+        return this.clases.size();
+    }
     
+    public int getNumeroComentarios(){
+        return this.comentarios.size();
+    }
+    
+    public int getNumeroVariables(){
+        return this.variables.size();
+    }
+    
+    public int getNumeroMetodos(){
+        return this.metodos.size();
+    }
+    
+    //aquí en el cliente, esto solo me será útil para los objetos que soliciten en los Reportes xD
     public String getClassObjects(){
         String clasesRepetidas = "";
         

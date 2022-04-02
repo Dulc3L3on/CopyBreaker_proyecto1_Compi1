@@ -27,21 +27,22 @@ public class ManejadorErrores {
      * Creado para los errores que se puedan generar
      * en el lexer
      * @param error
+     * @param esPorCadena
      */
     public void setError(Token error, boolean esPorCadena){
         if(!esPorCadena){
             String coincidencia = this.manejadorErroresExtra.esReservadaMalFormada(error);
         
             if(coincidencia != null){
-                this.listaErrores.add(new Error(error.getLexema(), error.getLinea(),
-                  error.getColumna(), LexerError.MAYBE_YOU_MEANT, coincidencia));
+                this.listaErrores.add(new Error(error.getLexema(), String.valueOf(error.getLinea()),
+                  String.valueOf(error.getColumna()), LexerError.MAYBE_YOU_MEANT, coincidencia));
             }else{
-               this.listaErrores.add(new Error(error.getLexema(), error.getLinea(),
-                  error.getColumna(), LexerError.INVALID_WORD, ""));
+               this.listaErrores.add(new Error(error.getLexema(), String.valueOf(error.getLinea()),
+                  String.valueOf(error.getColumna()), LexerError.INVALID_WORD, ""));
             }
         }else{
-            this.listaErrores.add(new Error(error.getLexema(), error.getLinea(),
-                  error.getColumna(), LexerError.UNCLOSE_STRING, ""));
+            this.listaErrores.add(new Error(error.getLexema(), String.valueOf(error.getLinea()),
+                  String.valueOf(error.getColumna()), LexerError.UNCLOSE_STRING, ""));
         }        
     }
 

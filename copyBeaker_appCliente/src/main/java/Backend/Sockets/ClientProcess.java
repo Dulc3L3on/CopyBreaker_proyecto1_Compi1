@@ -5,6 +5,7 @@
  */
 package Backend.Sockets;
 
+import Backend.Manejadores.ManejadorAnalisis;
 import Backend.Manejadores.ManejadorInterfaz;
 import java.io.File;
 import java.util.ArrayList;
@@ -15,10 +16,12 @@ import java.util.ArrayList;
  */
 public class ClientProcess {
     private Cliente cliente;
+    private final ManejadorAnalisis manejadorAnalisis;
     private final ManejadorInterfaz manejadorInterfaz;    
     
-    public ClientProcess(ManejadorInterfaz manejadorInterfaz){                
-        this.manejadorInterfaz = manejadorInterfaz;        
+    public ClientProcess(ManejadorInterfaz manejadorInterfaz, ManejadorAnalisis manejadorAnalisis){                
+        this.manejadorInterfaz = manejadorInterfaz;   
+        this.manejadorAnalisis = manejadorAnalisis;
     }
     
     public void request(ArrayList<ArrayList<File>> archivos){
@@ -28,8 +31,11 @@ public class ClientProcess {
         this.cliente.sendDataObject(archivos);
         System.out.println("En espera de resultados");        
         //en realidad aquí debería invocarse al manejador de resultados, puesto que hay que hacer varias cosas, todo esto si lo recibido no es null...
-        this.manejadorInterfaz.addResultados_JSON(this.cliente.getData());
+        String JSON = this.cliente.getData();
         System.out.println("Resultados recibidos");                        
+        this.manejadorAnalisis.procesarJSONRecibido(JSON);//puede que lo guarde o no, sin importar eso no hay problema con generar el JSON...        
+        this.manejadorInterfaz.addResultados_JSON(JSON);
+        System.out.println("Resultados procesados y desplegados");        
         
         this.cliente.finalizeClient();        
         System.out.println("-------Request finalizado-------");

@@ -32,27 +32,27 @@ public class EscritorJSON {//Esta clase no será útil en el cliente, puesto que
     }
     
     private void addClases(String clases){
-        JSON += "   Clases: [\n";                
-        JSON += clases;                
-        JSON += "\n     ],\n";
+        JSON += "   Clases: [";                
+        JSON += ((!clases.isBlank())?("\n"+clases+"\n     ]"):" ]");
+        JSON += ",\n";
     }
     
     private void addVariables(String variables){
-        JSON += "   Variables: [\n";        
-        JSON += variables;
-        JSON += "\n     ],\n";
+        JSON += "   Variables: [";        
+        JSON += ((!variables.isBlank()?("\n"+variables+"\n      ]"):(" ]")));
+        JSON += ",\n";
     }
     
     private void addMetodos(String metodos){
-        JSON += "   Metodos: [\n";
-        JSON += metodos;
-        JSON += "\n     ],\n";
+        JSON += "   Metodos: [";
+        JSON += ((!metodos.isBlank())?("\n"+metodos+"\n      ]"):" ]");
+        JSON += ",\n";
     }
     
     private void addComentarios(String comentarios){
-        JSON += "   Comentarios: [\n";
-        JSON += comentarios;
-        JSON += "\n     ],\n";
+        JSON += "   Comentarios: [";
+        JSON += ((!comentarios.isBlank())?("\n"+comentarios+"\n      ]"):" ]");
+        JSON += "\n";
     }
     
     public String getJSON(){

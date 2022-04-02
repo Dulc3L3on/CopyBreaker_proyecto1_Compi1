@@ -32,6 +32,10 @@ public class Metodo implements Serializable{
         this.nombre = nombre;        
         this.numeroParametros = numeroParametros;
     }
+    
+    public void inicializarParametros(){
+        this.parametros = new ArrayList<>();
+    }//será útil en caso se req add paramas usando 2do cnstrc... aunque para el contexto del proy, esto no se utilizará xD
 
     public String getTipo() {
         return tipo;
@@ -50,9 +54,9 @@ public class Metodo implements Serializable{
     }
     
     public String asString(){
-        return "{ Nombre: \""+ this.nombre + "\", "
-              + "Tipo: \"" + this.tipo + "\","
-              + "Parametros: " + numeroParametros + " }";//puesto que cuando el objeto sea creado con el cnstruct 2, el listado será nulo
+        return "{ \"Nombre\": \""+ this.nombre + "\", "
+              + "\"Tipo\": \"" + this.tipo + "\","
+              + "\"Parametros\": " + numeroParametros + " }";//puesto que cuando el objeto sea creado con el cnstruct 2, el listado será nulo
     }
     
 }

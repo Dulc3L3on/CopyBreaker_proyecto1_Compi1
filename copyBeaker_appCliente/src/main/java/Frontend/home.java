@@ -5,6 +5,7 @@
  */
 package Frontend;
 
+import Backend.Manejadores.ManejadorAnalisis;
 import Backend.Manejadores.ManejadorArchivos;
 import Backend.Manejadores.ManejadorInterfaz;
 import Backend.Sockets.ClientProcess;
@@ -20,6 +21,7 @@ public class home extends javax.swing.JFrame {
     private final ManejadorInterfaz manejadorInterfaz = new ManejadorInterfaz();
     private final ManejadorArchivos manejadorArchivos_Proyecto1;
     private final ManejadorArchivos manejadorArchivos_Proyecto2;
+    private final ManejadorAnalisis manejadorAnalisis;
     ArrayList<ArrayList<File>> listaArchivos = new ArrayList<>();//esta es para setear las dos listas de los archivos recogidos de cada proyecto...
     String[] arregloPrueba;
     
@@ -34,10 +36,12 @@ public class home extends javax.swing.JFrame {
        this.manejadorInterfaz.setComponents(scroll_proyecto1, txtA_proyecto1,
                scroll_proyecto2, txtA_proyecto2,
                scroll_txtA_JSON, txt_JSON, 
-               scroll_TxtA_Reportes, txtA_Reportes);
-       this.clientProcess = new ClientProcess(this.manejadorInterfaz); 
+               scroll_TxtA_Reportes, txtA_Reportes, log_JSON, log_Reportes,
+               btn_analizarJSON, btn_analizarReporte, btn_visualizarHTML);       
        this.manejadorArchivos_Proyecto1 = new ManejadorArchivos();
        this.manejadorArchivos_Proyecto2 = new ManejadorArchivos();       
+       this.manejadorAnalisis = new ManejadorAnalisis(manejadorInterfaz);
+       this.clientProcess = new ClientProcess(this.manejadorInterfaz, manejadorAnalisis); 
     }
 
     /**
@@ -71,26 +75,32 @@ public class home extends javax.swing.JFrame {
         jPanel5 = new javax.swing.JPanel();
         scroll_txtA_JSON = new javax.swing.JScrollPane();
         txt_JSON = new javax.swing.JTextArea();
-        jButton2 = new javax.swing.JButton();
+        btn_analizarJSON = new javax.swing.JButton();
         lbl_ubicacion_JSON = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jTextField2 = new javax.swing.JTextField();
-        jLabel10 = new javax.swing.JLabel();
+        log_JSON = new javax.swing.JTable();
+        txtF_textoBusqueda_JSON = new javax.swing.JTextField();
+        lbl_btn_buscar_JSON = new javax.swing.JLabel();
+        lbl_btn_findNext_JSON = new javax.swing.JLabel();
+        lbl_btn_findPrevious_JSON = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        btn_analizarReporte = new javax.swing.JButton();
         scroll_TxtA_Reportes = new javax.swing.JScrollPane();
         txtA_Reportes = new javax.swing.JTextArea();
         jPanel8 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        log_Reportes = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
         lbl_ubicacion_Reportes = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        txtF_textoBusqueda_Reportes = new javax.swing.JTextField();
+        lbl_btn_buscar_Reportes = new javax.swing.JLabel();
+        lbl_btn_findNext_Reportes = new javax.swing.JLabel();
+        lbl_btn_findPrev_Reportes = new javax.swing.JLabel();
+        btn_visualizarHTML = new javax.swing.JButton();
+        lbl_guardarProyecto = new javax.swing.JLabel();
+        lbl_btn_abrirProyecto = new javax.swing.JLabel();
+        lbl_guardarCambios = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -245,7 +255,12 @@ public class home extends javax.swing.JFrame {
         });
         scroll_txtA_JSON.setViewportView(txt_JSON);
 
-        jButton2.setText("if(edit == 0)?Ed:Analiz");
+        btn_analizarJSON.setText("Analizar JSON");
+        btn_analizarJSON.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_analizarJSONActionPerformed(evt);
+            }
+        });
 
         lbl_ubicacion_JSON.setBackground(new java.awt.Color(229, 233, 239));
         lbl_ubicacion_JSON.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -254,18 +269,47 @@ public class home extends javax.swing.JFrame {
 
         jPanel7.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        log_JSON.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "No.", "Linea", "Columna", "Tipo", "Error", "Descripcion"
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(log_JSON);
+        if (log_JSON.getColumnModel().getColumnCount() > 0) {
+            log_JSON.getColumnModel().getColumn(0).setMinWidth(50);
+            log_JSON.getColumnModel().getColumn(0).setPreferredWidth(50);
+            log_JSON.getColumnModel().getColumn(0).setMaxWidth(50);
+            log_JSON.getColumnModel().getColumn(1).setMinWidth(55);
+            log_JSON.getColumnModel().getColumn(1).setPreferredWidth(55);
+            log_JSON.getColumnModel().getColumn(1).setMaxWidth(55);
+            log_JSON.getColumnModel().getColumn(2).setMinWidth(55);
+            log_JSON.getColumnModel().getColumn(2).setPreferredWidth(55);
+            log_JSON.getColumnModel().getColumn(2).setMaxWidth(55);
+            log_JSON.getColumnModel().getColumn(3).setMinWidth(93);
+            log_JSON.getColumnModel().getColumn(3).setPreferredWidth(93);
+            log_JSON.getColumnModel().getColumn(3).setMaxWidth(93);
+            log_JSON.getColumnModel().getColumn(4).setMinWidth(115);
+            log_JSON.getColumnModel().getColumn(4).setPreferredWidth(115);
+            log_JSON.getColumnModel().getColumn(4).setMaxWidth(115);
+        }
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -280,8 +324,30 @@ public class home extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
-        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/lupa-icon.png"))); // NOI18N
-        jLabel10.setText("Buscar: ");
+        lbl_btn_buscar_JSON.setIcon(new javax.swing.ImageIcon(getClass().getResource("/lupa-icon.png"))); // NOI18N
+        lbl_btn_buscar_JSON.setText("Buscar: ");
+        lbl_btn_buscar_JSON.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbl_btn_buscar_JSONMouseClicked(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                lbl_btn_buscar_JSONMousePressed(evt);
+            }
+        });
+
+        lbl_btn_findNext_JSON.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon_next.png"))); // NOI18N
+        lbl_btn_findNext_JSON.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbl_btn_findNext_JSONMouseClicked(evt);
+            }
+        });
+
+        lbl_btn_findPrevious_JSON.setText("<<");
+        lbl_btn_findPrevious_JSON.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbl_btn_findPrevious_JSONMouseClicked(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -293,13 +359,17 @@ public class home extends javax.swing.JFrame {
                     .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(scroll_txtA_JSON)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 464, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(4, 4, 4)
-                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(1, 1, 1)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_analizarJSON, javax.swing.GroupLayout.PREFERRED_SIZE, 394, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(3, 3, 3)
+                        .addComponent(lbl_btn_buscar_JSON, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(2, 2, 2)
+                        .addComponent(txtF_textoBusqueda_JSON, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)))
+                        .addComponent(lbl_btn_findPrevious_JSON)
+                        .addGap(18, 18, 18)
+                        .addComponent(lbl_btn_findNext_JSON)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -308,26 +378,34 @@ public class home extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addComponent(scroll_txtA_JSON, javax.swing.GroupLayout.PREFERRED_SIZE, 487, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btn_analizarJSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lbl_btn_buscar_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lbl_btn_findPrevious_JSON)
+                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(lbl_btn_findNext_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE))
+                            .addComponent(txtF_textoBusqueda_JSON, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         jTabbedPane2.addTab("JSON", jPanel5);
 
-        jButton1.setText("if[ !nice ]?Proc:vi");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btn_analizarReporte.setText("Analizar Reporte");
+        btn_analizarReporte.setEnabled(false);
+        btn_analizarReporte.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btn_analizarReporteActionPerformed(evt);
             }
         });
 
+        txtA_Reportes.setEditable(false);
         txtA_Reportes.setColumns(20);
         txtA_Reportes.setRows(5);
         txtA_Reportes.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -340,18 +418,47 @@ public class home extends javax.swing.JFrame {
 
         jPanel8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        log_Reportes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "No", "Linea", "Columna", "Tipo", "Error", "Descripcion"
             }
-        ));
-        jScrollPane2.setViewportView(jTable2);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane2.setViewportView(log_Reportes);
+        if (log_Reportes.getColumnModel().getColumnCount() > 0) {
+            log_Reportes.getColumnModel().getColumn(0).setMinWidth(50);
+            log_Reportes.getColumnModel().getColumn(0).setPreferredWidth(50);
+            log_Reportes.getColumnModel().getColumn(0).setMaxWidth(50);
+            log_Reportes.getColumnModel().getColumn(1).setMinWidth(55);
+            log_Reportes.getColumnModel().getColumn(1).setPreferredWidth(55);
+            log_Reportes.getColumnModel().getColumn(1).setMaxWidth(55);
+            log_Reportes.getColumnModel().getColumn(2).setMinWidth(55);
+            log_Reportes.getColumnModel().getColumn(2).setPreferredWidth(55);
+            log_Reportes.getColumnModel().getColumn(2).setMaxWidth(55);
+            log_Reportes.getColumnModel().getColumn(3).setMinWidth(97);
+            log_Reportes.getColumnModel().getColumn(3).setPreferredWidth(97);
+            log_Reportes.getColumnModel().getColumn(3).setMaxWidth(97);
+            log_Reportes.getColumnModel().getColumn(4).setMinWidth(115);
+            log_Reportes.getColumnModel().getColumn(4).setPreferredWidth(115);
+            log_Reportes.getColumnModel().getColumn(4).setMaxWidth(115);
+        }
 
         jLabel8.setText("LOG");
 
@@ -359,7 +466,7 @@ public class home extends javax.swing.JFrame {
         jPanel8.setLayout(jPanel8Layout);
         jPanel8Layout.setHorizontalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 922, Short.MAX_VALUE)
+            .addComponent(jScrollPane2)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addGap(87, 87, 87)
                 .addComponent(jLabel8)
@@ -379,14 +486,36 @@ public class home extends javax.swing.JFrame {
         lbl_ubicacion_Reportes.setText("línea: 0    columna: 0");
         lbl_ubicacion_Reportes.setOpaque(true);
 
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtF_textoBusqueda_Reportes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtF_textoBusqueda_ReportesActionPerformed(evt);
             }
         });
 
-        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/lupa-icon.png"))); // NOI18N
-        jLabel11.setText("Buscar: ");
+        lbl_btn_buscar_Reportes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/lupa-icon.png"))); // NOI18N
+        lbl_btn_buscar_Reportes.setText("Buscar: ");
+        lbl_btn_buscar_Reportes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbl_btn_buscar_ReportesMouseClicked(evt);
+            }
+        });
+
+        lbl_btn_findNext_Reportes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon_next.png"))); // NOI18N
+        lbl_btn_findNext_Reportes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbl_btn_findNext_ReportesMouseClicked(evt);
+            }
+        });
+
+        lbl_btn_findPrev_Reportes.setText("<<");
+        lbl_btn_findPrev_Reportes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbl_btn_findPrev_ReportesMouseClicked(evt);
+            }
+        });
+
+        btn_visualizarHTML.setText("Visualizar HTML");
+        btn_visualizarHTML.setEnabled(false);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -398,13 +527,19 @@ public class home extends javax.swing.JFrame {
                     .addComponent(scroll_TxtA_Reportes)
                     .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 467, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(4, 4, 4)
-                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(1, 1, 1)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btn_analizarReporte, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btn_visualizarHTML, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_ubicacion_Reportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(lbl_btn_buscar_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)
+                        .addComponent(txtF_textoBusqueda_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(11, 11, 11)
+                        .addComponent(lbl_btn_findPrev_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(lbl_btn_findNext_Reportes)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lbl_ubicacion_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -413,13 +548,16 @@ public class home extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addComponent(scroll_TxtA_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 487, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextField1))
+                        .addComponent(btn_analizarReporte, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lbl_btn_buscar_Reportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtF_textoBusqueda_Reportes)
+                        .addComponent(lbl_btn_findPrev_Reportes)
+                        .addComponent(btn_visualizarHTML))
+                    .addComponent(lbl_btn_findNext_Reportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(lbl_ubicacion_Reportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addGap(11, 11, 11)
                 .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -441,21 +579,29 @@ public class home extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Resultados", jPanel4);
 
-        jLabel3.setFont(new java.awt.Font("Manjari", 0, 16)); // NOI18N
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guardar_icon_3.png"))); // NOI18N
-        jLabel3.setText("  Guardar");
-        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+        lbl_guardarProyecto.setFont(new java.awt.Font("Manjari", 0, 16)); // NOI18N
+        lbl_guardarProyecto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guardar_icon_3.png"))); // NOI18N
+        lbl_guardarProyecto.setText("  Guardar Proyecto");
+        lbl_guardarProyecto.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel3MouseClicked(evt);
+                lbl_guardarProyectoMouseClicked(evt);
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Manjari", 0, 16)); // NOI18N
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/open_icon.png"))); // NOI18N
-        jLabel1.setText("  Abrir");
-        jLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
+        lbl_btn_abrirProyecto.setFont(new java.awt.Font("Manjari", 0, 16)); // NOI18N
+        lbl_btn_abrirProyecto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/open_icon.png"))); // NOI18N
+        lbl_btn_abrirProyecto.setText("  Abrir");
+        lbl_btn_abrirProyecto.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jLabel1MouseClicked(evt);
+                lbl_btn_abrirProyectoMouseClicked(evt);
+            }
+        });
+
+        lbl_guardarCambios.setFont(new java.awt.Font("Manjari", 0, 16)); // NOI18N
+        lbl_guardarCambios.setText("Guardar Cambios");
+        lbl_guardarCambios.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbl_guardarCambiosMouseClicked(evt);
             }
         });
 
@@ -466,18 +612,22 @@ public class home extends javax.swing.JFrame {
             .addComponent(jTabbedPane1)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(lbl_btn_abrirProyecto)
                 .addGap(30, 30, 30)
-                .addComponent(jLabel3)
+                .addComponent(lbl_guardarProyecto)
+                .addGap(51, 51, 51)
+                .addComponent(lbl_guardarCambios, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel3))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbl_guardarCambios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lbl_btn_abrirProyecto)
+                        .addComponent(lbl_guardarProyecto)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTabbedPane1))
         );
@@ -514,9 +664,9 @@ public class home extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btn_analizarReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_analizarReporteActionPerformed
         
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btn_analizarReporteActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         
@@ -559,14 +709,6 @@ public class home extends javax.swing.JFrame {
         this.manejadorInterfaz.addUbicacion(txtA_Reportes, lbl_ubicacion_Reportes);
     }//GEN-LAST:event_txtA_ReportesCaretUpdate
 
-    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel3MouseClicked
-
-    private void jLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel1MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jLabel1MouseClicked
-
     private void lista_Carga1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lista_Carga1MouseClicked
         if(this.lista_Carga1.getSelectedIndex()!= -1){
             this.txtA_proyecto1.setText(this.manejadorArchivos_Proyecto1.getFileAsString(this.lista_Carga1.getSelectedIndex()));
@@ -579,9 +721,75 @@ public class home extends javax.swing.JFrame {
         }        
     }//GEN-LAST:event_lista_Carga2MouseClicked
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtF_textoBusqueda_ReportesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtF_textoBusqueda_ReportesActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtF_textoBusqueda_ReportesActionPerformed
+
+    private void lbl_btn_buscar_JSONMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_buscar_JSONMouseClicked
+        if(!txt_JSON.getText().isBlank() && !txt_JSON.getText().isEmpty()){
+            this.manejadorInterfaz.buscarTexto(txt_JSON, txt_JSON.getText(), txtF_textoBusqueda_JSON.getText(), 0, true);
+        }        
+    }//GEN-LAST:event_lbl_btn_buscar_JSONMouseClicked
+
+    private void lbl_btn_findNext_JSONMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_findNext_JSONMouseClicked
+        if(!txt_JSON.getText().isBlank() && !txt_JSON.getText().isEmpty()){
+            this.manejadorInterfaz.buscarSiguiente(txt_JSON, txtF_textoBusqueda_JSON.getText());
+        }               
+    }//GEN-LAST:event_lbl_btn_findNext_JSONMouseClicked
+
+    private void lbl_btn_findPrevious_JSONMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_findPrevious_JSONMouseClicked
+        if(!txt_JSON.getText().isBlank() && !txt_JSON.getText().isEmpty()){
+            this.manejadorInterfaz.buscarAnterior(txt_JSON, txtF_textoBusqueda_JSON.getText());
+        }               
+    }//GEN-LAST:event_lbl_btn_findPrevious_JSONMouseClicked
+
+    private void lbl_btn_buscar_JSONMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_buscar_JSONMousePressed
+        
+    }//GEN-LAST:event_lbl_btn_buscar_JSONMousePressed
+
+    private void lbl_btn_buscar_ReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_buscar_ReportesMouseClicked
+        if(!txtA_Reportes.getText().isBlank() && !txtA_Reportes.getText().isEmpty()){
+            this.manejadorInterfaz.buscarTexto(txtA_Reportes, txtA_Reportes.getText(), txtF_textoBusqueda_Reportes.getText(), 0, true);
+        }        
+    }//GEN-LAST:event_lbl_btn_buscar_ReportesMouseClicked
+
+    private void lbl_btn_findNext_ReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_findNext_ReportesMouseClicked
+        if(!txtA_Reportes.getText().isBlank() && !txtA_Reportes.getText().isEmpty()){
+            this.manejadorInterfaz.buscarSiguiente(txtA_Reportes, txtF_textoBusqueda_Reportes.getText());
+        }               
+    }//GEN-LAST:event_lbl_btn_findNext_ReportesMouseClicked
+
+    private void lbl_btn_findPrev_ReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_findPrev_ReportesMouseClicked
+        if(!txtA_Reportes.getText().isBlank() && !txtA_Reportes.getText().isEmpty()){
+            this.manejadorInterfaz.buscarAnterior(txtA_Reportes, txtF_textoBusqueda_Reportes.getText());
+        }      
+    }//GEN-LAST:event_lbl_btn_findPrev_ReportesMouseClicked
+
+    private void btn_analizarJSONActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_analizarJSONActionPerformed
+        if(!txt_JSON.getText().isBlank() && !txt_JSON.getText().isEmpty()){
+            if(this.manejadorAnalisis.verificarEstructuraJSON(txt_JSON.getText())){
+                if(this.manejadorAnalisis.getManejadorProyectos().actualProyectIsSaved()){
+                    this.manejadorAnalisis.getManejadorProyectos().guardarCambios(txt_JSON.getText(), true);
+                }//si no está correcto no se guardará automáticamente PERO el usuario si lo desea podrá hacerlo...                
+            }
+        }//Esto de forma eqq tendrás que hacer para cuando analices el HTML...
+    }//GEN-LAST:event_btn_analizarJSONActionPerformed
+
+    private void lbl_btn_abrirProyectoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_abrirProyectoMouseClicked
+        this.manejadorAnalisis.getManejadorProyectos().openProyect();
+    }//GEN-LAST:event_lbl_btn_abrirProyectoMouseClicked
+
+    private void lbl_guardarProyectoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_guardarProyectoMouseClicked
+        this.manejadorAnalisis.getManejadorProyectos().guardarComo(txt_JSON.getText(), txtA_Reportes.getText());
+    }//GEN-LAST:event_lbl_guardarProyectoMouseClicked
+
+    private void lbl_guardarCambiosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_guardarCambiosMouseClicked
+        if(this.manejadorAnalisis.getManejadorProyectos().actualProyectIsSaved()){            
+            this.manejadorAnalisis.getManejadorProyectos().guardarCambios("", true);//esto lo averiguaremos dependiendo de que ventana del tabLayer esté enfocada...
+        }else{
+            this.manejadorAnalisis.getManejadorProyectos().guardarComo(txt_JSON.getText(), txtA_Reportes.getText());
+        }
+    }//GEN-LAST:event_lbl_guardarCambiosMouseClicked
 
     private void enabledMainButton(ArrayList<File> archivosProyecto1, ArrayList<File> archivosProyecto2){        
         this.btn_analizar.setEnabled((!archivosProyecto1.isEmpty() && !archivosProyecto2.isEmpty()));        
@@ -624,14 +832,11 @@ public class home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_analizar;
+    private javax.swing.JButton btn_analizarJSON;
+    private javax.swing.JButton btn_analizarReporte;
     private javax.swing.JButton btn_carga1;
     private javax.swing.JButton btn_carga2;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JButton btn_visualizarHTML;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -650,16 +855,23 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JLabel lbl_btn_abrirProyecto;
+    private javax.swing.JLabel lbl_btn_buscar_JSON;
+    private javax.swing.JLabel lbl_btn_buscar_Reportes;
+    private javax.swing.JLabel lbl_btn_findNext_JSON;
+    private javax.swing.JLabel lbl_btn_findNext_Reportes;
+    private javax.swing.JLabel lbl_btn_findPrev_Reportes;
+    private javax.swing.JLabel lbl_btn_findPrevious_JSON;
+    private javax.swing.JLabel lbl_guardarCambios;
+    private javax.swing.JLabel lbl_guardarProyecto;
     private javax.swing.JLabel lbl_ubicacion_JSON;
     private javax.swing.JLabel lbl_ubicacion_Proyecto1;
     private javax.swing.JLabel lbl_ubicacion_Proyecto2;
     private javax.swing.JLabel lbl_ubicacion_Reportes;
     private javax.swing.JList<String> lista_Carga1;
     private javax.swing.JList<String> lista_Carga2;
+    private javax.swing.JTable log_JSON;
+    private javax.swing.JTable log_Reportes;
     private javax.swing.JScrollPane scroll_TxtA_Reportes;
     private javax.swing.JScrollPane scroll_proyecto1;
     private javax.swing.JScrollPane scroll_proyecto2;
@@ -667,6 +879,8 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JTextArea txtA_Reportes;
     private javax.swing.JTextArea txtA_proyecto1;
     private javax.swing.JTextArea txtA_proyecto2;
+    private javax.swing.JTextField txtF_textoBusqueda_JSON;
+    private javax.swing.JTextField txtF_textoBusqueda_Reportes;
     private javax.swing.JTextArea txt_JSON;
     // End of variables declaration//GEN-END:variables
 }

@@ -25,6 +25,7 @@ public class Comentario implements Serializable{
     //Estos métodos asString es para que se pueda formar
     //lo que contiene cada {} del JSON
     public String asString(){
+        texto = texto.replace( "\n", "\"\n+ \"");//si no llegara a funcionar el cb en el lexer, entonces harás que se reemplace por "" <nada> xD
         return "{ Texto: \""+ this.texto + "\" }";
     }    
     

@@ -8,7 +8,7 @@ import Backend.Manejadores.ManejadorErrores;
 
 %%
 //Código de usuario
-%class Lexer
+%class Lexer_JSON
 %unicode
 %line
 %column
@@ -25,7 +25,7 @@ simbolosAceptados = ":"|","|"{"|"}"|"["|"]"
 //macros fundamentales
 digito = [0-9]
 numero = {digito}+  
-decimal = 0|1("."{numero})?
+//eliminé decimal, puesto que no se debe corroborar que el score sea un número decimal con una parte entera de 0 y 1, puesto que se muestra como string todo lo que no sea un entero...
 
 //macros auxiliares
 finDeLinea = \r|\n|\r\n
@@ -41,7 +41,7 @@ espacioEnBlanco = {finDeLinea} | {tabulacion}
     StringBuffer contenido = new StringBuffer();
   
     private Symbol symbol(int tipo, String valor, boolean conCompania){//Dejé el valor como string, como no requiero que alguno de los lexemas sea diferente...
-        Token tokenActual = new Token (yyline+1, yycolumn+1, valor, (conCompania)?tokenAnterior:null);        
+        Token tokenActual = new Token ((yyline+1), (yycolumn+1), valor, (conCompania)?tokenAnterior:null);        
 
         if(tokenAnterior != null && requeriaCompania){
             tokenAnterior.setSiguiente(tokenActual);
@@ -80,7 +80,7 @@ espacioEnBlanco = {finDeLinea} | {tabulacion}
 
     private void accionParadaParaError(){//aquí es donde se imprime todo lo concatenado que se clasificó como error...          
         System.out.println("[L] error: "+ contenido.toString() + ((contenido.length() != 0)?" INVALID WORD":"Las cadenas solo pueden ocupar una línea")+"\n");
-        manejadorErrores.setError(new Token(yyline+1, yycolumn+1, contenido.toString(), null), ((contenido.length() != 0)?false:true));//aquí no se requiere de un token previo... y esta vez nisiqueira en las operaciones xD
+        manejadorErrores.setError(new Token((yyline+1), (yycolumn+1), contenido.toString(), null), ((contenido.length() != 0)?false:true));//aquí no se requiere de un token previo... y esta vez nisiqueira en las operaciones xD
 
         yybegin(YYINITIAL);//ese operador ternario lo puse para que se justifique el hecho de que después de error no se muestre el contenido errado, puesto que contenido va a tener length = 0 si el error surgió en STRING [puesto que se llegará a error cuando haya salto de línea o retorno de carro no explícito] entonces puedo utilizar eso para personalizar el msje [cabe reslatar que si el error surge en el YYINI, siempre tendrá maś de algo contenido, puesto que desde ese estado se puede llegar a error si se encuentra con algo que no es aceptado y ahí el \n y \r son ignorados, es decir técnicamente aceptados xD]
     }//si la justificación por la cual uso el operador ternario no funciona, entonces guarda el stado y si ese es == SSTRING entonces pones ese msje xD, ahí si el msje estaría correcto siempre xD
@@ -116,16 +116,18 @@ espacioEnBlanco = {finDeLinea} | {tabulacion}
 }
 
  <SSTRING> {
-      \"                       { yybegin(YYINITIAL);System.out.println("[L] cadena: "+ contenido.toString() + " T: "+CADENA);return symbol(CADENA, new String(contenido), false);}//devulve el contenido dentro de las "" puesto que eso es lo que interesa xD      
+      \"                                                                      { yybegin(YYINITIAL);System.out.println("[L] cadena: "+ contenido.toString() + " T: "+CADENA);return symbol(CADENA, new String(contenido), false);}//devulve el contenido dentro de las "" puesto que eso es lo que interesa xD      
 
-      [^\n\r\"\\]+             { contenido.append( yytext()); }
+      \"{espacioEnBlanco}*"+"{espacioEnBlanco}*\"                            { contenido.append( yytext()); }
+
+      [^\n\r\"\\]+                                                            { contenido.append( yytext()); }
 
       //Esto es para cuando add literalmente estos símbolos, de tal forma que puedan cumplir su función xD    
-      \\t                      { contenido.append('\t'); }
-      \\n                      { contenido.append('\n'); }
-      \\r                      { contenido.append('\r'); }
-      \\\"                     { contenido.append('\"'); }
-      \\                       { contenido.append('\\'); }      
+      \\t                                                                     { contenido.append('\t'); }
+      \\n                                                                     { contenido.append('\n'); }
+      \\r                                                                     { contenido.append('\r'); }
+      \\\"                                                                    { contenido.append('\"'); }
+      \\                                                                      { contenido.append('\\'); }      
 }//si impide que hayan saltos de línea entre cadenas y eso es controlado por la expre que niega los escapes...
 
 <ERROR>{    

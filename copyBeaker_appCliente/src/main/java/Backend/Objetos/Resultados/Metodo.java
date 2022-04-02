@@ -5,9 +5,7 @@
  */
 package Backend.Objetos.Resultados;
 
-import Backend.Objetos.Resultados.Variable;
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  *
@@ -15,19 +13,9 @@ import java.util.ArrayList;
  */
 public class Metodo implements Serializable{
     private final String tipo;
-    private final String nombre;    
-    private ArrayList<Variable> parametros;//a estos obj simplemente no se les seteará la función puesto que es obvi de donde son xD
-    private int numeroParametros;
+    private final String nombre;        
+    private final int numeroParametros;
     
-    public Metodo(String tipo, String nombre, ArrayList<Variable> parametros){
-        this.tipo = tipo;
-        this.nombre = nombre;        
-        this.parametros = parametros;
-        this.numeroParametros = this.parametros.size();
-    }
-
-    //este se va a utilizar cuando se cree un obj Método para addlo al RESULT
-    //final [el que queda después de haber hecho las comparaciones]
     public Metodo(String tipo, String nombre, int numeroParametros){
         this.tipo = tipo;
         this.nombre = nombre;        
@@ -41,10 +29,6 @@ public class Metodo implements Serializable{
     public String getNombre() {
         return nombre;
     }
-
-    public ArrayList<Variable> getParametros() {
-        return parametros;
-    }
     
     public int getNumeroParametros(){
         return this.numeroParametros;
@@ -53,6 +37,6 @@ public class Metodo implements Serializable{
     public String asString(){
         return "{ Nombre: \""+ this.nombre + "\", "
               + "Tipo: \"" + this.tipo + "\","
-              + "Parametros: " + this.parametros.size() + " }";
+              + "Parametros: " + this.numeroParametros + " }";
     }
 }

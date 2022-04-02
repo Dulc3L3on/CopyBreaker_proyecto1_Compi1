@@ -16,12 +16,12 @@ import Backend.Objetos.Enums.SintaxError;
 
 public class Error {    
     private String lexema;
-    private int linea;
-    private int columna;    
+    private String linea;//las coloqué string, para hacer algunas cosas peculiares, más que todo para cuando no se sepa el #línea y/o #col del error
+    private String columna;    
     private final String tipo;
     private String descripcion;
     
-    public Error(String lexema, int linea, int columna, LexerError tipo, String extra){//Ese extra será para el maybe xD        
+    public Error(String lexema, String linea, String columna, LexerError tipo, String extra){//Ese extra será para el maybe xD        
         this.lexema = lexema;
         this.linea = linea;
         this.columna = columna;
@@ -29,15 +29,15 @@ public class Error {
         this.descripcion = this.lexerErrors[tipo.ordinal()]+extra;//Se enviará "" cuando no se req, entonces NO problem xD
     }
     
-    public Error(String lexema, int linea, int columna, SintaxError tipo, String listaEspera){       
+    public Error(String lexema, String linea, String columna, SintaxError tipo, String extra){//a menos que veas como evitar el ArrayIndexOutBounds al intentar leer la lista de símbolos, este cnstrct no se utilizará xD
         this.lexema = lexema;
         this.linea = linea;
         this.columna = columna;        
         this.tipo = "Sintactico";
-        this.descripcion = this.sintaxErrors[tipo.ordinal()] + listaEspera;        
+        this.descripcion = this.sintaxErrors[tipo.ordinal()] + extra;        
     }
     
-    public Error(String lexema, int linea, int columna, SintaxError tipo){        
+    public Error(String lexema, String linea, String columna, SintaxError tipo){        
         this.lexema = lexema;
         this.linea = linea;
         this.columna = columna;        
@@ -49,13 +49,9 @@ public class Error {
         this.lexema = lexema;
     }
 
-    public void setLinea(int linea) {
+    public void setLinea(String linea) {
         this.linea = linea;
-    }
-
-    public void setColumna(int columna) {
-        this.columna = columna;
-    }
+    }//puede que tal vez me sirva para dar un rango de dónde puede estar la línea de error, esto al usar la línea del último obj add al RESULT y el sig justo después del error... pero APRESÚRATE si quieres hacer eso...
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
@@ -65,11 +61,11 @@ public class Error {
         return lexema;
     }
 
-    public int getLinea() {
+    public String getLinea() {
         return linea;
     }
 
-    public int getColumna() {
+    public String getColumna() {
         return columna;
     }
 
@@ -90,22 +86,23 @@ public class Error {
     private final String sintaxErrors[] = new String[]{
         "Error fatal, imposible realizar el análisis",
         "Error sintáctico, se esperaba: ",
-        "Estructura general de JSON con errores { <lista_secciones> }",
+        "Estructura general de JSON con errores; esperado-> { <lista_secciones> }",
+        "Existe una sección del mismo tipo en la línea ",
         "Lista de secciones de JSON con errores",
         "Falta nombre de sección [score|clases|metodos|variables|comentarios]",
-        "Sección score con errores, se esperaba-> score : <cadena>",
-        "Sección de clases con errores, se esperaba-> clases : [ <objetos_clase> ]",
-        "Lista de objetos clase con errores, se esparaba-> {<objeto_clase>},... {<objeto_clase>}",        
-        "Sección de variables con errores, se esperaba-> variables : [ <objetos_variable> ]",
-        "Lista de objetos variable con errores, se esparaba-> {<objeto_variable>},... {<objeto_variable>}",
-        "Cuerpo de objeto variable con errores, se esperaba-> <tipo_atributo> : CADENA",
-        "Atributo de objeto variable incorrecto",
-        "Sección de métodos con errores, se esperaba-> métodos : [ <objetos_variable> ]",
-        "Lista de objetos método con errores, se esparaba-> {<objeto_variable>},... {<objeto_variable>}",
-        "Cuerpo de objeto método con errores, se esperaba-> <tipo_atributo> : CADENA",
-        "Atributo de objeto método incorrecto",
-        "Sección de comentarios con errores, se espraba-> comentarios : [ <objetos_comentario> ]",
-        "Lista de comentarios con errores, se esperaba-> {<objetos_comentario>}, ... {<objeto_comentario>}"
+        "Sección score con errores; esperado-> score : <cadena>",
+        "Sección de clases con errores; esperado-> clases : [ <clase> ]",
+        "Lista de objetos clase con errores, esperado-> {<clase>},... {<clase>}",        
+        "Sección de variables con errores, esperado-> variables : [ <variable>* ]",
+        "Lista de objetos variable con errores, esperado-> {<variable>},... {<variable>}",
+        "Objeto variable con errores; esperado-> <tipo_atributo> : CADENA",
+        "Un objeto variable necesita 3 atributos: <tipo>, <nombre>, <funcion>",
+        "Sección de métodos con errores, se esperaba-> métodos : [ <metodo>* ]",
+        "Lista de objetos método con errores; esperado-> {<metodo>},... {<metodo>}",
+        "Objeto método con errores; esperado-> <tipo_atributo> : CADENA|NUMERO",
+        "Un objeto metodo necesita 3 atributos: <tipo>, <nombre>, <parametros>",
+        "Sección de comentarios con errores; esperado-> comentarios : [ <comentario>* ]",
+        "Lista de comentarios con errores; esperado-> {<comentario>}, ... {<comentario>}"
     };
     
 }
