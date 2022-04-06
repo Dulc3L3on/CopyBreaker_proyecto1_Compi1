@@ -1,0 +1,152 @@
+/*1. package e imports*/
+package Backend.Analizadores;
+
+import java_cup.runtime.*;
+import java.util.List;
+import java.util.ArrayList;
+import Backend.Objetos.Token;
+import Backend.Manejadores.ManejadorErrores;
+import Backend.Objetos.Error;
+import Backend.Objetos.Enums.SintaxError;
+import Backend.Analizadores.DEF_ParserSym.*;
+
+class DEF_Parser;
+
+action code{://Métodos que NO pueden ser accedidos desde el exterior, puesto que forman parte de una clase interna
+
+
+
+
+    private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error                
+        manejadorErrores.setError((new Error(((token != null)?token.getLexema():""), String.valueOf(linea), String.valueOf(columna), error)));
+        
+    }
+:}/*el código que se encuentra aquí dentro NO puede ser accedido desde la clase...*/
+
+parser code {:/*código que modifica el comportamiento del parser [sobreescribiendo o creado métodos]    */
+    private ManejadorErrores manejadorErrores;        
+
+    public DEF_Parser(DEF_Lexer lexer, ManejadorErrores manejadorErroresLex){/*nuevo constructor*/
+        super(lexer);        
+
+        manejadorErrores = manejadorErroresLex;        
+    }    
+
+    public void report_fatal_error(String message, Object info){
+        manejadorErrores.setError(new Error(((info != null)?info.toString():""), "", 
+        "", SintaxError.FATAL_ERROR));
+    }
+
+    protected int error_sync_size(){
+        return 1;
+    }/*para que establezca que con un token bien leido basta para recuperarse...   */
+:}/*este si puede ser accedido desde el código...*/
+
+/*2. Terminales*/
+terminal INTEGER, STRING;
+terminal RESULT, SCORE, CLASES, NOMBRE, VARIABLES, TIPO, FUNCION, METODOS, PARAMETROS, COMENTARIOS, TEXTO;
+terminal IGUAL, COMA, PUNTO_COMA, PUNTO,CORCHETE_A, CORCHETE_C;
+terminal MAS, RESTA, MENOS, POR, DIV, PARENTESIS_A, PARENTESIS_C;
+terminal ENTERO, CADENA, VARIABLE;
+
+/*3. NO terminales*/
+non terminal inicio, declaracion_variables, asignacion;
+non terminal creacion_var_numero, valor_numerico;
+non terminal creacion_var_string, valor_string, concat, opciones_concat;
+non terminal lista_variables;
+non terminal result_string, valor_result, result_clases, result_metodos, result_variables, result_comentarios, result_integer;/*tipos_result, puesto que el valor# que forma parte de una de las prod, del NT único en el que se encontraba este, ya se envarga de permitir el result_integer xD*/
+
+/*3.1 Precedencia y asociatividad*/
+precedence left MAS, RESTA;/*basado en la docu xD*/
+precedence left POR, DIV;/*no creo que me de problemas, al aparecer AST, también en direccion...*/
+precedence left MENOS;
+
+/*4. reglas de Producción*/
+start with inicio;
+
+inicio ::= declaracion_variables
+         | asignacion
+         ;
+
+declaracion_variables ::= INTEGER creacion_var_numero
+                        | STRING creacion_var_string
+                        ;
+
+creacion_var_numero ::= VARIABLE IGUAL valor_numerico
+                      | lista_variables
+                      ;
+
+creacion_var_string ::= VARIABLE IGUAL valor_string
+                      | VARIABLE IGUAL VARIABLE
+                      | lista_variables
+                      ;
+
+lista_variables ::= lista_variables COMA VARIABLE
+                  | VARIABLE
+                  ;
+
+valor_numerico ::= valor_numerico MAS valor_numerico                               {:System.out.println("[S] substruct: cont_#: MAS");:}
+                 | valor_numerico RESTA valor_numerico                             {:System.out.println("[S] substruct: cont_#: RESTA");:}
+                 | valor_numerico POR valor_numerico                               {:System.out.println("[S] substruct: cont_#: ASTERISCO");:}
+                 | valor_numerico DIV valor_numerico                               {:System.out.println("[S] substruct: cont_#: DIV");:}
+                 | RESTA valor_numerico                                            {:System.out.println("[S] substruct: cont_#: MENOS");:}
+                 %prec MENOS                                        
+                 | PARENTESIS_A valor_numerico PARENTESIS_C                        {:System.out.println("[S] substruct: cont_#: ( cont_# )");:}
+                 | ENTERO                                                          {:System.out.println("[S] substruct: cont_#: ENTERO");:}
+                 | VARIABLE                                                        {:System.out.println("[S] substruct: cont_#: VARIABLE");:}
+                 | result_integer                                                  {:System.out.println("[S] substruct: cont_#: RESULT [integer]");:}
+                 ;
+
+valor_string ::= valor_numerico MAS valor_string
+               | concat
+               ;
+
+concat ::= concat opciones_concat
+         | CADENA
+         | result_string
+         ;
+
+opciones_concat ::= MAS valor_numerico
+                  | MAS CADENA
+                  | MAS result_string
+                  ;
+
+result_string ::= RESULT PUNTO valor_result
+                ;
+
+valor_result ::= SCORE
+               | result_clases
+               | result_metodos
+               | result_variables               
+               | result_comentarios
+               ;
+
+result_clases ::= CLASES
+                | CLASES CORCHETE_A valor_numerico CORCHETE_C
+                | CLASES CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+                ;
+
+result_metodos ::= METODOS
+                 | METODOS CORCHETE_A valor_numerico CORCHETE_C
+                 | METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
+                 | METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+                 ;
+
+result_variables ::= VARIABLES
+                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C
+                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
+                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO FUNCION
+                   ;
+
+result_comentarios ::= COMENTARIOS
+                     | COMENTARIOS CORCHETE_A valor_numerico CORCHETE_C
+                     | COMENTARIOS CORCHETE_A valor_numerico CORCHETE_C PUNTO TEXTO
+                     ;
+
+result_integer ::= RESULT PUNTO METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO PARAMETROS
+                 ;
+
+asignacion ::= VARIABLE IGUAL valor_numerico PUNTO_COMA
+             | VARIABLE IGUAL valor_string PUNTO_COMA
+             ;

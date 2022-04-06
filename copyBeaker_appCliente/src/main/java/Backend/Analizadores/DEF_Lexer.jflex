@@ -2,13 +2,13 @@
 package Backend.Analizadores;
 import java_cup.runtime.*;
 import Backend.Objetos.Token;
-import static Backend.Analizadores.JSON_ParserSym.*;
+import static Backend.Analizadores.DEF_ParserSym.*;
 import Backend.Manejadores.ManejadorErrores;
 //import Objetos.ReporteError;//yo supongo que si se debe importar para usar el eqq de ctes static, aunque sea kotlin... solo era para probar que si jala cosas de kotlin en Java xD
 
 %%
 //Código de usuario
-%class Lexer_JSON
+%class DEF_Lexer
 %unicode
 %line
 %column
@@ -16,21 +16,32 @@ import Backend.Manejadores.ManejadorErrores;
 //%standalone
 //%int
 %caseless
-%cupsym JSON_ParserSym
+%cupsym DEF_ParserSym
 %cup //recuerda reemplazarlo por %cup, al hacer eso tampoco se hace nec add el %int...
 
 //macros [símbolos aceptados]
-simbolosAceptados = ":"|","|"{"|"}"|"["|"]"
+simbolosAceptados = "="|","|";"|"."|"["|"]"
+operadoresAritmeticos = "+"|"-"|"*"|"/"|"("|")"
 
 //macros fundamentales
 digito = [0-9]
 numero = {digito}+  
-//eliminé decimal, puesto que no se debe corroborar que el score sea un número decimal con una parte entera de 0 y 1, puesto que se muestra como string todo lo que no sea un entero...
+letra = [a-zA-Z\u00f1\u00d1]//recuerda que estos últimos 2 son caracteres de escape del formato unicode...
+
+identificador = ("$"|{letra})|("_"|"$"|{letra})("_"|"$"|{letra}|{digito})+
 
 //macros auxiliares
 finDeLinea = \r|\n|\r\n
 tabulacion = [ \t\f]
 espacioEnBlanco = {finDeLinea} | {tabulacion}
+
+//matros para comentarios
+ComentarioMultiLinea = {comentarioTradicional} | {comentarioDocumentacion}
+
+comentarioTradicional   = "</" [^*] ~"/>" | "</" "/"+ ">"  
+    
+comentarioDocumentacion = "<//" {contenidoComentario} "/"+ ">"
+contenidoComentario = ( [^*] | "/"+ [^"</"] )*
 
 %{          
     ManejadorErrores manejadorErrores;
@@ -52,19 +63,28 @@ espacioEnBlanco = {finDeLinea} | {tabulacion}
         return new Symbol(tipo, yyline+1, yycolumn+1, tokenActual);
     }
 
+    private void accionComentario(){
+        System.out.println("[L] comentario: "+ yytext());                    
+    }
+
     private Symbol acccionReservada(int tipo){//por el momneot es void xD    
         System.out.println("[L] reservada: "+ yytext());                
 
         return symbol(tipo, yytext(), false);    
     }    
 
+    private Symbol accionIdentificador(){
+        System.out.println("[L] identificador: "+ yytext());
+        return symbol(VARIABLE, yytext(), false);
+    }
+
     private Symbol accionSimbolosAceptados(){        
         if(yystate() == ERROR){
             accionParadaParaError();
         }
 
-        System.out.println("[L] símbolo "+ yytext() +" T: " +((yytext().equals(":"))?"DOS_PUNTOS":((yytext().equals(","))?"COMA":((yytext().equals("{"))?"LLAVE_A":((yytext().equals("}"))?"LLAVE_C":((yytext().equals("["))?"CORCHETE_A":"CORCHETE_C"))))));        
-        return symbol(((yytext().equals(":"))?DOS_PUNTOS:((yytext().equals(","))?COMA:((yytext().equals("{"))?LLAVE_A:((yytext().equals("}"))?LLAVE_C:((yytext().equals("["))?CORCHETE_A:CORCHETE_C))))), yytext(), false);    
+        System.out.println("[L] símbolo "+ yytext() +" T: " +((yytext().equals("="))?"IGUAL":((yytext().equals(","))?"COMA":((yytext().equals(";"))?"PUNTO_COMA":((yytext().equals("."))?"PUNTO":((yytext().equals("["))?"CORCHETE_A":"CORCHETE_C"))))));        
+        return symbol(((yytext().equals("="))?IGUAL:((yytext().equals(","))?COMA:((yytext().equals(";"))?PUNTO_COMA:((yytext().equals("."))?PUNTO:((yytext().equals("["))?CORCHETE_A:CORCHETE_C))))), yytext(), false);    
     }//por si acaso miras que si te es posible add SA a ERROR sin generar problemas al formar los tokens aquí y analizar las RP en el parser
    
     private void accionProcesarError(){
@@ -87,48 +107,62 @@ espacioEnBlanco = {finDeLinea} | {tabulacion}
 
     public void setInfoNecesaria(ManejadorErrores elManejadorErrores){
         manejadorErrores = elManejadorErrores;
-    }//el RESULT ya tendrá seteada la clase respectiva sin problemas xD
+    }
 %}
 
 %state SSTRING ERROR
 
 %%
 //Reglas léxicas
-<YYINITIAL> "score"               {return acccionReservada(SCORE);}
-<YYINITIAL> "clases"              {return acccionReservada(CLASES);}
-<YYINITIAL> "variables"           {return acccionReservada(VARIABLES);}
-<YYINITIAL> "metodos"             {return acccionReservada(METODOS);}
-<YYINITIAL> "comentarios"         {return acccionReservada(COMENTARIOS);}
-<YYINITIAL> "nombre"              {return acccionReservada(NOMBRE);}
-<YYINITIAL> "tipo"                {return acccionReservada(TIPO);}
-<YYINITIAL> "funcion"             {return acccionReservada(FUNCION);}
-<YYINITIAL> "parametros"          {return acccionReservada(PARAMETROS);}
-<YYINITIAL> "texto"               {return acccionReservada(TEXTO);}
+<YYINITIAL> "Integer"               {return acccionReservada(INTEGER);}
+<YYINITIAL> "String"                {return acccionReservada(STRING);}
+<YYINITIAL> "RESULT"                {return acccionReservada(RESULT);}
+<YYINITIAL> "Score"                 {return acccionReservada(SCORE);}
+<YYINITIAL> "Clases"                {return acccionReservada(CLASES);}
+<YYINITIAL> "Nombre"                {return acccionReservada(NOMBRE);}
+<YYINITIAL> "Variables"             {return acccionReservada(VARIABLES);}
+<YYINITIAL> "Tipo"                  {return acccionReservada(TIPO);}
+<YYINITIAL> "Funcion"               {return acccionReservada(FUNCION);}
+<YYINITIAL> "Metodos"               {return acccionReservada(METODOS);}
+<YYINITIAL> "Parametros"            {return acccionReservada(PARAMETROS);}
+<YYINITIAL> "Comentarios"           {return acccionReservada(COMENTARIOS);}
+<YYINITIAL> "Texto"                 {return acccionReservada(TEXTO);}
 
-<YYINITIAL, ERROR> {simbolosAceptados}    {return accionSimbolosAceptados();}
+<YYINITIAL, ERROR> {simbolosAceptados}            {return accionSimbolosAceptados();}
 
 <YYINITIAL>{    
-    {numero}                          {System.out.println("[L] numero: "+ yytext());return symbol(NUMERO, yytext(), false);}//son los signos de operación en sí quienes requieren del anterior
+    {numero}                          {System.out.println("[L] entero: "+ yytext());return symbol(ENTERO, (yytext()), false);}//la conversión se va a hacer en un método del parser, al final voy a dejar en String el lexema de Token, para ahorrarme los casteos en los strings, además como este se puede convertir a integer, solo tendría que hacer que dicho método pueda atrapar la excepción que se pueda generar al no corresponder el string a un entero...
+
+    {identificador}                   {accionIdentificador();}
+
+    {operadoresAritmeticos}           {System.out.println("[L] simbolo: "+ yytext());
+                                       return symbol(((yytext().equals("+"))?MAS:((yytext().equals("-"))?RESTA:((yytext().equals("*"))?POR:((yytext().equals("/"))?DIV:((yytext().equals("("))?PARENTESIS_A:PARENTESIS_C))))), yytext(), true);}
 
     \"                                {contenido.setLength(0); yybegin(SSTRING);}//tengo que hacer que la entrada se convierta a un tipo específico, sino podría detectar como errónea la codificación de un caracter equivalente en otro "sistema" o modo de codificación, como sucedió con las comillas                
+
+    {ComentarioMultiLinea}            {accionComentario();}
 
     {espacioEnBlanco}                 {/*se ignora*/}
 }
 
  <SSTRING> {
-      \"                                                                      { yybegin(YYINITIAL);System.out.println("[L] cadena: "+ contenido.toString() + " T: "+CADENA);return symbol(CADENA, new String(contenido), false);}//devulve el contenido dentro de las "" puesto que eso es lo que interesa xD      
+      \"                                   { yybegin(YYINITIAL);System.out.println("[L] cadena: "+ contenido.toString() + " T: "+CADENA);return symbol(CADENA, new String(contenido), false);}//devulve el contenido dentro de las "" puesto que eso es lo que interesa xD      
 
-      \"{espacioEnBlanco}*"+"{espacioEnBlanco}*\"                             { /*no se append, puesto que solo se desea almacenar el contenido*/ }
-
-      [^\n\r\"\\]+                                                            { contenido.append( yytext()); }
+      [^\n\r\"\\]+                         { contenido.append( yytext()); }
 
       //Esto es para cuando add literalmente estos símbolos, de tal forma que puedan cumplir su función xD    
-      \\t                                                                     { contenido.append('\t'); }
-      \\n                                                                     { contenido.append('\n'); }
-      \\r                                                                     { contenido.append('\r'); }
-      \\\"                                                                    { contenido.append('\"'); }
-      \\                                                                      { contenido.append('\\'); }      
+      \\t                                  { contenido.append('\t'); }
+      \\n                                  { contenido.append('\n'); }
+      \\r                                  { contenido.append('\r'); }
+      \\\"                                 { contenido.append('\"'); }
+      \\                                   { contenido.append('\\'); }      
 }//si impide que hayan saltos de línea entre cadenas y eso es controlado por la expre que niega los escapes...
+//quité el estado que add a la gram del JSON, para las concat, puesto que allá, si se podía tener eso puesto 
+//que no se podía hacer concatenación de dif, tipos, es decir no había casteo de tipos, así como sucede aquí
+//por lo tanto como aquí si debo revisar, porque no se si se trate de una suma o concat, por el hecho de mez-
+//clar varios tipos, en este caso 2, no puede quedarse aquí esa ER
+
+
 
 <ERROR>{    
     {espacioEnBlanco}           {accionParadaParaError();}//aquí se invoca a la función que se encarga de recisar lo de substring de reservadas xD

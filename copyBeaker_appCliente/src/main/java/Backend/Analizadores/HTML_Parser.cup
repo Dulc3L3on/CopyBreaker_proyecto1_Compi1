@@ -1,0 +1,234 @@
+/*1. package e imports*/
+package Backend.Analizadores;
+
+import java_cup.runtime.*;
+import java.util.List;
+import java.util.ArrayList;
+import Backend.Objetos.Token;
+import Backend.Manejadores.ManejadorErrores;
+import Backend.Objetos.Error;
+import Backend.Objetos.Enums.SintaxError;
+import Backend.Analizadores.HTML_ParserSym.*;
+
+class HTML_Parser;
+
+action code{://Métodos que NO pueden ser accedidos desde el exterior, puesto que forman parte de una clase interna
+
+
+
+
+    private void addError(Token token, int linea, int columna, SintaxError error){//tipoReporte = operacion o error                
+        manejadorErrores.setError((new Error(((token != null)?token.getLexema():""), String.valueOf(linea), String.valueOf(columna), error)));
+        
+    }
+:}/*el código que se encuentra aquí dentro NO puede ser accedido desde la clase...*/
+
+parser code {:/*código que modifica el comportamiento del parser [sobreescribiendo o creado métodos]    */
+    private ManejadorErrores manejadorErrores;        
+
+    public HTML_Parser(HTML_Lexer lexer, ManejadorErrores manejadorErroresLex){/*nuevo constructor*/
+        super(lexer);        
+
+        manejadorErrores = manejadorErroresLex;        
+    }    
+
+    public void report_fatal_error(String message, Object info){
+        manejadorErrores.setError(new Error(((info != null)?info.toString():""), "", 
+        "", SintaxError.FATAL_ERROR));
+    }
+
+    protected int error_sync_size(){
+        return 1;
+    }/*para que establezca que con un token bien leido basta para recuperarse...   */
+:}/*este si puede ser accedido desde el código...*/
+
+/*2. terminales*/
+
+terminal HTML_A, HTML_C, H1_A, H1_C, H2_A, H2_C, TABLE_A, TABLE_C, TR_A, TR_C, TH_A, TH_C, TD_A, TD_C, BR, FOR_C;
+terminal FOR_A, FOR_CA, VAR_A, VAR_C;
+terminal CORCHETE_A, CORCHETE_C, PUNTO;
+terminal VARIABLE, ENTERO, CONTENIDO;//aquí no es nec un T = CADENA... xD
+terminal RESULT, SCORE, CLASES, NOMBRE, VARIABLES, TIPO, FUNCION, METODOS, PARAMETROS, COMENTARIOS, TEXTO;
+terminal ITERATOR, HASTA, DOS_PUNTOS;
+
+/*3. no terminales*/
+non terminal inicio, body;
+non terminal etiqueta, headers, header1, rest_header1, header2, rest_header2, table, rest_table, for_loop, rest_for_loop;
+non terminal for_row, rest_for_row, table_row, rest_table_row, for_cell, rest_for_cell;
+non terminal table_head, rest_table_head, table_cell, rest_table_cell;
+non terminal content, valor_variable, tipo_result, result_integer;
+non terminal result_string, valor_result, result_clases, result_metodos, result_variables, result_comentarios, valor_numerico, var_tipo_numerica;
+/*3.1 precedencia y asociatividad*/
+/*no necesaria en este contexto*/
+
+/*4. reglas de producción*/
+start with inicio;
+
+inicio ::= HTML_A body HTML_C
+         | HTML_A HTML_C
+         ;
+
+body ::= body etiqueta
+       | body content
+       | etiqueta
+       | content
+       ;
+
+etiqueta ::= headers
+           | table
+           | for_loop
+           | BR
+           ;
+
+headers ::= header1
+          | header2
+          ;
+
+header1 ::= H1_A rest_header1
+          ;
+
+rest_header1 ::= etiqueta rest_header1
+               | content rest_header1
+               | H1_C
+               ;
+
+header2 ::= H2_A rest_header2
+          ;
+
+rest_header2 ::= etiqueta rest_header2
+               | content rest_header2
+               | H2_C
+               ;
+
+table ::= TABLE_A rest_table
+        ;
+
+rest_table ::= headers rest_table
+             | table rest_table
+             | BR rest_table
+             | content rest_table
+             | for_row rest_table
+             | table_row rest_table
+             | TABLE_C
+             ;
+
+for_loop ::= FOR_A ITERATOR DOS_PUNTOS VARIABLE HASTA DOS_PUNTOS var_tipo_numerica FOR_CA rest_for_loop
+           ;
+
+rest_for_loop ::= etiqueta rest_for_loop
+                | content rest_for_loop
+                | FOR_CA
+                ;
+
+content ::= VAR_A valor_variable VAR_C
+          | CONTENIDO
+          ;
+
+for_row ::= FOR_A ITERATOR DOS_PUNTOS VARIABLE HASTA DOS_PUNTOS var_tipo_numerica FOR_CA rest_for_row
+          ;
+
+rest_for_row ::= headers rest_for_row
+               | table rest_for_row
+               | BR rest_for_row
+               | content rest_for_row
+               | for_row rest_for_row
+               | table_row rest_for_row
+               | FOR_C
+               ;
+               
+table_row ::= TR_A rest_table_row
+            ;
+
+rest_table_row ::= headers rest_table_row
+                 | table rest_table_row
+                 | BR rest_table_row
+                 | content rest_table_row
+                 | for_cell rest_table_row
+                 | table_head rest_table_row
+                 | table_cell rest_table_row
+                 | TR_C
+                 ;
+
+for_cell ::= FOR_A ITERATOR DOS_PUNTOS VARIABLE HASTA DOS_PUNTOS var_tipo_numerica FOR_CA rest_for_cell
+           ;
+            
+rest_for_cell ::= headers rest_for_cell
+                | table rest_for_cell
+                | BR rest_for_cell
+                | content rest_for_cell
+                | table_head rest_for_cell
+                | table_cell rest_for_cell
+                | for_cell rest_for_cell
+                | FOR_C
+                ;
+
+table_head ::= TH_A rest_table_head
+             ;
+    
+rest_table_head ::= etiqueta rest_table_head
+                  | content rest_table_head
+                  | TH_C
+                  ;
+
+table_cell ::= TD_A rest_table_cell
+             ;
+
+rest_table_cell ::= etiqueta rest_table_cell
+                  | content rest_table_cell
+                  | TD_C
+                  ;
+                  
+valor_variable ::= tipo_result
+                 | VARIABLE
+                 ;
+
+
+tipo_result ::= result_integer
+              | result_string
+              ;
+
+result_string ::= RESULT PUNTO valor_result
+                ;
+
+valor_result ::= SCORE
+               | result_clases
+               | result_metodos
+               | result_variables               
+               | result_comentarios
+               ;
+
+result_clases ::= CLASES
+                | CLASES CORCHETE_A valor_numerico CORCHETE_C
+                | CLASES CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+                ;
+
+result_metodos ::= METODOS
+                 | METODOS CORCHETE_A valor_numerico CORCHETE_C
+                 | METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
+                 | METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+                 ;
+
+result_variables ::= VARIABLES
+                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C
+                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
+                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO FUNCION
+                   ;
+
+result_comentarios ::= COMENTARIOS
+                     | COMENTARIOS CORCHETE_A valor_numerico CORCHETE_C
+                     | COMENTARIOS CORCHETE_A valor_numerico CORCHETE_C PUNTO TEXTO
+                     ;
+
+result_integer ::= RESULT PUNTO METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO PARAMETROS
+                 ;
+
+valor_numerico ::= ENTERO
+                 | var_tipo_numerica
+                 ;
+
+
+var_tipo_numerica ::= result_integer
+                    | VARIABLE
+                    ;
+

@@ -22,7 +22,14 @@ public class Comentario implements Serializable{
         return this.texto;
     }
     
+    
+    //Estos métodos son para formar el reporte
     public String asString(){        
+        //puesto que se add la concat de string al haber saltos de línea en el
+        //contenido de los comentarios, entonces en el lexer del JSON se debe
+        //hacer que solo concatene el contenido no a
+        //esos-> \" {whiteSpace}* + {whiteSpace}* \" esto lo digo, porque de no 
+        //hacerlo, en el reporte se mostrará esas concatenaciones...
         return "{ Texto: \""+ this.texto + "\" }";
     }
 }
