@@ -37,9 +37,11 @@ public class ManejadorAnalisis {
         this.manejadorProyectos = new ManejadorProyectos(manejadorInterfaz);
     }
     
-    public void procesarJSONRecibido(String JSON){
+    public void procesarJSONRecibido(String JSON, boolean esApertura){        
         if(this.verificarEstructuraJSON(JSON)){
-            this.manejadorProyectos.crearProyectoCopy(JSON);//si lo cierra, entonces no se crearán los archivos, simplemente se mostrará el JSON, con lo de los reportes no hay problema porque no hay algo que mostrar...            
+            if(!esApertura){
+                this.manejadorProyectos.crearProyectoCopy(JSON);//si lo cierra, entonces no se crearán los archivos, simplemente se mostrará el JSON, con lo de los reportes no hay problema porque no hay algo que mostrar...                            
+            }            
         }else{
             System.out.println("JSON recibido con errores");
         }//se supone que no debería entrar aquí, es más ni siquiera debería tener el if...

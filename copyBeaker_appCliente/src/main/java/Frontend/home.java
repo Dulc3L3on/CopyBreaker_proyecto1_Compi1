@@ -24,7 +24,7 @@ public class home extends javax.swing.JFrame {
     private final ManejadorArchivos manejadorArchivos_Proyecto2;
     private final ManejadorAnalisis manejadorAnalisis;
     ArrayList<ArrayList<File>> listaArchivos = new ArrayList<>();//esta es para setear las dos listas de los archivos recogidos de cada proyecto...
-    String[] arregloPrueba;
+    String[] arregloPrueba;    
     boolean esJSON;
     
     /**
@@ -44,6 +44,8 @@ public class home extends javax.swing.JFrame {
        this.manejadorArchivos_Proyecto2 = new ManejadorArchivos();       
        this.manejadorAnalisis = new ManejadorAnalisis(manejadorInterfaz);
        this.clientProcess = new ClientProcess(this.manejadorInterfaz, manejadorAnalisis); 
+       
+       area_HTML.setContentType("text/html");       
     }
 
     /**
@@ -82,10 +84,11 @@ public class home extends javax.swing.JFrame {
         jPanel7 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         log_JSON = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
         txtF_textoBusqueda_JSON = new javax.swing.JTextField();
         lbl_btn_buscar_JSON = new javax.swing.JLabel();
         lbl_btn_findNext_JSON = new javax.swing.JLabel();
-        lbl_btn_findPrevious_JSON = new javax.swing.JLabel();
+        lbtn_finPrev_JSON = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         btn_analizarReporte = new javax.swing.JButton();
         scroll_TxtA_Reportes = new javax.swing.JScrollPane();
@@ -98,8 +101,10 @@ public class home extends javax.swing.JFrame {
         txtF_textoBusqueda_Reportes = new javax.swing.JTextField();
         lbl_btn_buscar_Reportes = new javax.swing.JLabel();
         lbl_btn_findNext_Reportes = new javax.swing.JLabel();
-        lbl_btn_findPrev_Reportes = new javax.swing.JLabel();
         btn_visualizarHTML = new javax.swing.JButton();
+        lbtn_finPrev_Reporte = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        area_HTML = new javax.swing.JEditorPane();
         lbl_guardarProyecto = new javax.swing.JLabel();
         lbl_btn_abrirProyecto = new javax.swing.JLabel();
         lbl_guardarCambios = new javax.swing.JLabel();
@@ -240,7 +245,7 @@ public class home extends javax.swing.JFrame {
                         .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_carga2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addComponent(btn_analizar, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -319,17 +324,26 @@ public class home extends javax.swing.JFrame {
             log_JSON.getColumnModel().getColumn(4).setMaxWidth(115);
         }
 
+        jLabel1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        jLabel1.setText("LOG");
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(87, 87, 87)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addGap(0, 26, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(6, 6, 6)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         lbl_btn_buscar_JSON.setIcon(new javax.swing.ImageIcon(getClass().getResource("/lupa-icon.png"))); // NOI18N
@@ -344,16 +358,18 @@ public class home extends javax.swing.JFrame {
         });
 
         lbl_btn_findNext_JSON.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon_next.png"))); // NOI18N
+        lbl_btn_findNext_JSON.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lbl_btn_findNext_JSON.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbl_btn_findNext_JSONMouseClicked(evt);
             }
         });
 
-        lbl_btn_findPrevious_JSON.setText("<<");
-        lbl_btn_findPrevious_JSON.addMouseListener(new java.awt.event.MouseAdapter() {
+        lbtn_finPrev_JSON.setIcon(new javax.swing.ImageIcon(getClass().getResource("/boton_prev.png"))); // NOI18N
+        lbtn_finPrev_JSON.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lbtn_finPrev_JSON.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lbl_btn_findPrevious_JSONMouseClicked(evt);
+                lbtn_finPrev_JSONMouseClicked(evt);
             }
         });
 
@@ -373,8 +389,8 @@ public class home extends javax.swing.JFrame {
                         .addGap(2, 2, 2)
                         .addComponent(txtF_textoBusqueda_JSON, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lbl_btn_findPrevious_JSON)
-                        .addGap(18, 18, 18)
+                        .addComponent(lbtn_finPrev_JSON)
+                        .addGap(16, 16, 16)
                         .addComponent(lbl_btn_findNext_JSON)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -391,14 +407,13 @@ public class home extends javax.swing.JFrame {
                         .addComponent(btn_analizarJSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lbl_btn_buscar_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lbl_btn_findPrevious_JSON)
-                            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lbl_btn_findNext_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE))
-                            .addComponent(txtF_textoBusqueda_JSON, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lbl_ubicacion_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lbl_btn_findNext_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtF_textoBusqueda_JSON)
+                            .addComponent(lbtn_finPrev_JSON, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(0, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -468,6 +483,7 @@ public class home extends javax.swing.JFrame {
             log_Reportes.getColumnModel().getColumn(4).setMaxWidth(115);
         }
 
+        jLabel8.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         jLabel8.setText("LOG");
 
         javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
@@ -483,9 +499,9 @@ public class home extends javax.swing.JFrame {
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
@@ -509,16 +525,10 @@ public class home extends javax.swing.JFrame {
         });
 
         lbl_btn_findNext_Reportes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icon_next.png"))); // NOI18N
+        lbl_btn_findNext_Reportes.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lbl_btn_findNext_Reportes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbl_btn_findNext_ReportesMouseClicked(evt);
-            }
-        });
-
-        lbl_btn_findPrev_Reportes.setText("<<");
-        lbl_btn_findPrev_Reportes.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lbl_btn_findPrev_ReportesMouseClicked(evt);
             }
         });
 
@@ -527,6 +537,14 @@ public class home extends javax.swing.JFrame {
         btn_visualizarHTML.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_visualizarHTMLActionPerformed(evt);
+            }
+        });
+
+        lbtn_finPrev_Reporte.setIcon(new javax.swing.ImageIcon(getClass().getResource("/boton_prev.png"))); // NOI18N
+        lbtn_finPrev_Reporte.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        lbtn_finPrev_Reporte.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lbtn_finPrev_ReporteMouseClicked(evt);
             }
         });
 
@@ -547,9 +565,9 @@ public class home extends javax.swing.JFrame {
                         .addComponent(lbl_btn_buscar_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(1, 1, 1)
                         .addComponent(txtF_textoBusqueda_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(11, 11, 11)
-                        .addComponent(lbl_btn_findPrev_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lbtn_finPrev_Reporte)
+                        .addGap(15, 15, 15)
                         .addComponent(lbl_btn_findNext_Reportes)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lbl_ubicacion_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -561,21 +579,25 @@ public class home extends javax.swing.JFrame {
                 .addGap(23, 23, 23)
                 .addComponent(scroll_TxtA_Reportes, javax.swing.GroupLayout.PREFERRED_SIZE, 487, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btn_analizarReporte, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(lbl_btn_buscar_Reportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(txtF_textoBusqueda_Reportes)
-                        .addComponent(lbl_btn_findPrev_Reportes)
                         .addComponent(btn_visualizarHTML))
-                    .addComponent(lbl_btn_findNext_Reportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lbl_ubicacion_Reportes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lbl_btn_findNext_Reportes, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lbl_ubicacion_Reportes, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(lbtn_finPrev_Reporte, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(11, 11, 11)
-                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         tab_Cliente.addTab("Reportes", jPanel6);
+
+        jScrollPane5.setViewportView(area_HTML);
+
+        tab_Cliente.addTab("Reporte Generado", jScrollPane5);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -595,6 +617,7 @@ public class home extends javax.swing.JFrame {
         lbl_guardarProyecto.setFont(new java.awt.Font("Manjari", 0, 16)); // NOI18N
         lbl_guardarProyecto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guardar_icon_3.png"))); // NOI18N
         lbl_guardarProyecto.setText("  Guardar Proyecto");
+        lbl_guardarProyecto.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lbl_guardarProyecto.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbl_guardarProyectoMouseClicked(evt);
@@ -604,6 +627,7 @@ public class home extends javax.swing.JFrame {
         lbl_btn_abrirProyecto.setFont(new java.awt.Font("Manjari", 0, 16)); // NOI18N
         lbl_btn_abrirProyecto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/open_icon.png"))); // NOI18N
         lbl_btn_abrirProyecto.setText("  Abrir");
+        lbl_btn_abrirProyecto.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lbl_btn_abrirProyecto.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbl_btn_abrirProyectoMouseClicked(evt);
@@ -611,7 +635,9 @@ public class home extends javax.swing.JFrame {
         });
 
         lbl_guardarCambios.setFont(new java.awt.Font("Manjari", 0, 16)); // NOI18N
-        lbl_guardarCambios.setText("Guardar Cambios");
+        lbl_guardarCambios.setIcon(new javax.swing.ImageIcon(getClass().getResource("/guardar_Cambios.png"))); // NOI18N
+        lbl_guardarCambios.setText("  Guardar Cambios");
+        lbl_guardarCambios.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lbl_guardarCambios.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 lbl_guardarCambiosMouseClicked(evt);
@@ -628,19 +654,18 @@ public class home extends javax.swing.JFrame {
                 .addComponent(lbl_btn_abrirProyecto)
                 .addGap(30, 30, 30)
                 .addComponent(lbl_guardarProyecto)
-                .addGap(51, 51, 51)
-                .addComponent(lbl_guardarCambios, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addComponent(lbl_guardarCambios, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbl_guardarCambios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lbl_btn_abrirProyecto)
-                        .addComponent(lbl_guardarProyecto)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lbl_btn_abrirProyecto)
+                    .addComponent(lbl_guardarProyecto)
+                    .addComponent(lbl_guardarCambios, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTabbedPane1))
         );
@@ -755,12 +780,6 @@ public class home extends javax.swing.JFrame {
         }               
     }//GEN-LAST:event_lbl_btn_findNext_JSONMouseClicked
 
-    private void lbl_btn_findPrevious_JSONMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_findPrevious_JSONMouseClicked
-        if(!txt_JSON.getText().isBlank() && !txt_JSON.getText().isEmpty()){
-            this.manejadorInterfaz.buscarAnterior(txt_JSON, txtF_textoBusqueda_JSON.getText());
-        }               
-    }//GEN-LAST:event_lbl_btn_findPrevious_JSONMouseClicked
-
     private void lbl_btn_buscar_JSONMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_buscar_JSONMousePressed
         
     }//GEN-LAST:event_lbl_btn_buscar_JSONMousePressed
@@ -777,12 +796,6 @@ public class home extends javax.swing.JFrame {
         }               
     }//GEN-LAST:event_lbl_btn_findNext_ReportesMouseClicked
 
-    private void lbl_btn_findPrev_ReportesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_findPrev_ReportesMouseClicked
-        if(!txtA_Reportes.getText().isBlank() && !txtA_Reportes.getText().isEmpty()){
-            this.manejadorInterfaz.buscarAnterior(txtA_Reportes, txtF_textoBusqueda_Reportes.getText());
-        }      
-    }//GEN-LAST:event_lbl_btn_findPrev_ReportesMouseClicked
-
     private void btn_analizarJSONActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_analizarJSONActionPerformed
         if(!txt_JSON.getText().isBlank() && !txt_JSON.getText().isEmpty()){
             if(this.manejadorAnalisis.verificarEstructuraJSON(txt_JSON.getText())){
@@ -795,11 +808,14 @@ public class home extends javax.swing.JFrame {
 
     private void lbl_btn_abrirProyectoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_abrirProyectoMouseClicked
         this.manejadorAnalisis.getManejadorProyectos().openProyect();
-        this.manejadorAnalisis.procesarJSONRecibido(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getJSON().getContenido());        
-        this.manejadorAnalisis.procesarCOPYRecibido(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getCOPY().getContenido());
+        
+        if(this.manejadorAnalisis.getManejadorProyectos().seCargaronLosArchivos()){
+            this.manejadorAnalisis.procesarJSONRecibido(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getJSON().getContenido(), true);        
+            this.manejadorAnalisis.procesarCOPYRecibido(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getCOPY().getContenido());
                 
-        this.txt_JSON.setText(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getJSON().getContenido());
-        this.txtA_Reportes.setText(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getCOPY().getContenido());
+            this.txt_JSON.setText(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getJSON().getContenido());
+            this.txtA_Reportes.setText(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getCOPY().getContenido());
+        }        
     }//GEN-LAST:event_lbl_btn_abrirProyectoMouseClicked
 
     private void lbl_guardarProyectoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_guardarProyectoMouseClicked
@@ -828,6 +844,18 @@ public class home extends javax.swing.JFrame {
         esJSON = (tab_Cliente.getSelectedIndex() == 0);//puesto que este solo cambia cunado lo seleccionan y no cuando pierde o gana el foco, entonces nice xD, nunca dará -1 xD xD bueno eso probé y salió así, de todos modos ahí te fijas de la consola...
         System.out.println(tab_Cliente.getSelectedIndex());
     }//GEN-LAST:event_tab_ClienteStateChanged
+
+    private void lbtn_finPrev_ReporteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbtn_finPrev_ReporteMouseClicked
+        if(!txtA_Reportes.getText().isBlank() && !txtA_Reportes.getText().isEmpty()){
+            this.manejadorInterfaz.buscarAnterior(txtA_Reportes, txtF_textoBusqueda_Reportes.getText());
+        }         
+    }//GEN-LAST:event_lbtn_finPrev_ReporteMouseClicked
+
+    private void lbtn_finPrev_JSONMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbtn_finPrev_JSONMouseClicked
+        if(!txt_JSON.getText().isBlank() && !txt_JSON.getText().isEmpty()){
+            this.manejadorInterfaz.buscarAnterior(txt_JSON, txtF_textoBusqueda_JSON.getText());
+        }         
+    }//GEN-LAST:event_lbtn_finPrev_JSONMouseClicked
 
     private void enabledMainButton(ArrayList<File> archivosProyecto1, ArrayList<File> archivosProyecto2){        
         this.btn_analizar.setEnabled((!archivosProyecto1.isEmpty() && !archivosProyecto2.isEmpty()));        
@@ -869,12 +897,14 @@ public class home extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JEditorPane area_HTML;
     private javax.swing.JButton btn_analizar;
     private javax.swing.JButton btn_analizarJSON;
     private javax.swing.JButton btn_analizarReporte;
     private javax.swing.JButton btn_carga1;
     private javax.swing.JButton btn_carga2;
     private javax.swing.JButton btn_visualizarHTML;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -890,6 +920,7 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lbl_btn_abrirProyecto;
@@ -897,14 +928,14 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JLabel lbl_btn_buscar_Reportes;
     private javax.swing.JLabel lbl_btn_findNext_JSON;
     private javax.swing.JLabel lbl_btn_findNext_Reportes;
-    private javax.swing.JLabel lbl_btn_findPrev_Reportes;
-    private javax.swing.JLabel lbl_btn_findPrevious_JSON;
     private javax.swing.JLabel lbl_guardarCambios;
     private javax.swing.JLabel lbl_guardarProyecto;
     private javax.swing.JLabel lbl_ubicacion_JSON;
     private javax.swing.JLabel lbl_ubicacion_Proyecto1;
     private javax.swing.JLabel lbl_ubicacion_Proyecto2;
     private javax.swing.JLabel lbl_ubicacion_Reportes;
+    private javax.swing.JLabel lbtn_finPrev_JSON;
+    private javax.swing.JLabel lbtn_finPrev_Reporte;
     private javax.swing.JList<String> lista_Carga1;
     private javax.swing.JList<String> lista_Carga2;
     private javax.swing.JTable log_JSON;

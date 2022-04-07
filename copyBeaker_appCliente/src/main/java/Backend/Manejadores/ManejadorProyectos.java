@@ -87,7 +87,7 @@ public class ManejadorProyectos {
     }
     
     public void openProyect(){
-        File archivo = this.manejadorInterfaz.openReadChooser(".copy");//se llama al menajdor interfaz para msotrar el jfilechooser de apertura
+        File archivo = this.manejadorInterfaz.openReadChooser("copy");//se llama al menajdor interfaz para msotrar el jfilechooser de apertura
         
         if(archivo != null){//se lee el proyecto si el path != null/true            
             pathProyecto = archivo.getAbsolutePath();//para así actualizarlo...
@@ -111,6 +111,10 @@ public class ManejadorProyectos {
     
     public boolean actualProyectIsSaved(){
         return (this.proyectoCopy != null);
+    }
+    
+    public boolean seCargaronLosArchivos(){
+        return this.actualProyectIsSaved();
     }
     
     //el copy guardará los objetos del JSON y del .def por si acaso los eliminan entonces los volvería a crear
