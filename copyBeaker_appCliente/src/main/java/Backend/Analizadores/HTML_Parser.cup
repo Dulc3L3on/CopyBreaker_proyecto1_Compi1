@@ -49,15 +49,16 @@ terminal FOR_A, FOR_CA, VAR_A, VAR_C;
 terminal CORCHETE_A, CORCHETE_C, PUNTO;
 terminal VARIABLE, ENTERO, CONTENIDO;//aquí no es nec un T = CADENA... xD
 terminal RESULT, SCORE, CLASES, NOMBRE, VARIABLES, TIPO, FUNCION, METODOS, PARAMETROS, COMENTARIOS, TEXTO;
-terminal ITERATOR, HASTA, DOS_PUNTOS;
+terminal ITERADOR, HASTA, DOS_PUNTOS;
 
 /*3. no terminales*/
 non terminal inicio, body;
-non terminal etiqueta, headers, header1, rest_header1, header2, rest_header2, table, rest_table, for_loop, rest_for_loop;
-non terminal for_row, rest_for_row, table_row, rest_table_row, for_cell, rest_for_cell;
+non terminal etiqueta, headers, header1, rest_header1, header2, rest_header2, table, rest_table, for_loop, cuerpo_for_loop, rest_for_loop;
+non terminal for_row, rest_for_row, table_row, cuerpo_for_row, rest_table_row, for_cell, cuerpo_for_cell, rest_for_cell;
 non terminal table_head, rest_table_head, table_cell, rest_table_cell;
-non terminal content, valor_variable, tipo_result, result_integer;
-non terminal result_string, valor_result, result_clases, result_metodos, result_variables, result_comentarios, valor_numerico, var_tipo_numerica;
+non terminal content, valor_variable, tipo_result, result_integer, cuerpo_result_integer;
+non terminal result_string, valor_result, result_clases, cuerpo_clase, result_metodos, cuerpo_metodo;
+non terminal result_variables, cuerpo_variable, result_comentarios, cuerpo_comentario, valor_numerico, var_tipo_numerica;
 /*3.1 precedencia y asociatividad*/
 /*no necesaria en este contexto*/
 
@@ -66,25 +67,32 @@ start with inicio;
 
 inicio ::= HTML_A body HTML_C
          | HTML_A HTML_C
-         ;
+         | error:err                                                                    {:System.out.println("[S] error: BAD_GENERAL_HTML_STRUCT");
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_GENERAL_STRUCT);:}
+         ;//Aquí no es nec colocar un labda, porque por la separación de la entrada orignal, hecha en Java, si no se encuentra una <HTML> entonces no deuvlve un índice y por lo tanto no recorta nada
 
 body ::= body etiqueta
        | body content
        | etiqueta
        | content
+ //      | error
        ;
 
 etiqueta ::= headers
            | table
            | for_loop
            | BR
+           //| error
            ;
 
 headers ::= header1
-          | header2
+          | header2          
+          | error:err                                                                  {:System.out.println("[S] error: BAD_HEADER_LABEL_STRUCT");
+                                                                                         addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_HEADER_LABEL_STRUCT);:}
           ;
 
 header1 ::= H1_A rest_header1
+      //    | error
           ;
 
 rest_header1 ::= etiqueta rest_header1
@@ -93,6 +101,7 @@ rest_header1 ::= etiqueta rest_header1
                ;
 
 header2 ::= H2_A rest_header2
+      //    | error
           ;
 
 rest_header2 ::= etiqueta rest_header2
@@ -101,6 +110,7 @@ rest_header2 ::= etiqueta rest_header2
                ;
 
 table ::= TABLE_A rest_table
+  //      | error
         ;
 
 rest_table ::= headers rest_table
@@ -112,20 +122,32 @@ rest_table ::= headers rest_table
              | TABLE_C
              ;
 
-for_loop ::= FOR_A ITERATOR DOS_PUNTOS VARIABLE HASTA DOS_PUNTOS var_tipo_numerica FOR_CA rest_for_loop
+for_loop ::= FOR_A cuerpo_for_loop
+            ;
+
+cuerpo_for_loop ::= ITERADOR DOS_PUNTOS VARIABLE HASTA DOS_PUNTOS var_tipo_numerica FOR_CA rest_for_loop
+           | error:err                                                                                                      {:System.out.println("[S] error: BAD_FOR_LOOP_BODY");
+                                                                                                                              addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_FOR_LOOP_BODY);:}
            ;
 
 rest_for_loop ::= etiqueta rest_for_loop
                 | content rest_for_loop
                 | FOR_CA
+                //| error
                 ;
 
 content ::= VAR_A valor_variable VAR_C
           | CONTENIDO
+      //    | error
           ;
 
-for_row ::= FOR_A ITERATOR DOS_PUNTOS VARIABLE HASTA DOS_PUNTOS var_tipo_numerica FOR_CA rest_for_row
+for_row ::= FOR_A cuerpo_for_row
           ;
+
+cuerpo_for_row ::=  ITERADOR DOS_PUNTOS VARIABLE HASTA DOS_PUNTOS var_tipo_numerica FOR_CA rest_for_row
+                 | error:err                                                                                                 {:System.out.println("[S] error: BAD_FOR_ROW_LOOP_BODY");
+                                                                                                                               addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_FOR_ROW_LOOP_BODY);:}
+                 ;
 
 rest_for_row ::= headers rest_for_row
                | table rest_for_row
@@ -137,6 +159,7 @@ rest_for_row ::= headers rest_for_row
                ;
                
 table_row ::= TR_A rest_table_row
+        //    | error
             ;
 
 rest_table_row ::= headers rest_table_row
@@ -149,8 +172,13 @@ rest_table_row ::= headers rest_table_row
                  | TR_C
                  ;
 
-for_cell ::= FOR_A ITERATOR DOS_PUNTOS VARIABLE HASTA DOS_PUNTOS var_tipo_numerica FOR_CA rest_for_cell
+for_cell ::= FOR_A cuerpo_for_cell
            ;
+
+cuerpo_for_cell ::= ITERADOR DOS_PUNTOS VARIABLE HASTA DOS_PUNTOS var_tipo_numerica FOR_CA rest_for_cell
+                  | error:err                                                                                                   {:System.out.println("[S] error: BAD_FOR_CELL_LOOP_STRUCT");
+                                                                                                                                  addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_FOR_CELL_LOOP_STRUCT);:}
+                  ;
             
 rest_for_cell ::= headers rest_for_cell
                 | table rest_for_cell
@@ -163,6 +191,7 @@ rest_for_cell ::= headers rest_for_cell
                 ;
 
 table_head ::= TH_A rest_table_head
+        //     | error
              ;
     
 rest_table_head ::= etiqueta rest_table_head
@@ -171,6 +200,7 @@ rest_table_head ::= etiqueta rest_table_head
                   ;
 
 table_cell ::= TD_A rest_table_cell
+       //      | error
              ;
 
 rest_table_cell ::= etiqueta rest_table_cell
@@ -180,6 +210,8 @@ rest_table_cell ::= etiqueta rest_table_cell
                   
 valor_variable ::= tipo_result
                  | VARIABLE
+                 | error:err                                                        {:System.out.println("[S] error: BAD_VARIABLE_VALUE");
+                                                                                      addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_VARIABLE_VALUE);:}
                  ;
 
 
@@ -188,6 +220,7 @@ tipo_result ::= result_integer
               ;
 
 result_string ::= RESULT PUNTO valor_result
+        //        | error
                 ;
 
 valor_result ::= SCORE
@@ -195,36 +228,69 @@ valor_result ::= SCORE
                | result_metodos
                | result_variables               
                | result_comentarios
+               | error:err                                                            {:System.out.println("[S] error: BAD_RESULT_INVOCATION");
+                                                                                        addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_RESULT_INVOCATION);:}
                ;
 
-result_clases ::= CLASES
-                | CLASES CORCHETE_A valor_numerico CORCHETE_C
-                | CLASES CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+result_clases ::= CLASES 
+                | CLASES cuerpo_clase
                 ;
 
+
+cuerpo_clase ::= CORCHETE_A valor_numerico CORCHETE_C
+               | CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+               | error:err                                                             {:System.out.println("[S] error: BAD_ATTRIBUTES_CLASS_INVOCATION");
+                                                                                         addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTES_CLASS_INVOCATION);:}
+               ;
+
 result_metodos ::= METODOS
-                 | METODOS CORCHETE_A valor_numerico CORCHETE_C
-                 | METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
-                 | METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+                 | METODOS cuerpo_metodo
                  ;
+
+
+cuerpo_metodo ::= CORCHETE_A valor_numerico CORCHETE_C
+                | CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
+                | CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE                 
+                | error:err                                                             {:System.out.println("[S] error: BAD_ATTRIBUTES_METHOD_INVOCATION");
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTES_METHOD_INVOCATION);:}
+                ;
 
 result_variables ::= VARIABLES
-                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C
-                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
-                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
-                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO FUNCION
+                   | VARIABLES cuerpo_variable
                    ;
 
+
+cuerpo_variable ::= CORCHETE_A valor_numerico CORCHETE_C
+                  | CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
+                  | CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+                  | CORCHETE_A valor_numerico CORCHETE_C PUNTO FUNCION
+                  | error:err                                                           {:System.out.println("[S] error: BAD_ATTRIBUTES_VAR_INVOCATION");
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTES_VAR_INVOCATION);:}
+                  ;
+
 result_comentarios ::= COMENTARIOS
-                     | COMENTARIOS CORCHETE_A valor_numerico CORCHETE_C
-                     | COMENTARIOS CORCHETE_A valor_numerico CORCHETE_C PUNTO TEXTO
+                     | COMENTARIOS cuerpo_comentario
                      ;
 
-result_integer ::= RESULT PUNTO METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO PARAMETROS
+
+cuerpo_comentario ::= CORCHETE_A valor_numerico CORCHETE_C
+                    | CORCHETE_A valor_numerico CORCHETE_C PUNTO TEXTO
+                     | error:err                                                        {:System.out.println("[S] error: BAD_ATTRIBUTE_COMMENT_INVOCATION");
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTE_COMMENT_INVOCATION);:}
+                    ;
+
+result_integer ::= RESULT cuerpo_result_integer
                  ;
+
+cuerpo_result_integer ::= PUNTO METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO PARAMETROS
+                        | error:err                                                                                 {:System.out.println("[S] error: BAD_INTEGER_RESULT_INVOCATION");
+                                                                                                                      addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_INTEGER_RESULT_INVOCATION);:}
+                        ;
 
 valor_numerico ::= ENTERO
                  | var_tipo_numerica
+                 | error:err                                            {:System.out.println("[S] error: BAD_NUMBER_VALUE_STRUCT");
+                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_NUMBER_VALUE_STRUCT);:}
                  ;
 
 

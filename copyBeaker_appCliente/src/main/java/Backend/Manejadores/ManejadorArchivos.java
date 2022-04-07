@@ -18,7 +18,7 @@ import javax.swing.JFileChooser;
 public class ManejadorArchivos {
     private final String ACCEPTED_EXTENSION = ".java";
     private ArrayList<File> listaArchivos = new ArrayList<>();//quité el null, porque indep de que tenga o no archivos, se devolverá una lista, ya sea llena o vacía segun corresp, y además hago la ini, para la revisión que permitirá habilitar/desabilitar el botón de análisis
-    private String[] nombreArchivos;    
+    private String[] nombreArchivos = new String[0];//para que no de nullPointer cuando no ha cargado nada aún... 
 
     public void setFiles(){        
         String path = this.getPath();

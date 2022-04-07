@@ -66,10 +66,11 @@ start with inicio;
 
 inicio ::= declaracion_variables
          | asignacion
-         ;
+         |
+         ;//este último lo coloqué por que podría solo aparecer comentarios...
 
-declaracion_variables ::= INTEGER creacion_var_numero
-                        | STRING creacion_var_string
+declaracion_variables ::= INTEGER creacion_var_numero PUNTO_COMA
+                        | STRING creacion_var_string PUNTO_COMA
                         ;
 
 creacion_var_numero ::= VARIABLE IGUAL valor_numerico

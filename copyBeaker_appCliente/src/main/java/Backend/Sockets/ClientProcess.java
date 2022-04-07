@@ -33,8 +33,7 @@ public class ClientProcess {
         //en realidad aquí debería invocarse al manejador de resultados, puesto que hay que hacer varias cosas, todo esto si lo recibido no es null...
         String JSON = this.cliente.getData();
         System.out.println("Resultados recibidos");                        
-        this.manejadorAnalisis.procesarJSONRecibido(JSON);//puede que lo guarde o no, sin importar eso no hay problema con generar el JSON...        
-        this.manejadorInterfaz.addResultados_JSON(JSON);
+        this.manejadorAnalisis.procesarJSONRecibido(JSON);//puede que lo guarde o no, sin importar eso no hay problema con generar el JSON...                
         System.out.println("Resultados procesados y desplegados");        
         
         this.cliente.finalizeClient();        

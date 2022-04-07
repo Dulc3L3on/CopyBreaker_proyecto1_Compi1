@@ -102,7 +102,21 @@ public class Error {
         "Objeto método con errores; esperado-> <tipo_atributo> : CADENA|NUMERO",
         "Un objeto metodo necesita 3 atributos: <tipo>, <nombre>, <parametros>",
         "Sección de comentarios con errores; esperado-> comentarios : [ <comentario>* ]",
-        "Lista de comentarios con errores; esperado-> {<comentario>}, ... {<comentario>}"
+        "Lista de comentarios con errores; esperado-> {<comentario>}, ... {<comentario>}",
+        
+        "HTML mal estructurado; esperado -> <HTML> <<body>> </HTML>",
+        "Tipo de encabezado malformado; esperado -> <H1> <<content>> </H1>",
+        "Definición de for mal formada; esperado -> <for iterator: <<var>> hasta: <<var>> />",
+        "El for generador de filas, está mal formado",
+        "El for generador de celdas, está mal formado",
+        "Valor de tipo variable incorrecto, se esperaba: <contenido>| <variable>| <result>",
+        "Invocación de atributo result, mal hecha; esperado-> RESULT <<atributosRESULT>>+",
+        "Invocación de atributos de RESULT.CLASES tienen errores",
+        "Invocación de atributos de RESULT.METODOS tienen errores",
+        "Invocación de atributos de RESULT.VARIABLES tienen errores",
+        "Invocación de atributos de RESULT.COMENTARIOS tienen errores",
+        "Invocación de RESULT.PARAMETROS con errores",
+        "Valor numérico inválido, se esperaba -> <<entero>> | <<var#>> | <<result#>>"
     };
     
 }

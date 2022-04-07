@@ -59,6 +59,7 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
     boolean etiquetaAntApetura = false;//Esta solo podrá ser cambiada por las eti de cierre o apertura, no por $$()$$, en el caso de la etiqueta for, la podrá modificar hasta que se haya corroborado que todo está bien con el for... xD
     int estadoEntrada = -5;//para evitar que haga matchs que no corresponden...
     
+    boolean yaSeHaHechoPush = false;//Esto es por el comentario, porque en realidad no debería poder cb de estado, porque no es un pto de recu, sino solo un comment xD, eso sí, si debería hacer que se envíe el contenido dep de la etiqueta xD
     //aquí no se requiere del manejador de errores, puesto que todo lo que no sea palabras reservadas y esté dentro de dos tag de ini y fin o esté fuer [antes de una tag de ini], lo toma como cont int o ext respectivamente xD
 
     boolean requeriaCompania = false;
@@ -95,7 +96,8 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
         }//quizá además de esto requiera hacer una eli en el string duplicado de esta parte, para eliminar los coment, conforme los vaya encontrando...
 
         System.out.println("[L] comentario: "+ yytext() + "\n");
-        return symbol(COMENTARIOS, yytext(), false);
+        return null;
+        //return symbol(COMENTARIOS, yytext(), false);//estos no se envían :v dobi
     }
 
     private Symbol acccionReservada(int tipo){
@@ -125,6 +127,7 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
                        ((yytext().toLowerCase().contains("tr"))?TR_C:((yytext().toLowerCase().contains("th"))?TH_C:
                        ((yytext().toLowerCase().contains("td"))?TD_C:FOR_C)))))))), new String(yytext()), false);                
     }
+
 
     private void accionProcesarError(){
         estadoEntrada = (yystate()!=ERROR)?yystate():estadoEntrada;//puesto que error no es un estado con el que deba trabajar el lenguaje, sino que es un aux, un detector xD, si no hacías esto se creaba un bucle infinito, xd [edscubierto en el alone xD]
@@ -256,7 +259,7 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
                                                     }else{
                                                         return acccionReservada(TEXTO);
                                                     }}    
-<FOR, ERROR> "Iterator"                             {if(yystate() == ERROR){
+<FOR, ERROR> "Iterador"                             {if(yystate() == ERROR){
                                                         if(estadoEntrada == FOR){
                                                             yypushback(yylength());
                                                             yybegin(estadoEntrada);
@@ -264,7 +267,7 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
                                                             contenido.append(yytext());
                                                         }
                                                     }else{
-                                                        return acccionReservada(ITERATOR);
+                                                        return acccionReservada(ITERADOR);
                                                     }}      
 <FOR, ERROR> "Hasta"                                {if(yystate() == ERROR){
                                                         if(estadoEntrada == FOR){//estadoEntrada == IDENTIFICADOR, puesto que en realidad palabra reservada como tal solo dentro del estado léxico del for...
@@ -284,7 +287,9 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
                                                         yybegin(YYINITIAL);
                                                         if(etiquetaAntApetura){
                                                             System.out.println("[L] contenido in [aper]: "+ contenido.toString() + "\n");                                                        
-                                                            return symbol(CONTENIDO, new String(contenido), false);     
+                                                            if(!contenido.toString().isBlank()){
+                                                                return symbol(CONTENIDO, new String(contenido), false);
+                                                            }                                                          
                                                         }else{
                                                             System.out.println("[L] contenido ext [aper]: "+ contenido.toString() + "\n");                                                      
                                                         }                                                                                                                                                                       
@@ -297,7 +302,9 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
                                                       yybegin(YYINITIAL);
                                                       if(etiquetaAntApetura){//puesto que no importa si la etiqueta está bien formada, sino que se halló con un algo que corresp a una de apertura y eso le basta para hacer el respectivo retorno...
                                                            System.out.println("[L] contenido in [ini_for]: "+ contenido.toString() + "\n");                                                           
-                                                           return symbol(CONTENIDO, new String(contenido), false);
+                                                           if(!contenido.toString().isBlank()){
+                                                                return symbol(CONTENIDO, new String(contenido), false);
+                                                            }                                                          
                                                       }else{
                                                            System.out.println("[L] contenido ext [ini_for: "+ contenido.toString() + "\n");                                                      
                                                       }                                                         
@@ -307,26 +314,33 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
                                                         yybegin(FOR);
                                                         return symbol(FOR_A, yytext(), false);}}//mejor los voy a enviar para evitar posibles incongruencias al existir errores, con tal que el parser tenga todos los token que se req para decir si es válida o no la entrada...
         
-    {inicioIdentificador}                          {if(yystate() == ERROR){//puesto que aquí no se ha completado la etiqueta, no se puede hacer el envío del contenido, o si? solo lo que no se puede hacer es colocar el valor de la var que se mencionó, en false...
-                                                      yypushback(yylength());
-                                                      yybegin(YYINITIAL);
+    {inicioIdentificador}                          {if(yystate() == ERROR){//puesto que aquí no se ha completado la etiqueta, no se puede hacer el envío del contenido, o si? solo lo que no se puede hacer es colocar el valor de la var que se mencionó, en false...                                                      
                                                       if(etiquetaAntApetura){//puesto que no importa si la etiqueta está bien formada, sino que se halló con un algo que corresp a una de apertura y eso le basta para hacer el respectivo retorno...
+                                                           yypushback(yylength());
+                                                           yybegin(YYINITIAL);
+
                                                            System.out.println("[L] contenido in [ini_ID]: "+ contenido.toString() + "\n");                                                           
-                                                           return symbol(CONTENIDO, new String(contenido), false);
+                                                           if(!contenido.toString().isBlank()){
+                                                                return symbol(CONTENIDO, new String(contenido), false);
+                                                            }                                                          
                                                       }else{
-                                                           System.out.println("[L] contenido ext [ini_ID]: "+ contenido.toString() + "\n");                                                      
+                                                            contenido.append(yytext());
+                                                           //System.out.println("[L] contenido ext [ini_ID]: "+ contenido.toString() + "\n");                                                      
                                                       }                                                         
                                                     }else{//es decir es = YYINITIAL, puesto que solo con estado error y YYINI, se puede entrar a esta sección                                                      
                                                       //etiquetaAntApetura = true;//NO debe tener esto, pues podría estar en el exterior y hacer que todo lo que aparezca despés de esa etiqueta se tome como contini lo cula no es cierto y mejor dicho, en el exterior esta etiqueta no tendría por qué identificarse como un ID... sino como un contenido
-                                                      yybegin(IDENTIFICADOR);
-                                                      return symbol(VAR_A, yytext(), false);}}//hago este retorno por razones eqq a FOR_A, aunque en realidad en esta ER, sería imposible, pero por si, mejor de una vez xD
+                                                        System.out.println("[L] ini ID\n");   
+                                                        yybegin(IDENTIFICADOR);
+                                                        return symbol(VAR_A, yytext(), false);}}//hago este retorno por razones eqq a FOR_A, aunque en realidad en esta ER, sería imposible, pero por si, mejor de una vez xD
 
     {etiquetaCierre}                                {if(yystate() == ERROR){
                                                         yypushback(yylength());
                                                         yybegin(YYINITIAL);
                                                         if(etiquetaAntApetura){
                                                             System.out.println("[L] contenido in [cierr]: "+ contenido.toString() + "\n");                                                            
-                                                            return symbol(CONTENIDO, new String(contenido), false);
+                                                            if(!contenido.toString().isBlank()){
+                                                                return symbol(CONTENIDO, new String(contenido), false);
+                                                            }                                                          
                                                         }else{
                                                             System.out.println("[L] contenido ext [cierr]: "+ contenido.toString() + "\n");                                                      
                                                         }                                 
@@ -336,17 +350,31 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
 }
 
 {ComentarioMultiLinea}                              {if(yystate() == ERROR){
-                                                        yypushback(yylength());
-                                                        yybegin(estadoEntrada);
-                                                        if(etiquetaAntApetura){
-                                                            System.out.println("[L] contenido in [Com]: "+ contenido.toString() + "\n");                                                            
-                                                            return symbol(CONTENIDO, new String(contenido), false);
+                                                        if(!yaSeHaHechoPush){
+                                                            yypushback(yylength());
+                                                            //yybegin(estadoEntrada);//tendría que hacer un cb de estado?? no debería mantenerme en el que estab puesto que esto es un comentario???
+                                                            if(etiquetaAntApetura){
+                                                                System.out.println("[L] contenido in [Com]: "+ contenido.toString() + "\n");                                                            
+                                                                if(!contenido.toString().isBlank()){
+                                                                    return symbol(CONTENIDO, new String(contenido), false);
+                                                                }                                                          
+                                                            }else{                                                                                                                                
+                                                                System.out.println("[L] contenido ext [Com]: "+ contenido.toString() + "\n");                                                      
+                                                            }    
+                                                            yaSeHaHechoPush = true;
+                                                            contenido.setLength(0);//para limpiar el buffer, puesto que no se saldrá del estado de error, hasta que alguna otra etiqueta lo haga.. xD
                                                         }else{
-                                                            System.out.println("[L] contenido ext [Com]: "+ contenido.toString() + "\n");                                                      
-                                                        }    
-                                                        estadoEntrada = -5 ;
+                                                            yaSeHaHechoPush = false;//este solo es de utilidad para el comentario y siempre se vendrá a esta parte, cuando se entre estando en un estado de error, por lo tanto no habrán incongruencias...
+                                                            Symbol simbolo = accionComentario();    
+                                                            if(simbolo != null){
+                                                                return simbolo;
+                                                            }
+                                                        }//para este punto ya se habrá enviado el contenido como corresponde y se habrá puesto el puntero al inicio del comentario, por lo tanto solo queda reiniciar la var y mostrar que lo que sigue es un comentario... xD     //estadoEntrada = -5 ;                                                            
                                                     }else{
-                                                        return accionComentario();
+                                                        Symbol simbolo = accionComentario();    
+                                                            if(simbolo != null){
+                                                                return simbolo;
+                                                            }
                                                     }//sino no hay nada que hacer xD
                                                     }
 
@@ -369,17 +397,25 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
 //y coloqué a for como a identificador, puesto que en ambos se puede utilizar el result...
 
 <IDENTIFICADOR, FOR, ERROR> {variable}                          {if(yystate() == ERROR){
-                                                                    if(estadoEntrada == IDENTIFICADOR || estadoEntrada == FOR){
-                                                                        yypushback(yylength());
-                                                                        yybegin(estadoEntrada);//lo dejo así,puesto que solo puede ser cualquiera de los 3 que esperaría que fuera...                                                                                    
+                                                                    //System.out.println("estado actual: "+((yystate() == ERROR)?"ERROR":((yystate()==IDENTIFICADOR)?"IDENTIFICADR":((yystate() == FOR)?"FOR":"YYINI"))));
+                                                                    //System.out.println((estadoEntrada == ERROR)?"ERROR":((estadoEntrada==IDENTIFICADOR)?"IDENTIFICADR":((estadoEntrada == FOR)?"FOR":"YYINI")));
+
+                                                                    if(estadoEntrada == IDENTIFICADOR || estadoEntrada == FOR){                                                                        
                                                                         if(etiquetaAntApetura){
-                                                                            System.out.println("[L] contenido in [var]: "+ contenido.toString() + "\n");                                                                            
-                                                                            return symbol(CONTENIDO, new String(contenido), false);
+                                                                            yypushback(yylength());
+                                                                            yybegin(estadoEntrada);//lo dejo así,puesto que solo puede ser cualquiera de los 3 que esperaría que fuera...                                                                                    
+
+                                                                            System.out.println("[L] contenido in [var]: "+ contenido.toString() + "\n");                                                                                                                                                        
+                                                                            estadoEntrada = -5 ;                                                                            
+
+                                                                            if(!contenido.toString().isBlank()){
+                                                                                return symbol(CONTENIDO, new String(contenido), false);
+                                                                            }                                                          
                                                                         }else{
-                                                                            System.out.println("[L] contenido ext [var]: "+ contenido.toString() + "\n");                                                      
+                                                                            contenido.append(yytext());
+                                                                            //System.out.println("[L] contenido ext [var]: "+ contenido.toString() + "\n");                                                      
                                                                         }     
 
-                                                                        estadoEntrada = -5 ;
                                                                     }else{//Es decir que es YYINITIAL
                                                                         contenido.append(yytext());
                                                                     }//puesto que en el estado YYINI, no existe una ER como identificador
@@ -396,7 +432,9 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
                                                             yybegin(estadoEntrada);//lo dejo así,puesto que solo puede ser cualquiera de los 3 que esperaría que fuera...                                                                                    
                                                             if(etiquetaAntApetura){
                                                                 System.out.println("[L] contenido in [fin_ID]: "+ contenido.toString() + "\n");                                                                
-                                                                return symbol(CONTENIDO, new String(contenido), false);
+                                                                if(!contenido.toString().isBlank()){
+                                                                    return symbol(CONTENIDO, new String(contenido), false);
+                                                                }                                                          
                                                             }else{
                                                                 System.out.println("[L] contenido ext [fin_ID]: "+ contenido.toString() + "\n");                                                      
                                                             }     
@@ -419,7 +457,9 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
                                                             yybegin(FOR);//pongo el YYINI, puesto que al llegar aquí sin importar que haya sido desde el estado de error, esta ER siempre indicará fin de etiqueta de ini del for, por lo tanto, que debería salirse de este estado...
                                                             if(etiquetaAntApetura){
                                                                 System.out.println("[L] contenido in [fin_FOR]: "+ contenido.toString() + "\n");                                                                
-                                                                return symbol(CONTENIDO, new String(contenido), false);
+                                                                if(!contenido.toString().isBlank()){
+                                                                    return symbol(CONTENIDO, new String(contenido), false);
+                                                                }                                                          
                                                             }else{
                                                                 System.out.println("[L] contenido ext [fin_FOR]: "+ contenido.toString() + "\n");                                                      
                                                             }     
@@ -438,8 +478,10 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
                                                             yypushback(yylength());
                                                             yybegin(FOR);//antes tenía estadoEntrada, pero ya que sé cual es mejor lo pongo de una vez xD
                                                             if(etiquetaAntApetura){
-                                                                System.out.println("[L] contenido in [:]: "+ contenido.toString() + "\n");                                                                
-                                                                return symbol(CONTENIDO, new String(contenido), false);
+                                                                System.out.println("[L] contenido in [:]: "+ contenido.toString() + "\n");    
+                                                                if(!contenido.toString().isBlank()){
+                                                                    return symbol(CONTENIDO, new String(contenido), false);
+                                                                }                                                                                                                          
                                                             }else{
                                                                 System.out.println("[L] contenido ext [:]: "+ contenido.toString() + "\n");                                                      
                                                             }     

@@ -14,19 +14,19 @@ import java.io.Serializable;
 public class ProyectoCopy implements Serializable{
     private final String root;
     private Archivo archivoJSON;
-    private Archivo archivoDEF;
+    private Archivo archivoCOPY;
     
-    public ProyectoCopy(String root, Archivo archivoJSON, Archivo archicoDEF){
+    public ProyectoCopy(String root, Archivo archivoJSON, Archivo archicoCOPY){
         this.root = root;
         this.archivoJSON = archivoJSON;
-        this.archivoDEF = archicoDEF;
+        this.archivoCOPY = archicoCOPY;
     }
     
     public void resetContent(String newContent, boolean enJSON){
         if(enJSON){
             this.archivoJSON.saveContent(newContent);
         }else{
-            this.archivoDEF.saveContent(newContent);
+            this.archivoCOPY.saveContent(newContent);
         }
     }    
     
@@ -34,8 +34,8 @@ public class ProyectoCopy implements Serializable{
         return this.archivoJSON;
     }
     
-    public Archivo getDEF(){
-        return this.archivoDEF;
+    public Archivo getCOPY(){
+        return this.archivoCOPY;
     }
     
 }

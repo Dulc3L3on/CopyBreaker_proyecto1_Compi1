@@ -26,12 +26,12 @@ public class HTML_ParserSym {
   public static final int CORCHETE_C = 23;
   public static final int TABLE_A = 8;
   public static final int CORCHETE_A = 22;
+  public static final int ITERADOR = 39;
   public static final int HTML_C = 3;
   public static final int HASTA = 40;
   public static final int HTML_A = 2;
   public static final int TR_C = 11;
   public static final int TR_A = 10;
-  public static final int ITERATOR = 39;
   public static final int CLASES = 30;
   public static final int TH_C = 13;
   public static final int TH_A = 12;
@@ -90,7 +90,7 @@ public class HTML_ParserSym {
   "PARAMETROS",
   "COMENTARIOS",
   "TEXTO",
-  "ITERATOR",
+  "ITERADOR",
   "HASTA",
   "DOS_PUNTOS"
   };

@@ -11,6 +11,7 @@ import Backend.Manejadores.ManejadorInterfaz;
 import Backend.Sockets.ClientProcess;
 import java.io.File;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -24,6 +25,7 @@ public class home extends javax.swing.JFrame {
     private final ManejadorAnalisis manejadorAnalisis;
     ArrayList<ArrayList<File>> listaArchivos = new ArrayList<>();//esta es para setear las dos listas de los archivos recogidos de cada proyecto...
     String[] arregloPrueba;
+    boolean esJSON;
     
     /**
      * Creates new form home
@@ -71,7 +73,7 @@ public class home extends javax.swing.JFrame {
         lbl_ubicacion_Proyecto1 = new javax.swing.JLabel();
         lbl_ubicacion_Proyecto2 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
+        tab_Cliente = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         scroll_txtA_JSON = new javax.swing.JScrollPane();
         txt_JSON = new javax.swing.JTextArea();
@@ -245,6 +247,12 @@ public class home extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Cargar Proyectos", jPanel3);
 
+        tab_Cliente.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                tab_ClienteStateChanged(evt);
+            }
+        });
+
         txt_JSON.setColumns(20);
         txt_JSON.setRows(5);
         txt_JSON.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -395,7 +403,7 @@ public class home extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane2.addTab("JSON", jPanel5);
+        tab_Cliente.addTab("JSON", jPanel5);
 
         btn_analizarReporte.setText("Analizar Reporte");
         btn_analizarReporte.setEnabled(false);
@@ -516,6 +524,11 @@ public class home extends javax.swing.JFrame {
 
         btn_visualizarHTML.setText("Visualizar HTML");
         btn_visualizarHTML.setEnabled(false);
+        btn_visualizarHTML.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_visualizarHTMLActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -562,19 +575,19 @@ public class home extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane2.addTab("Reportes", jPanel6);
+        tab_Cliente.addTab("Reportes", jPanel6);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(tab_Cliente, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane2))
+                .addComponent(tab_Cliente))
         );
 
         jTabbedPane1.addTab("Resultados", jPanel4);
@@ -665,7 +678,9 @@ public class home extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_analizarReporteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_analizarReporteActionPerformed
-        
+        if(!txtA_Reportes.getText().isBlank()){
+            this.manejadorAnalisis.procesarCOPYRecibido(txtA_Reportes.getText());
+        }
     }//GEN-LAST:event_btn_analizarReporteActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -683,12 +698,15 @@ public class home extends javax.swing.JFrame {
 
     private void btn_carga2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_carga2ActionPerformed
         this.manejadorArchivos_Proyecto2.setFiles();
+                
         this.manejadorInterfaz.addArchivosALista(lista_Carga2, this.manejadorArchivos_Proyecto2.getNombreArchivos(), txtA_proyecto2);
         this.enabledMainButton(this.manejadorArchivos_Proyecto1.getFiles(), this.manejadorArchivos_Proyecto2.getFiles());
     }//GEN-LAST:event_btn_carga2ActionPerformed
 
     private void btn_carga1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_carga1ActionPerformed
         this.manejadorArchivos_Proyecto1.setFiles();
+        
+        System.out.println(this.manejadorArchivos_Proyecto1.getNombreArchivos());
         this.manejadorInterfaz.addArchivosALista(lista_Carga1, this.manejadorArchivos_Proyecto1.getNombreArchivos(), txtA_proyecto1);
         this.enabledMainButton(this.manejadorArchivos_Proyecto1.getFiles(), this.manejadorArchivos_Proyecto2.getFiles());
     }//GEN-LAST:event_btn_carga1ActionPerformed
@@ -777,6 +795,11 @@ public class home extends javax.swing.JFrame {
 
     private void lbl_btn_abrirProyectoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_btn_abrirProyectoMouseClicked
         this.manejadorAnalisis.getManejadorProyectos().openProyect();
+        this.manejadorAnalisis.procesarJSONRecibido(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getJSON().getContenido());        
+        this.manejadorAnalisis.procesarCOPYRecibido(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getCOPY().getContenido());
+                
+        this.txt_JSON.setText(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getJSON().getContenido());
+        this.txtA_Reportes.setText(this.manejadorAnalisis.getManejadorProyectos().getProyectoAbierto().getCOPY().getContenido());
     }//GEN-LAST:event_lbl_btn_abrirProyectoMouseClicked
 
     private void lbl_guardarProyectoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_guardarProyectoMouseClicked
@@ -784,12 +807,27 @@ public class home extends javax.swing.JFrame {
     }//GEN-LAST:event_lbl_guardarProyectoMouseClicked
 
     private void lbl_guardarCambiosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lbl_guardarCambiosMouseClicked
-        if(this.manejadorAnalisis.getManejadorProyectos().actualProyectIsSaved()){            
-            this.manejadorAnalisis.getManejadorProyectos().guardarCambios("", true);//esto lo averiguaremos dependiendo de que ventana del tabLayer esté enfocada...
+        //esto sin importar que el txtA tenga o no contenido, simplemente guarda porque el usuario dice que guardes xD
+        if(this.manejadorAnalisis.getManejadorProyectos().actualProyectIsSaved()){                       
+            this.manejadorAnalisis.getManejadorProyectos().guardarCambios((esJSON)?txt_JSON.getText():txtA_Reportes.getText(), esJSON);//esto lo averiguaremos dependiendo de que ventana del tabLayer esté enfocada...
         }else{
             this.manejadorAnalisis.getManejadorProyectos().guardarComo(txt_JSON.getText(), txtA_Reportes.getText());
         }
     }//GEN-LAST:event_lbl_guardarCambiosMouseClicked
+
+    private void btn_visualizarHTMLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_visualizarHTMLActionPerformed
+        if(this.manejadorAnalisis.getHTML() != null){
+            //this.generadorReporte(this.manejadorAnalisis.getHTML());
+        }else{
+            JOptionPane.showMessageDialog(null, "Copy con errores", "No podrás visualizar "
+                 + "el Reporte a\nmenos que arregles los errores",JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btn_visualizarHTMLActionPerformed
+
+    private void tab_ClienteStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tab_ClienteStateChanged
+        esJSON = (tab_Cliente.getSelectedIndex() == 0);//puesto que este solo cambia cunado lo seleccionan y no cuando pierde o gana el foco, entonces nice xD, nunca dará -1 xD xD bueno eso probé y salió así, de todos modos ahí te fijas de la consola...
+        System.out.println(tab_Cliente.getSelectedIndex());
+    }//GEN-LAST:event_tab_ClienteStateChanged
 
     private void enabledMainButton(ArrayList<File> archivosProyecto1, ArrayList<File> archivosProyecto2){        
         this.btn_analizar.setEnabled((!archivosProyecto1.isEmpty() && !archivosProyecto2.isEmpty()));        
@@ -854,7 +892,6 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JLabel lbl_btn_abrirProyecto;
     private javax.swing.JLabel lbl_btn_buscar_JSON;
     private javax.swing.JLabel lbl_btn_buscar_Reportes;
@@ -876,6 +913,7 @@ public class home extends javax.swing.JFrame {
     private javax.swing.JScrollPane scroll_proyecto1;
     private javax.swing.JScrollPane scroll_proyecto2;
     private javax.swing.JScrollPane scroll_txtA_JSON;
+    private javax.swing.JTabbedPane tab_Cliente;
     private javax.swing.JTextArea txtA_Reportes;
     private javax.swing.JTextArea txtA_proyecto1;
     private javax.swing.JTextArea txtA_proyecto2;

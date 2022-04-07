@@ -86,9 +86,14 @@ public class ManejadorInterfaz {
         areaTexto.setText("");
     }      
       
-    public void addResultados_JSON(String JSON){
-        this.txtA_JSON.setText(JSON);
-        this.txtA_JSON.updateUI();
+    public void addResultados(String resultados, boolean esJSON){
+        if(esJSON){
+            this.txtA_JSON.setText(resultados);
+            this.txtA_JSON.updateUI();
+        }else{
+            this.txtA_Reportes.setText(resultados);
+            this.txtA_Reportes.updateUI();
+        }
     }
     
     public void addUbicacion(JTextArea areaTexto, JLabel etiquetaPosicion){

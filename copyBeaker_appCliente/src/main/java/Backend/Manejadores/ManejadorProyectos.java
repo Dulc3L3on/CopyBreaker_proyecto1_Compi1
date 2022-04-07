@@ -52,10 +52,19 @@ public class ManejadorProyectos {
         }
     }
     
-    private String inicializarDEF(){
-        return "";
+    public String inicializarDEF(){
+        return "</Seccion de definición de variables/>\n\n\n</Sección del HTML/>\n"
+                + "<html>\n\t</aquí puedes darle forma a tu reporte :3 />\n</html>";
     }
     
+    /**
+     * Este es el método que deberás utilizar para
+     * actualizar el objeto del proyectoCOpy actual
+     * ya se encarga de hacerlo siempre y cuando no
+     * sea null
+     * @param cambios
+     * @param enJSON
+     */
     public void guardarCambios(String cambios, boolean enJSON){//en este método se actualiza el contenido del objeto        
         if(proyectoCopy != null){            
             this.proyectoCopy.resetContent(cambios, enJSON);
@@ -92,6 +101,12 @@ public class ManejadorProyectos {
                 System.out.println("Error al abrir el proyecto");
             }
         }        
+    }///también se debe llamar al analizador, para que pueda procese los dos archivos, y así pueda genera los resultados dep del contenido guardado
+    //y con ello almacenar en su variable de HTML_normalizado y de RESULT, lo corresp.. esto con tal de no tener que estar guardando más cosas xD
+    //Así solo llamo los métodos juntos en el JFrame y ya xD
+    
+    public ProyectoCopy getProyectoAbierto(){
+        return this.proyectoCopy;
     }
     
     public boolean actualProyectIsSaved(){
