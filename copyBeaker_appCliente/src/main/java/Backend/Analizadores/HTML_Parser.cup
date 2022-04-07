@@ -228,8 +228,8 @@ valor_result ::= SCORE
                | result_metodos
                | result_variables               
                | result_comentarios
-               | error:err                                                            {:System.out.println("[S] error: BAD_RESULT_INVOCATION");
-                                                                                        addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_RESULT_INVOCATION);:}
+               | error:err                                                            {:System.out.println("[S] error: BAD_ATTRIBUTE_RESULT_ACCESS");
+                                                                                        addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTE_RESULT_ACCESS);:}
                ;
 
 result_clases ::= CLASES 
@@ -240,7 +240,7 @@ result_clases ::= CLASES
 cuerpo_clase ::= CORCHETE_A valor_numerico CORCHETE_C
                | CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
                | error:err                                                             {:System.out.println("[S] error: BAD_ATTRIBUTES_CLASS_INVOCATION");
-                                                                                         addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTES_CLASS_INVOCATION);:}
+                                                                                         addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTES_CLASS_INVOCATION);:}
                ;
 
 result_metodos ::= METODOS
@@ -252,7 +252,7 @@ cuerpo_metodo ::= CORCHETE_A valor_numerico CORCHETE_C
                 | CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
                 | CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE                 
                 | error:err                                                             {:System.out.println("[S] error: BAD_ATTRIBUTES_METHOD_INVOCATION");
-                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTES_METHOD_INVOCATION);:}
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTES_METHOD_INVOCATION);:}
                 ;
 
 result_variables ::= VARIABLES
@@ -265,7 +265,7 @@ cuerpo_variable ::= CORCHETE_A valor_numerico CORCHETE_C
                   | CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
                   | CORCHETE_A valor_numerico CORCHETE_C PUNTO FUNCION
                   | error:err                                                           {:System.out.println("[S] error: BAD_ATTRIBUTES_VAR_INVOCATION");
-                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTES_VAR_INVOCATION);:}
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTES_VAR_INVOCATION);:}
                   ;
 
 result_comentarios ::= COMENTARIOS
@@ -276,7 +276,7 @@ result_comentarios ::= COMENTARIOS
 cuerpo_comentario ::= CORCHETE_A valor_numerico CORCHETE_C
                     | CORCHETE_A valor_numerico CORCHETE_C PUNTO TEXTO
                      | error:err                                                        {:System.out.println("[S] error: BAD_ATTRIBUTE_COMMENT_INVOCATION");
-                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTE_COMMENT_INVOCATION);:}
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTE_COMMENT_INVOCATION);:}
                     ;
 
 result_integer ::= RESULT cuerpo_result_integer
@@ -284,7 +284,7 @@ result_integer ::= RESULT cuerpo_result_integer
 
 cuerpo_result_integer ::= PUNTO METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO PARAMETROS
                         | error:err                                                                                 {:System.out.println("[S] error: BAD_INTEGER_RESULT_INVOCATION");
-                                                                                                                      addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_INTEGER_RESULT_INVOCATION);:}
+                                                                                                                      addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_INTEGER_RESULT_INVOCATION);:}
                         ;
 
 valor_numerico ::= ENTERO

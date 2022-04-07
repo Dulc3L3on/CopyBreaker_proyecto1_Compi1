@@ -74,7 +74,7 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
     }    
 
     private Symbol accionIdentificador(){
-        System.out.println("[L] identificador: "+ yytext());
+        System.out.println("[L] variable: "+ yytext());
         return symbol(VARIABLE, yytext(), false);
     }
 
@@ -133,7 +133,7 @@ contenidoComentario = ( [^*] | "/"+ [^"</"] )*
 <YYINITIAL>{    
     {numero}                          {System.out.println("[L] entero: "+ yytext());return symbol(ENTERO, (yytext()), false);}//la conversión se va a hacer en un método del parser, al final voy a dejar en String el lexema de Token, para ahorrarme los casteos en los strings, además como este se puede convertir a integer, solo tendría que hacer que dicho método pueda atrapar la excepción que se pueda generar al no corresponder el string a un entero...
 
-    {identificador}                   {accionIdentificador();}
+    {identificador}                   {return accionIdentificador();}
 
     {operadoresAritmeticos}           {System.out.println("[L] simbolo: "+ yytext());
                                        return symbol(((yytext().equals("+"))?MAS:((yytext().equals("-"))?RESTA:((yytext().equals("*"))?POR:((yytext().equals("/"))?DIV:((yytext().equals("("))?PARENTESIS_A:PARENTESIS_C))))), yytext(), true);}

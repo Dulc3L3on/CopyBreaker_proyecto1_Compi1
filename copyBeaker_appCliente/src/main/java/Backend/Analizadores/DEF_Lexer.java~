@@ -8,6 +8,8 @@ import java_cup.runtime.*;
 import Backend.Objetos.Token;
 import static Backend.Analizadores.DEF_ParserSym.*;
 import Backend.Manejadores.ManejadorErrores;
+import Backend.Objetos.Error;
+import Backend.Objetos.Enums.LexerError;
 //import Objetos.ReporteError;//yo supongo que si se debe importar para usar el eqq de ctes static, aunque sea kotlin... solo era para probar que si jala cosas de kotlin en Java xD
 
 
@@ -731,7 +733,7 @@ public class DEF_Lexer implements java_cup.runtime.Scanner {
       message = ZZ_ERROR_MSG[ZZ_UNKNOWN_ERROR];
     }
 
-    throw new Error(message);
+    throw new java.lang.Error(message);
   }
 
 

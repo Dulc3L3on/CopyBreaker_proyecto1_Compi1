@@ -1462,8 +1462,8 @@ class CUP$HTML_Parser$actions {
 		int errleft = ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()).left;
 		int errright = ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()).right;
 		Object err = (Object)((java_cup.runtime.Symbol) CUP$HTML_Parser$stack.peek()).value;
-		System.out.println("[S] error: BAD_RESULT_INVOCATION");
-                                                                                        addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_RESULT_INVOCATION);
+		System.out.println("[S] error: BAD_ATTRIBUTE_RESULT_ACCESS");
+                                                                                        addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTE_RESULT_ACCESS);
               CUP$HTML_Parser$result = parser.getSymbolFactory().newSymbol("valor_result",31, ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), RESULT);
             }
           return CUP$HTML_Parser$result;
@@ -1512,7 +1512,7 @@ class CUP$HTML_Parser$actions {
 		int errright = ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()).right;
 		Object err = (Object)((java_cup.runtime.Symbol) CUP$HTML_Parser$stack.peek()).value;
 		System.out.println("[S] error: BAD_ATTRIBUTES_CLASS_INVOCATION");
-                                                                                         addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTES_CLASS_INVOCATION);
+                                                                                         addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTES_CLASS_INVOCATION);
               CUP$HTML_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_clase",33, ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), RESULT);
             }
           return CUP$HTML_Parser$result;
@@ -1570,7 +1570,7 @@ class CUP$HTML_Parser$actions {
 		int errright = ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()).right;
 		Object err = (Object)((java_cup.runtime.Symbol) CUP$HTML_Parser$stack.peek()).value;
 		System.out.println("[S] error: BAD_ATTRIBUTES_METHOD_INVOCATION");
-                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTES_METHOD_INVOCATION);
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTES_METHOD_INVOCATION);
               CUP$HTML_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_metodo",35, ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), RESULT);
             }
           return CUP$HTML_Parser$result;
@@ -1637,7 +1637,7 @@ class CUP$HTML_Parser$actions {
 		int errright = ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()).right;
 		Object err = (Object)((java_cup.runtime.Symbol) CUP$HTML_Parser$stack.peek()).value;
 		System.out.println("[S] error: BAD_ATTRIBUTES_VAR_INVOCATION");
-                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTES_VAR_INVOCATION);
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTES_VAR_INVOCATION);
               CUP$HTML_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_variable",37, ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), RESULT);
             }
           return CUP$HTML_Parser$result;
@@ -1686,7 +1686,7 @@ class CUP$HTML_Parser$actions {
 		int errright = ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()).right;
 		Object err = (Object)((java_cup.runtime.Symbol) CUP$HTML_Parser$stack.peek()).value;
 		System.out.println("[S] error: BAD_ATTRIBUTE_COMMENT_INVOCATION");
-                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_ATTRIBUTE_COMMENT_INVOCATION);
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTE_COMMENT_INVOCATION);
               CUP$HTML_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_comentario",39, ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), RESULT);
             }
           return CUP$HTML_Parser$result;
@@ -1717,7 +1717,7 @@ class CUP$HTML_Parser$actions {
 		int errright = ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()).right;
 		Object err = (Object)((java_cup.runtime.Symbol) CUP$HTML_Parser$stack.peek()).value;
 		System.out.println("[S] error: BAD_INTEGER_RESULT_INVOCATION");
-                                                                                                                      addError(Token.parseToken(err), errleft, errright, SintaxError.HTML_BAD_INTEGER_RESULT_INVOCATION);
+                                                                                                                      addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_INTEGER_RESULT_INVOCATION);
               CUP$HTML_Parser$result = parser.getSymbolFactory().newSymbol("cuerpo_result_integer",29, ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$HTML_Parser$stack.peek()), RESULT);
             }
           return CUP$HTML_Parser$result;

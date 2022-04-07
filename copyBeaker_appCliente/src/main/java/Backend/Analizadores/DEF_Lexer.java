@@ -8,8 +8,6 @@ import java_cup.runtime.*;
 import Backend.Objetos.Token;
 import static Backend.Analizadores.DEF_ParserSym.*;
 import Backend.Manejadores.ManejadorErrores;
-import Backend.Objetos.Error;
-import Backend.Objetos.Enums.LexerError;
 //import Objetos.ReporteError;//yo supongo que si se debe importar para usar el eqq de ctes static, aunque sea kotlin... solo era para probar que si jala cosas de kotlin en Java xD
 
 
@@ -474,7 +472,7 @@ public class DEF_Lexer implements java_cup.runtime.Scanner {
     }    
 
     private Symbol accionIdentificador(){
-        System.out.println("[L] identificador: "+ yytext());
+        System.out.println("[L] variable: "+ yytext());
         return symbol(VARIABLE, yytext(), false);
     }
 
@@ -733,7 +731,7 @@ public class DEF_Lexer implements java_cup.runtime.Scanner {
       message = ZZ_ERROR_MSG[ZZ_UNKNOWN_ERROR];
     }
 
-    throw new java.lang.Error(message);
+    throw new Error(message);
   }
 
 
@@ -931,7 +929,7 @@ public class DEF_Lexer implements java_cup.runtime.Scanner {
             // fall through
           case 32: break;
           case 4:
-            { accionIdentificador();
+            { return accionIdentificador();
             }
             // fall through
           case 33: break;

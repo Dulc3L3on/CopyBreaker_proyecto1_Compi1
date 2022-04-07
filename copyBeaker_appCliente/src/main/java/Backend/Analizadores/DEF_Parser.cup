@@ -50,11 +50,12 @@ terminal MAS, RESTA, MENOS, POR, DIV, PARENTESIS_A, PARENTESIS_C;
 terminal ENTERO, CADENA, VARIABLE;
 
 /*3. NO terminales*/
-non terminal inicio, declaracion_variables, asignacion;
+non terminal inicio, sentencia, declaracion, declaracion_variables, asignacion, cuerpo_asignacion;
 non terminal creacion_var_numero, valor_numerico;
 non terminal creacion_var_string, valor_string, concat, opciones_concat;
 non terminal lista_variables;
-non terminal result_string, valor_result, result_clases, result_metodos, result_variables, result_comentarios, result_integer;/*tipos_result, puesto que el valor# que forma parte de una de las prod, del NT único en el que se encontraba este, ya se envarga de permitir el result_integer xD*/
+non terminal result_string, valor_result, result_clases, cuerpo_clase, result_metodos, cuerpo_metodo;
+non terminal result_variables, cuerpo_variable, result_comentarios, cuerpo_comentario, result_integer, cuerpo_result_integer;/*tipos_result, puesto que el valor# que forma parte de una de las prod, del NT único en el que se encontraba este, ya se envarga de permitir el result_integer xD*/
 
 /*3.1 Precedencia y asociatividad*/
 precedence left MAS, RESTA;/*basado en la docu xD*/
@@ -64,14 +65,44 @@ precedence left MENOS;
 /*4. reglas de Producción*/
 start with inicio;
 
-inicio ::= declaracion_variables
-         | asignacion
-         |
-         ;//este último lo coloqué por que podría solo aparecer comentarios...
+inicio ::= inicio sentencia
+         | 
+   //      | error:err
+         ;
 
-declaracion_variables ::= INTEGER creacion_var_numero PUNTO_COMA
-                        | STRING creacion_var_string PUNTO_COMA
-                        ;
+/*inicio ::= inicio declaracion
+         | inicio asignacion
+         |
+    //     | error:err                                                               {:System.out.println("[S] error: DEF_BAD_SENTENCE\n");
+    //                                                                                 addError(Token.parseToken(err), errleft, errright, SintaxError.DEF_BAD_SENTENCE);:}
+         ;*//*vrs2 [después de la original, la original era así menos la prod de error xD]*///este último lo coloqué por que podría solo aparecer comentarios...
+
+sentencia ::= declaracion PUNTO_COMA
+            | asignacion PUNTO_COMA
+            | error:err                                                              {:System.out.println("[S] error: DEF_BAD_SENTENCE\n");
+                                                                                     addError(Token.parseToken(err), errleft, errright, SintaxError.DEF_BAD_SENTENCE);:}
+            ;
+
+declaracion ::= INTEGER creacion_var_numero
+              | STRING creacion_var_string
+          //    | error:err                                                           {:System.out.println("[S] error: DEF_BAD_VARIABLE_DECLARATION\n");
+          //                                                                           addError(Token.parseToken(err), errleft, errright, SintaxError.DEF_BAD_VARIABLE_DECLARATION);:}
+              ;//actual y defi diría yo xD
+
+/*declaracion ::= INTEGER creacion_var_numero PUNTO_COMA
+              | STRING creacion_var_string PUNTO_COMA
+              | error:err                                                           {:System.out.println("[S] error: DEF_BAD_VARIABLE_DECLARATION\n");
+                                                                                     addError(Token.parseToken(err), errleft, errright, SintaxError.DEF_BAD_VARIABLE_DECLARATION);:}
+              ;*//*original*/
+
+/*declaracion ::= declaracion_variables PUNTO_COMA
+                ;
+
+declaracion_variables ::= INTEGER creacion_var_numero 
+                        | STRING creacion_var_string 
+                        | error:err                                                {:System.out.println("[S] error: DEF_BAD_VARIABLE_DECLARATION\n");
+                                                                                     addError(Token.parseToken(err), errleft, errright, SintaxError.DEF_BAD_VARIABLE_DECLARATION);:}
+                        ;*//*intento previo a la actual y después de la original*/
 
 creacion_var_numero ::= VARIABLE IGUAL valor_numerico
                       | lista_variables
@@ -84,6 +115,8 @@ creacion_var_string ::= VARIABLE IGUAL valor_string
 
 lista_variables ::= lista_variables COMA VARIABLE
                   | VARIABLE
+                  | error:err VARIABLE                                            {:System.out.println("[S] error: DEF_BAD_VARIABLE_LIST\n");
+                                                                                     addError(Token.parseToken(err), errleft, errright, SintaxError.DEF_BAD_VARIABLE_LIST);:}
                   ;
 
 valor_numerico ::= valor_numerico MAS valor_numerico                               {:System.out.println("[S] substruct: cont_#: MAS");:}
@@ -96,6 +129,8 @@ valor_numerico ::= valor_numerico MAS valor_numerico                            
                  | ENTERO                                                          {:System.out.println("[S] substruct: cont_#: ENTERO");:}
                  | VARIABLE                                                        {:System.out.println("[S] substruct: cont_#: VARIABLE");:}
                  | result_integer                                                  {:System.out.println("[S] substruct: cont_#: RESULT [integer]");:}
+                 | error:err                                                       {:System.out.println("[S] error: DEF_BAD_NUMERIC_TYPE\n");
+                                                                                     addError(Token.parseToken(err), errleft, errright, SintaxError.DEF_BAD_NUMERIC_TYPE);:}
                  ;
 
 valor_string ::= valor_numerico MAS valor_string
@@ -105,11 +140,13 @@ valor_string ::= valor_numerico MAS valor_string
 concat ::= concat opciones_concat
          | CADENA
          | result_string
+  //       | error:err
          ;
 
 opciones_concat ::= MAS valor_numerico
                   | MAS CADENA
                   | MAS result_string
+//                  | error:err
                   ;
 
 result_string ::= RESULT PUNTO valor_result
@@ -120,34 +157,79 @@ valor_result ::= SCORE
                | result_metodos
                | result_variables               
                | result_comentarios
+               | error:err                                                              {:System.out.println("[S] error: BAD_ATTRIBUTE_RESULT_ACCESS\n");
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTE_RESULT_ACCESS);:}
                ;
 
-result_clases ::= CLASES
-                | CLASES CORCHETE_A valor_numerico CORCHETE_C
-                | CLASES CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+result_clases ::= CLASES 
+                | CLASES cuerpo_clase
                 ;
 
+
+cuerpo_clase ::= CORCHETE_A valor_numerico CORCHETE_C
+               | CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+               | error:err                                                             {:System.out.println("[S] error: BAD_ATTRIBUTES_CLASS_INVOCATION");
+                                                                                         addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTES_CLASS_INVOCATION);:}
+               ;
+
 result_metodos ::= METODOS
-                 | METODOS CORCHETE_A valor_numerico CORCHETE_C
-                 | METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
-                 | METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+                 | METODOS cuerpo_metodo
                  ;
+
+
+cuerpo_metodo ::= CORCHETE_A valor_numerico CORCHETE_C
+                | CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
+                | CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE                 
+                | error:err                                                             {:System.out.println("[S] error: BAD_ATTRIBUTES_METHOD_INVOCATION");
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTES_METHOD_INVOCATION);:}
+                ;
 
 result_variables ::= VARIABLES
-                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C
-                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
-                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
-                   | VARIABLES CORCHETE_A valor_numerico CORCHETE_C PUNTO FUNCION
+                   | VARIABLES cuerpo_variable
                    ;
 
+
+cuerpo_variable ::= CORCHETE_A valor_numerico CORCHETE_C
+                  | CORCHETE_A valor_numerico CORCHETE_C PUNTO TIPO
+                  | CORCHETE_A valor_numerico CORCHETE_C PUNTO NOMBRE
+                  | CORCHETE_A valor_numerico CORCHETE_C PUNTO FUNCION
+                  | error:err                                                           {:System.out.println("[S] error: BAD_ATTRIBUTES_VAR_INVOCATION");
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTES_VAR_INVOCATION);:}
+                  ;
+
 result_comentarios ::= COMENTARIOS
-                     | COMENTARIOS CORCHETE_A valor_numerico CORCHETE_C
-                     | COMENTARIOS CORCHETE_A valor_numerico CORCHETE_C PUNTO TEXTO
+                     | COMENTARIOS cuerpo_comentario
                      ;
 
-result_integer ::= RESULT PUNTO METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO PARAMETROS
+
+cuerpo_comentario ::= CORCHETE_A valor_numerico CORCHETE_C
+                    | CORCHETE_A valor_numerico CORCHETE_C PUNTO TEXTO
+                     | error:err                                                        {:System.out.println("[S] error: BAD_ATTRIBUTE_COMMENT_INVOCATION");
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_ATTRIBUTE_COMMENT_INVOCATION);:}
+                    ;
+
+result_integer ::= RESULT cuerpo_result_integer
                  ;
 
-asignacion ::= VARIABLE IGUAL valor_numerico PUNTO_COMA
-             | VARIABLE IGUAL valor_string PUNTO_COMA
+cuerpo_result_integer ::= PUNTO METODOS CORCHETE_A valor_numerico CORCHETE_C PUNTO PARAMETROS
+                        | error:err                                                                                 {:System.out.println("[S] error: BAD_INTEGER_RESULT_INVOCATION");
+                                                                                                                      addError(Token.parseToken(err), errleft, errright, SintaxError.BAD_INTEGER_RESULT_INVOCATION);:}
+                        ;
+
+asignacion ::= VARIABLE IGUAL cuerpo_asignacion
+             | error:err                                                                {:System.out.println("[S] error: DEF_BAD_ASIGNATION_BODY");
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.DEF_BAD_ASIGNATION_BODY);:}                    
              ;
+
+cuerpo_asignacion ::=  valor_numerico
+                    |  valor_string
+                    ;/*actual y defi imagino xD*/
+
+/*asignacion ::= VARIABLE IGUAL cuerpo_asignacion
+             ;
+
+cuerpo_asignacion ::=  valor_numerico PUNTO_COMA
+                    |  valor_string PUNTO_COMA
+                    |  error:err                                                        {:System.out.println("[S] error: DEF_BAD_ASIGNATION_BODY");
+                                                                                          addError(Token.parseToken(err), errleft, errright, SintaxError.DEF_BAD_ASIGNATION_BODY);:}
+                    ;*//*Original*/
